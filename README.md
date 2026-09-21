@@ -1,5 +1,5 @@
 # Book Card 
-A new Koreader Sleep Screen
+A new KOReader Sleep Screen
 
 Sleep screen showing a reading summary card: cover (framed, rounded corners),
 title, author, series, reading time, time left, progress, daily average,
