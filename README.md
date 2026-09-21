@@ -48,3 +48,9 @@ top-level folder is `bookcard.koplugin`.
 - Needs KOReader's Statistics plugin enabled for time/pace/streak figures.
 - Cache: `settings/bookcard_cache.lua` and `cache/bookcard/cover.png`.
 - If you disable the plugin while "Book Card" is selected, pick another wallpaper.
+
+## Acknowledgements
+- Idea from statistics page from [crosspoint-reader](https://github.com/crosspoint-reader/crosspoint-reader).
+- Statistics based on [quanganhdo/koreader-user-patches](https://github.com/quanganhdo/koreader-user-patches).
+- Colorwheel from [Euphoriyy/KOReader.patches](https://github.com/Euphoriyy/KOReader.patches#-colorwheelwidgetlua).
+- In-plugin updater from [AndyHazz/bookshelf.koplugin](https://github.com/AndyHazz/bookshelf.koplugin).
