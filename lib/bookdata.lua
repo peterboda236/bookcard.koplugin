@@ -610,7 +610,27 @@ function M.prepare(card)
         if sc.modified then card.finished_date = sc.modified end
         if sc.highlights then card.highlights_count = sc.highlights end
     end
-    StatsDb.withDb(nil, function(conn) M.readGlobal(conn, card) end)
+    -- The snapshot is taken in onCloseDocument, which runs BEFORE the
+    -- statistics plugin writes the last page (its own onCloseDocument does
+    -- onPageUpdate + insertDB afterwards). So everything that comes from
+    -- the statistics DB is re-read here, when the DB is already complete:
+    -- reading time, pages read, days, daily average, avg_time (pace).
+    StatsDb.withDb(nil, function(conn)
+        local book_id = card.book_id
+        if not book_id and card.file then
+            local sc = M.readSidecar(card.file)
+            book_id = findBookId(conn, card.file, sc, card.title, card.authors)
+            card.book_id = book_id
+        end
+        if book_id then
+            fillBookStats(conn, card, book_id)
+            -- Same formula the statistics plugin uses for its avg_time.
+            if card.total_time and card.pages_read and card.pages_read > 0 then
+                card.avg_time = card.total_time / card.pages_read
+            end
+        end
+        M.readGlobal(conn, card)
+    end)
     return M.finalize(card)
 end
 
