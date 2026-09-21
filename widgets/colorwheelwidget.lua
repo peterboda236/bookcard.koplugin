@@ -5,9 +5,6 @@ A touch colour picker: a hue/saturation wheel with a brightness slider
 beside it and a live hex preview, shown when a colour setting is tapped in
 Book Card > Colors. Returns the chosen colour as a hex string through its
 callback; nothing here knows or cares which setting it is picking for.
-
-Ported from the Reading Insights plugin (lib/colorwheelwidget.lua), unchanged
-apart from this header.
 ]]--
 
 local Blitbuffer = require("ffi/blitbuffer")

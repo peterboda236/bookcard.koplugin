@@ -1,8 +1,5 @@
 --[[
-Book Card - user-configurable fonts.
-
-Ported from the Reading Insights plugin (lib/fonts.lua), adapted to Book
-card's own text roles:
+Book Card - user-configurable fonts, for these text roles:
 
   title       book title
   author      author line
@@ -12,21 +9,16 @@ card's own text roles:
   bottom      the streak text and the reader-type text (bottom row)
   battery     the battery percentage
 
-One difference from the original: most of Book Card's font sizes (title,
-author, series, stat_value, stat_label) are not fixed - card_view.lua
-computes them from however much space is left on the screen, so every card
-fits regardless of device/orientation. So "default size" here isn't a fixed
-number like in Reading Insights; it means "let card_view.lua keep computing
-it the way it always has" (getFace's `resolved_size` argument below). Only
-if the user sets a custom size for a role does that role stop auto-fitting
-and use the fixed size instead. bottom/battery already had genuinely fixed
-default sizes (14/13) before this menu existed, so those keep working the
-same way (DEFAULT_SIZE below).
+Most sizes (title, author, series, stat_value, stat_label) are not fixed -
+card_view.lua computes them from however much space is left on the screen,
+so every card fits regardless of device/orientation. "default size" means
+"let card_view.lua keep computing it" (getFace's `resolved_size` argument
+below); only a user-set custom size switches a role to a fixed size.
+bottom/battery instead have real fixed defaults (14/13, see DEFAULT_SIZE).
 
-Font *names* work like Reading Insights, except Book Card's own defaults
-are NotoSans (Regular/Bold/Italic and friends) for every role rather than
-KOReader's generic "tfont"/"cfont" aliases, so cards look consistent
-regardless of the device's currently-selected system font.
+Default font names are NotoSans (Regular/Bold/Italic and friends) for
+every role, rather than KOReader's generic "tfont"/"cfont" aliases, so
+cards look consistent regardless of the device's system font.
 
 Loaded once by main.lua and handed to card_view.lua.
 

@@ -1,12 +1,10 @@
 --[[
 Book Card - in-app updater.
 
-Updater based on https://github.com/AndyHazz/bookshelf.koplugin updater
-
-Mirrors bookshelf.koplugin's lib/bookshelf_updater.lua: lets the user check
-for and install new releases of this plugin directly from GitHub, without
-having to plug the device into a computer. Also supports pulling a specific
-development branch's tip, for testing pre-release builds.
+Lets the user check for and install new releases of this plugin directly
+from GitHub, without having to plug the device into a computer. Also
+supports pulling a specific development branch's tip, for testing
+pre-release builds.
 
 Loaded once by main.lua with `deps` = { Locale, PluginUtil }.
 
@@ -39,13 +37,8 @@ local Locale =
     deps.Locale
 local _ = Locale._
 
--- ---------------------------------------------------------------------------
--- SET THIS once the plugin has a GitHub repository: "<owner>/<repo>", e.g.
--- "peterboda236/bookcard.koplugin". Until then every update entry reports
--- that no update source is configured and nothing is downloaded.
 -- Releases must carry a .zip asset whose single top-level folder is
--- bookcard.koplugin (the same layout as the Reading Insights releases).
--- ---------------------------------------------------------------------------
+-- bookcard.koplugin.
 local GITHUB_REPO = "peterboda236/bookcard.koplugin"
 local PLUGIN_ID    = "bookcard.koplugin"
 local UA_PRODUCT   = "KOReader-BookCard"

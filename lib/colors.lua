@@ -1,14 +1,12 @@
 --[[
 Book Card - user-configurable text/battery colors.
 
-Ported from the Reading Insights plugin (lib/colors.lua), adapted to Book
-card's own elements. One difference from the original: Book Card's card
-already follows KOReader's night mode / "Background" setting (see
-card_view.lua's palette()), so "default" here means "follow that theme",
-not a fixed hex. A role keeps following the theme until the user picks a
-color for it in the Colors menu; "Reset to default" clears it back to
-following the theme again. This is also why, unlike Reading Insights,
-getColor() takes the caller's current theme color as a fallback.
+The card already follows KOReader's night mode / "Background" setting
+(see card_view.lua's palette()), so "default" here means "follow that
+theme", not a fixed hex. A role keeps following the theme until the user
+picks a color for it in the Colors menu; "Reset to default" clears it
+back to following the theme again. getColor() takes the caller's current
+theme color as a fallback for that reason.
 
   title       book title
   author      author line
