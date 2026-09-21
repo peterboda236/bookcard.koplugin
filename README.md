@@ -1,9 +1,16 @@
-# Book Card (bookcard.koplugin)
+# Book Card 
+A new Koreader Sleep Screen
 
 Sleep screen showing a reading summary card: cover (framed, rounded corners),
 title, author, series, reading time, time left, progress, daily average,
 pages/min, days + start date, finish date (or estimated finish), battery,
 daily + weekly reading streak and reader type.
+
+<img width="510" height="680" alt="FileManager_2026-09-21_094858" src="https://github.com/user-attachments/assets/6cdde237-53d2-47be-9189-af41912ccf8b" />
+
+<br>Settings screen in the menu<br>
+<img width="255" height="340" alt="FileManager_2026-09-21_094916" src="https://github.com/user-attachments/assets/aa3e40a1-41d5-4551-8ef4-b24f6992d7bc" />
+
 
 ## Install
 Copy the `bookcard.koplugin` folder to `koreader/plugins/`, restart KOReader.
