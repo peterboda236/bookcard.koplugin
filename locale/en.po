@@ -168,6 +168,9 @@ msgstr "%d week streak"
 msgid "%d weeks streak"
 msgstr "%d weeks streak"
 
+msgid "Today"
+msgstr "Today"
+
 msgid "Yesterday"
 msgstr "Yesterday"
 

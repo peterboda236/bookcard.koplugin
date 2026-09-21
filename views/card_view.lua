@@ -239,7 +239,9 @@ local function statRows(card)
     local started = Locale.shortDate(card.started_ts)
     local span_text = DASH
     if span then
-        if span == 1 then
+        if span == 0 then
+            span_text = _("Today")
+        elseif span == 1 then
             span_text = _("Yesterday")
         else
             span_text = string.format(N_("%d day ago", "%d days ago", span), span)

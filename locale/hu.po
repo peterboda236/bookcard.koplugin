@@ -168,6 +168,9 @@ msgstr "%d hetes sorozat"
 msgid "%d weeks streak"
 msgstr "%d hetes sorozat"
 
+msgid "Today"
+msgstr "Ma"
+
 msgid "Yesterday"
 msgstr "Tegnap"
 
