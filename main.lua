@@ -400,10 +400,27 @@ function BookCard:addToMainMenu(menu_items)
                 },
             },
             {
-                text = _("Cover / statistics spacing"),
+                text = _("Cover"),
                 sub_item_table = {
-                    gapItem(_("Small (default)"), "small"),
-                    gapItem(_("Large"), "large"),
+                    rounded,
+                    {
+                        text = _("Cover shadow"),
+                        checked_func = function()
+                            return Prefs.readBool(CardView.SETTING_COVER_SHADOW, true)
+                        end,
+                        callback = function()
+                            Prefs.save(CardView.SETTING_COVER_SHADOW,
+                                not Prefs.readBool(CardView.SETTING_COVER_SHADOW, true))
+                        end,
+                        keep_menu_open = true,
+                    },
+                    {
+                        text = _("Cover / statistics spacing"),
+                        sub_item_table = {
+                            gapItem(_("Small (default)"), "small"),
+                            gapItem(_("Large"), "large"),
+                        },
+                    },
                 },
             },
             {
@@ -418,7 +435,6 @@ function BookCard:addToMainMenu(menu_items)
             {
                 text = _("Card elements"),
                 sub_item_table = {
-                    rounded,
                     battery,
                     streak,
                     rtype,

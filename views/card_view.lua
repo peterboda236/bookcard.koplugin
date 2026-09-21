@@ -74,6 +74,7 @@ M.SETTING_READER_TYPE = "bookcard_show_reader_type"      -- default on
 M.SETTING_ROUNDED     = "bookcard_rounded_corners"       -- default on
 M.SETTING_THEME       = "bookcard_theme"                 -- "auto" (default) | "light" | "dark"
 M.SETTING_GAP         = "bookcard_cover_stats_gap"       -- "small" (default) | "large"
+M.SETTING_COVER_SHADOW = "bookcard_cover_shadow"          -- default on
 
 local DASH = "\u{2013}"  -- en dash: "no value"
 
@@ -142,18 +143,22 @@ end
 -- ---------------------------------------------------------------------------
 -- `max_w` x `max_h` is the box for the OUTER size (frame included).
 -- Returns the widget and its outer width and height.
-local function buildCover(card, max_w, max_h, pal)
+local function buildCover(card, max_w, max_h, pal, shadow_offset)
     local border = math.max(2, S(1))
     local radius = Prefs.readBool(M.SETTING_ROUNDED, true) and S(4) or 0
     local box_w, box_h = max_w - 2 * border, max_h - 2 * border
+    local soff = shadow_offset or 0
 
     local function framed(inner, inner_w, inner_h)
         local outer_w, outer_h = inner_w + 2 * border, inner_h + 2 * border
         return CoverFrame:new{
-            inner = inner,
-            width = outer_w, height = outer_h,
-            border = border, radius = radius,
-            bg = pal.bg, fg = pal.fg,
+            inner  = inner,
+            width  = outer_w, height = outer_h,
+            border = border,  radius = radius,
+            bg     = pal.bg,  fg     = pal.fg,
+            -- shadow awareness: BR corner restores shadow grey instead of bg
+            shadow_color  = soff > 0 and CoverFrame.SHADOW_GRAY or nil,
+            shadow_offset = soff,
         }, outer_w, outer_h
     end
 
@@ -420,9 +425,12 @@ function M.build(card, opts)
 
     -- The cover starts level with the first statistic (Progress), not with
     -- the battery indicator above it.
+    local show_cover_shadow = Prefs.readBool(M.SETTING_COVER_SHADOW, true)
+    -- Reserve space for the shadow offset so the cover doesn't overflow its column.
+    local shadow_off = show_cover_shadow and S(4) or 0
     local cover_top = stats_top
-    local cover_max_h = math.max(S(80), content_bottom - cover_top - text_h - S(10))
-    local cover, _cw, cover_h = buildCover(card, left_w, cover_max_h, pal)
+    local cover_max_h = math.max(S(80), content_bottom - cover_top - text_h - S(10) - shadow_off)
+    local cover, cover_w, cover_h = buildCover(card, left_w - shadow_off, cover_max_h, pal, shadow_off)
 
     -- Now that the cover's real height is known, spread the statistics rows
     -- so the LAST one's bottom lines up with the bottom of the cover.
@@ -447,6 +455,19 @@ function M.build(card, opts)
         table.insert(column, cell)
     end
     place(column, W - pad_x - right_w, stats_top)
+
+    -- Cover drop shadow (painted first so the cover sits on top).
+    if show_cover_shadow then
+        local radius = Prefs.readBool(M.SETTING_ROUNDED, true) and S(4) or 0
+        local shadow = CoverFrame.Shadow:new{
+            width  = cover_w,
+            height = cover_h,
+            offset = shadow_off,
+            radius = radius,
+            bg     = pal.bg,
+        }
+        place(shadow, pad_x, cover_top)
+    end
 
     place(cover, pad_x, cover_top)
 
