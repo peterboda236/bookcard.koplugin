@@ -75,6 +75,18 @@ M.SETTING_ROUNDED     = "bookcard_rounded_corners"       -- default on
 M.SETTING_THEME       = "bookcard_theme"                 -- "auto" (default) | "light" | "dark"
 M.SETTING_GAP         = "bookcard_cover_stats_gap"       -- "small" (default) | "large"
 M.SETTING_COVER_SHADOW = "bookcard_cover_shadow"          -- default on
+M.SETTING_HIGHLIGHTS   = "bookcard_show_highlights"      -- default OFF
+
+-- Individual statistics-column rows, in the order they are drawn (all
+-- default on, except SETTING_HIGHLIGHTS above, which stays off by default).
+M.SETTING_STAT_PROGRESS      = "bookcard_stat_progress"
+M.SETTING_STAT_PAGES         = "bookcard_stat_pages"
+M.SETTING_STAT_READING_TIME  = "bookcard_stat_reading_time"
+M.SETTING_STAT_TIME_LEFT     = "bookcard_stat_time_left"
+M.SETTING_STAT_DAILY_AVG     = "bookcard_stat_daily_avg"
+M.SETTING_STAT_PAGES_PER_MIN = "bookcard_stat_pages_per_min"
+M.SETTING_STAT_STARTED       = "bookcard_stat_started"
+M.SETTING_STAT_FINISH        = "bookcard_stat_finish"
 
 local DASH = "\u{2013}"  -- en dash: "no value"
 
@@ -222,44 +234,63 @@ local function statRows(card)
     end
 
     -- Progress goes first (top of the column), the page count right under it.
-    rows[#rows + 1] = { percent and (tostring(percent) .. "%") or DASH, _("Progress") }
-    if card.current_page and card.total_pages then
+    if Prefs.readBool(M.SETTING_STAT_PROGRESS, true) then
+        rows[#rows + 1] = { percent and (tostring(percent) .. "%") or DASH, _("Progress") }
+    end
+    if Prefs.readBool(M.SETTING_STAT_PAGES, true) and card.current_page and card.total_pages then
         rows[#rows + 1] = {
             string.format("%d / %d", card.current_page, card.total_pages),
             _("Pages"),
         }
     end
-    rows[#rows + 1] = { dur(card.total_time), _("Reading Time") }
-    rows[#rows + 1] = { card.finished and DASH or dur(card.time_left_secs), _("Time Left") }
-    rows[#rows + 1] = { dur(card.daily_avg_secs), _("Daily Avg") }
+    if Prefs.readBool(M.SETTING_STAT_READING_TIME, true) then
+        rows[#rows + 1] = { dur(card.total_time), _("Reading Time") }
+    end
+    if Prefs.readBool(M.SETTING_STAT_TIME_LEFT, true) then
+        rows[#rows + 1] = { card.finished and DASH or dur(card.time_left_secs), _("Time Left") }
+    end
+    if Prefs.readBool(M.SETTING_STAT_DAILY_AVG, true) then
+        rows[#rows + 1] = { dur(card.daily_avg_secs), _("Daily Avg") }
+    end
 
-    local ppm = card.pages_per_min
-    local ppm_text = DASH
-    if ppm then ppm_text = Locale.formatNumber(ppm, ppm >= 1 and 1 or 2) end
-    rows[#rows + 1] = { ppm_text, _("Pages/Min") }
+    if Prefs.readBool(M.SETTING_STAT_PAGES_PER_MIN, true) then
+        local ppm = card.pages_per_min
+        local ppm_text = DASH
+        if ppm then ppm_text = Locale.formatNumber(ppm, ppm >= 1 and 1 or 2) end
+        rows[#rows + 1] = { ppm_text, _("Pages/Min") }
+    end
 
     -- "Started": 1 day ago reads as "Yesterday", 2+ as "N days ago".
-    local span = card.span_days
-    local started = Locale.shortDate(card.started_ts)
-    local span_text = DASH
-    if span then
-        if span == 0 then
-            span_text = _("Today")
-        elseif span == 1 then
-            span_text = _("Yesterday")
+    if Prefs.readBool(M.SETTING_STAT_STARTED, true) then
+        local span = card.span_days
+        local started = Locale.shortDate(card.started_ts)
+        local span_text = DASH
+        if span then
+            if span == 0 then
+                span_text = _("Today")
+            elseif span == 1 then
+                span_text = _("Yesterday")
+            else
+                span_text = string.format(N_("%d day ago", "%d days ago", span), span)
+            end
+        end
+        rows[#rows + 1] = {
+            span_text,
+            started and Locale.tpl(_("Started {date}"), { date = started }) or _("Started"),
+        }
+    end
+
+    if Prefs.readBool(M.SETTING_STAT_FINISH, true) then
+        if card.finished then
+            rows[#rows + 1] = { Locale.shortDate(card.finished_ts) or DASH, _("Finished Date") }
         else
-            span_text = string.format(N_("%d day ago", "%d days ago", span), span)
+            rows[#rows + 1] = { Locale.shortDate(card.est_finish_ts) or DASH, _("Est. Finish") }
         end
     end
-    rows[#rows + 1] = {
-        span_text,
-        started and Locale.tpl(_("Started {date}"), { date = started }) or _("Started"),
-    }
 
-    if card.finished then
-        rows[#rows + 1] = { Locale.shortDate(card.finished_ts) or DASH, _("Finished Date") }
-    else
-        rows[#rows + 1] = { Locale.shortDate(card.est_finish_ts) or DASH, _("Est. Finish") }
+    -- Off by default: how many highlights this book has.
+    if Prefs.readBool(M.SETTING_HIGHLIGHTS, false) then
+        rows[#rows + 1] = { tostring(card.highlights_count or 0), _("Highlights") }
     end
     return rows
 end
@@ -366,7 +397,7 @@ function M.build(card, opts)
     local stats_top = pad_top + (battery_h > 0 and (battery_h + S(10)) or 0)
     local stats_h_for_fonts = content_bottom - stats_top
     local rows = statRows(card)
-    local budget = stats_h_for_fonts / #rows / dp     -- units per row
+    local budget = stats_h_for_fonts / math.max(1, #rows) / dp     -- units per row
     local value_size = math.min(22, budget * 0.42)
     local label_size = math.min(13, budget * 0.24)
     local value_face = Fonts.getFace("stat_value", value_size)

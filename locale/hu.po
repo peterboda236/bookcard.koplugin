@@ -60,6 +60,9 @@ msgstr "Olvasótípus megjelenítése"
 msgid "Card elements"
 msgstr "Kártyaelemek"
 
+msgid "Statistics"
+msgstr "Statisztikák"
+
 msgid "Clear cached data"
 msgstr "Gyorsítótár törlése"
 
@@ -149,6 +152,9 @@ msgstr "Befejezés dátuma"
 
 msgid "Est. Finish"
 msgstr "Várható befejezés"
+
+msgid "Highlights"
+msgstr "Kiemelések"
 
 msgid "%d day"
 msgstr "%d nap"

@@ -39,6 +39,7 @@ card fields:
   avg_time (secs/page), total_time (secs), days_read, pages_read
   started_ts, last_read_ts, finished_date
   streak_days, streak_weeks, hour_bucket, book_id
+  highlights_count
   cover_file / has_cover
  derived by finalize():
   finished, time_left_secs, daily_avg_secs, pages_per_min,
@@ -145,6 +146,32 @@ local function cleanSeries(props)
     return series, idx
 end
 
+-- Highlight count: works with either KOReader annotation format.
+--   new format: a flat "annotations" list; each highlight entry carries a
+--               "drawer" (its highlight style) - plain bookmarks don't have one
+--   old format: a "highlight" table keyed by page, each page holding a list
+local function countHighlights(ds)
+    local count = 0
+    local annotations = ds:readSetting("annotations")
+    if type(annotations) == "table" then
+        for _, item in ipairs(annotations) do
+            if type(item) == "table" and item.drawer then
+                count = count + 1
+            end
+        end
+        return count
+    end
+    local highlight = ds:readSetting("highlight")
+    if type(highlight) == "table" then
+        for _, items in pairs(highlight) do
+            if type(items) == "table" then
+                count = count + #items
+            end
+        end
+    end
+    return count
+end
+
 -- The statistics plugin's per-page cap (settings > statistics > max_sec).
 local function maxSec()
     local s = G_reader_settings and G_reader_settings:readSetting("statistics")
@@ -197,6 +224,7 @@ function M.readSidecar(file)
     end
     sc.md5 = ds:readSetting("partial_md5_checksum")
     sc.props = ds:readSetting("doc_props")
+    sc.highlights = countHighlights(ds)
     return sc
 end
 
@@ -493,6 +521,12 @@ function M.collectLive(ui)
     if ok_left then card.pages_left = num(pages_left) end
     if live_avg and live_avg > 0 then card.avg_time = live_avg end
 
+    -- Highlight count: from the live, in-memory settings (most current).
+    if ui.doc_settings then
+        local ok_hl, hl = pcall(countHighlights, ui.doc_settings)
+        if ok_hl then card.highlights_count = hl end
+    end
+
     local book_id = stats and stats.id_curr_book
     StatsDb.withDb(nil, function(conn)
         if not book_id then
@@ -537,6 +571,7 @@ function M.collectFromFile(file, ui)
     card.percent = sc.percent
     card.status = sc.status
     card.finished_date = sc.modified
+    card.highlights_count = sc.highlights
 
     StatsDb.withDb(nil, function(conn)
         local book_id = findBookId(conn, file, sc, props.title, props.authors)
@@ -573,6 +608,7 @@ function M.prepare(card)
         if not card.percent and sc.percent then card.percent = sc.percent end
         if sc.status then card.status = sc.status end
         if sc.modified then card.finished_date = sc.modified end
+        if sc.highlights then card.highlights_count = sc.highlights end
     end
     StatsDb.withDb(nil, function(conn) M.readGlobal(conn, card) end)
     return M.finalize(card)
