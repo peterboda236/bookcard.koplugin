@@ -471,7 +471,7 @@ function M.build(card, opts)
 
     place(cover, pad_x, cover_top)
 
-    local y = cover_top + cover_h + S(10)
+    local y = cover_top + cover_h + S(20)
     for i, block in ipairs(text_blocks) do
         if i > 1 then y = y + S(3) end
         place(block, pad_x, y)
