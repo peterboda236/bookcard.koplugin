@@ -58,7 +58,6 @@ local VerticalSpan = require("ui/widget/verticalspan")
 local logger = require("logger")
 local Screen = Device.screen
 
-local BatteryWidget = deps.PluginUtil.load("widgets/batterywidget.lua")
 local StatCell      = deps.PluginUtil.load("widgets/statcell.lua")
 local CoverFrame    = deps.PluginUtil.load("widgets/coverframe.lua")
 local SvgIcon       = deps.PluginUtil.load("widgets/svgicon.lua")
@@ -289,32 +288,22 @@ function M.build(card, opts)
         return widget
     end
 
-    -- Battery, top right: icon on the left, percentage on the right, drawn
-    -- upright like KOReader's own battery glyph (not the old sideways one).
-    -- The icon is sized off the "68%" text itself, so it can never dwarf it.
+    -- Battery, top right: KOReader's own battery glyph + percentage, same
+    -- symbol the stock footer/screensaver use (Device:getPowerDevice():
+    -- getBatterySymbol), so it matches the device's native battery icon.
     local battery_h = 0
     if show_battery then
-        local ok, capacity = pcall(function() return Device:getPowerDevice():getCapacity() end)
+        local powerd = Device:getPowerDevice()
+        local ok, capacity = pcall(function() return powerd:getCapacity() end)
         if ok and capacity then
             local battery_color = Colors.getColor("battery", pal.fg)
             local pct_face = Fonts.getFace("battery", 14)
-            local pct_text = text(capacity .. "%", pct_face, battery_color)
-            local pct_h = pct_text:getSize().h
-            -- A TextWidget's height is the full line box (with room for
-            -- ascenders/descenders), taller than the digits actually drawn,
-            -- so sizing the icon off it 1:1 still looks oversized next to
-            -- the text. Shrink it down to roughly the visible digit height.
-            local batt_h = math.max(S(8), math.floor(pct_h * 0.62))
-            local batt_w = math.max(S(5), math.floor(batt_h * 0.62))
-            local group = HorizontalGroup:new{
-                align = "center",
-                BatteryWidget:new{ percent = capacity, width = batt_w, height = batt_h, color = battery_color },
-                HorizontalSpan:new{ width = S(6) },
-                pct_text,
-            }
-            local size = group:getSize()
+            local batt_symbol = powerd:getBatterySymbol(
+                powerd:isCharged(), powerd:isCharging(), capacity)
+            local pct_text = text(batt_symbol .. capacity .. "%", pct_face, battery_color)
+            local size = pct_text:getSize()
             battery_h = size.h
-            place(group, W - pad_x - size.w, pad_top)
+            place(pct_text, W - pad_x - size.w, pad_top)
         end
     end
 

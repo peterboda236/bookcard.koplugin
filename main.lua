@@ -21,7 +21,7 @@ Files:
   lib/colors.lua        user-configurable text/battery colors ("Colors" menu)
   lib/fonts.lua         user-configurable fonts ("Fonts" menu)
   views/card_view.lua   the card layout + preview popup
-  widgets/              battery glyph, statistic cell, framed cover, svg icon,
+  widgets/              statistic cell, framed cover, svg icon,
                         color wheel (used by the Colors menu)
   icons/                svg icons for the bottom row
   locale/               en.po, hu.po
