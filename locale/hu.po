@@ -1,0 +1,425 @@
+# Book Card plugin translation (hu)
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Book Card"
+msgstr "Book Card"
+
+msgid "Book Card: preview"
+msgstr "Book Card: előnézet"
+
+msgid "Book Card is a new sleep screen for KOReader, heavily inspired by the idea and visual design of CrossPoint's sleep screen implementation."
+msgstr "A Book Card egy új alvóképernyő a KOReaderhez, amelyet nagyban ihletett a CrossPoint alvóképernyő-megvalósításának ötlete és vizuális megjelenése."
+
+msgid "About"
+msgstr "Névjegy"
+
+msgid "A sleep screen with a reading summary card: cover, reading time, progress, pace and streak."
+msgstr "Egy alvóképernyő olvasási összefoglaló kártyával: borító, olvasási idő, haladás, tempó és sorozat."
+
+msgid "Use as sleep screen"
+msgstr "Használat zárolt képernyőként"
+
+msgid "Preview"
+msgstr "Előnézet"
+
+msgid "Background"
+msgstr "Háttér"
+
+msgid "Follow night mode"
+msgstr "Éjszakai módot követi"
+
+msgid "Always light"
+msgstr "Mindig világos"
+
+msgid "Always dark"
+msgstr "Mindig sötét"
+
+msgid "Rounded cover corners"
+msgstr "Lekerekített borítósarkok"
+
+msgid "Cover / statistics spacing"
+msgstr "Borító / statisztika térköz"
+
+msgid "Small (default)"
+msgstr "Kicsi (alapértelmezett)"
+
+msgid "Large"
+msgstr "Nagy"
+
+msgid "Show battery"
+msgstr "Akkumulátor megjelenítése"
+
+msgid "Show reading streak"
+msgstr "Olvasási sorozat megjelenítése"
+
+msgid "Show reader type"
+msgstr "Olvasótípus megjelenítése"
+
+msgid "Card elements"
+msgstr "Kártyaelemek"
+
+msgid "Clear cached data"
+msgstr "Gyorsítótár törlése"
+
+msgid "Cached data cleared."
+msgstr "Gyorsítótár törölve."
+
+msgid "No book data yet. Open a book and read a few pages first."
+msgstr "Még nincs könyvadat. Nyiss meg egy könyvet, és olvass el pár oldalt."
+
+msgid "<1 min"
+msgstr "<1 p"
+
+msgid "%d min"
+msgstr "%d p"
+
+msgid "%dh %d min"
+msgstr "%d ó %d p"
+
+msgid "Jan"
+msgstr "jan."
+
+msgid "Feb"
+msgstr "febr."
+
+msgid "Mar"
+msgstr "márc."
+
+msgid "Apr"
+msgstr "ápr."
+
+msgid "May"
+msgstr "máj."
+
+msgid "Jun"
+msgstr "jún."
+
+msgid "Jul"
+msgstr "júl."
+
+msgid "Aug"
+msgstr "aug."
+
+msgid "Sep"
+msgstr "szept."
+
+msgid "Oct"
+msgstr "okt."
+
+msgid "Nov"
+msgstr "nov."
+
+msgid "Dec"
+msgstr "dec."
+
+msgid "{month} {day}"
+msgstr "{month} {day}."
+
+msgid "{month} {day}, {year}"
+msgstr "{year}. {month} {day}."
+
+msgid "Reading Time"
+msgstr "Olvasási idő"
+
+msgid "Time Left"
+msgstr "Hátralévő idő"
+
+msgid "Progress"
+msgstr "Haladás"
+
+msgid "Pages"
+msgstr "Oldal"
+
+msgid "Daily Avg"
+msgstr "Napi átlag"
+
+msgid "Pages/Min"
+msgstr "Oldal/perc"
+
+msgid "Started {date}"
+msgstr "Kezdés: {date}"
+
+msgid "Started"
+msgstr "Kezdés"
+
+msgid "Finished Date"
+msgstr "Befejezés dátuma"
+
+msgid "Est. Finish"
+msgstr "Várható befejezés"
+
+msgid "%d day"
+msgstr "%d nap"
+
+msgid "%d days"
+msgstr "%d nap"
+
+msgid "%d day streak"
+msgstr "%d napos sorozat"
+
+msgid "%d days streak"
+msgstr "%d napos sorozat"
+
+msgid "%d week streak"
+msgstr "%d hetes sorozat"
+
+msgid "%d weeks streak"
+msgstr "%d hetes sorozat"
+
+msgid "Yesterday"
+msgstr "Tegnap"
+
+msgid "%d day ago"
+msgstr "%d napja"
+
+msgid "%d days ago"
+msgstr "%d napja"
+
+msgid "and"
+msgstr "és"
+
+msgid "{series} / #{index}"
+msgstr "{series} / #{index}"
+
+msgid "Night Reader"
+msgstr "Éjszakai olvasó"
+
+msgid "Morning Reader"
+msgstr "Reggeli olvasó"
+
+msgid "Afternoon Reader"
+msgstr "Délutáni olvasó"
+
+msgid "Evening Reader"
+msgstr "Esti olvasó"
+
+msgid "Updates"
+msgstr "Frissítések"
+
+msgid "Notify on wake when update available"
+msgstr "Értesítés ébresztéskor, ha van frissítés"
+
+msgid "Update available"
+msgstr "Frissítés érhető el"
+
+msgid "Installed version"
+msgstr "Telepített verzió"
+
+msgid "Developer updates"
+msgstr "Fejlesztői frissítések"
+
+msgid "Development branch"
+msgstr "Fejlesztői ág"
+
+msgid "Branch name (leave empty for stable)"
+msgstr "Ág neve (üresen hagyva: stabil)"
+
+msgid "Cancel"
+msgstr "Mégse"
+
+msgid "Save"
+msgstr "Mentés"
+
+msgid "Check for updates"
+msgstr "Frissítések keresése"
+
+msgid "Install branch"
+msgstr "Ág telepítése"
+
+msgid "Reset to latest stable release"
+msgstr "Vissza a legújabb stabil kiadásra"
+
+msgid "Installed: v"
+msgstr "Telepítve: v"
+
+msgid "Reset"
+msgstr "Visszaállítás"
+
+msgid "This will clear the development branch setting and install the latest stable release of Book Card, then restart KOReader. Continue?"
+msgstr "Ez törli a fejlesztői ág beállítást, telepíti a Book Card legújabb stabil kiadását, majd újraindítja a KOReadert. Folytatod?"
+
+msgid "Book Card update available: v"
+msgstr "Book Card frissítés érhető el: v"
+
+msgid "No update source is configured yet."
+msgstr "Még nincs beállítva frissítési forrás."
+
+msgid "Open the releases page in a browser?"
+msgstr "Megnyitod a kiadások oldalát a böngészőben?"
+
+msgid "Open"
+msgstr "Megnyitás"
+
+msgid "Checking for updates..."
+msgstr "Frissítések keresése..."
+
+msgid "Could not check for updates."
+msgstr "Nem sikerült frissítéseket keresni."
+
+msgid "Book Card is up to date."
+msgstr "A Book Card naprakész."
+
+msgid "Version: "
+msgstr "Verzió: "
+
+msgid "Close"
+msgstr "Bezárás"
+
+msgid "Update and restart"
+msgstr "Frissítés és újraindítás"
+
+msgid "No download available for this release."
+msgstr "Ehhez a kiadáshoz nincs letölthető fájl."
+
+msgid "Update available!"
+msgstr "Frissítés érhető el!"
+
+msgid "Installed: "
+msgstr "Telepítve: "
+
+msgid "Latest: "
+msgstr "Legújabb: "
+
+msgid "Downloading update..."
+msgstr "Frissítés letöltése..."
+
+msgid "Download failed."
+msgstr "A letöltés sikertelen."
+
+msgid "Installation failed: "
+msgstr "A telepítés sikertelen: "
+
+msgid "Book Card updated to v"
+msgstr "A Book Card frissítve: v"
+
+msgid "Restart KOReader now?"
+msgstr "Újraindítod most a KOReadert?"
+
+msgid "Restart"
+msgstr "Újraindítás"
+
+msgid "Could not install branch:"
+msgstr "Az ág telepítése nem sikerült:"
+
+msgid "Downloading latest release..."
+msgstr "Legújabb kiadás letöltése..."
+
+msgid "Could not fetch latest release."
+msgstr "A legújabb kiadás lekérése nem sikerült."
+
+msgid "Latest release has no downloadable zip."
+msgstr "A legújabb kiadásnak nincs letölthető zip fájlja."
+
+msgid "Fonts"
+msgstr "Betűtípusok"
+
+msgid "Colors"
+msgstr "Színek"
+
+msgid "Title"
+msgstr "Cím"
+
+msgid "Author"
+msgstr "Szerző"
+
+msgid "Series"
+msgstr "Sorozat"
+
+msgid "Statistics values"
+msgstr "Statisztika értékek"
+
+msgid "Statistics labels"
+msgstr "Statisztika címkék"
+
+msgid "Streak / reader type"
+msgstr "Sorozat / olvasótípus"
+
+msgid "Battery percentage"
+msgstr "Akkumulátor százalék"
+
+msgid "Title color"
+msgstr "Cím színe"
+
+msgid "Author color"
+msgstr "Szerző színe"
+
+msgid "Series color"
+msgstr "Sorozat színe"
+
+msgid "Statistics value color"
+msgstr "Statisztika érték színe"
+
+msgid "Statistics label color"
+msgstr "Statisztika címke színe"
+
+msgid "Streak / reader type color"
+msgstr "Sorozat / olvasótípus színe"
+
+msgid "Battery color"
+msgstr "Akkumulátor színe"
+
+msgid "Font"
+msgstr "Betűtípus"
+
+msgid "Custom font name (type manually)"
+msgstr "Egyéni betűtípus név (kézi beírás)"
+
+msgid "Font size"
+msgstr "Betűméret"
+
+msgid "Reset to default"
+msgstr "Visszaállítás alapértelmezettre"
+
+msgid "Choose a font"
+msgstr "Válassz betűtípust"
+
+msgid "Font name"
+msgstr "Betűtípus neve"
+
+msgid "Enter a bundled font file name (e.g. NotoSans-Bold.ttf) or a KOReader font alias (e.g. tfont, cfont). If it can't be found, this role falls back to its default font."
+msgstr "Add meg egy beépített betűtípus fájlnevét (pl. NotoSans-Bold.ttf) vagy egy KOReader betűtípus-aliast (pl. tfont, cfont). Ha nem található, ez a szerep visszaáll az alapértelmezett betűtípusára."
+
+msgid "Please enter a non-empty font name."
+msgstr "Adj meg egy nem üres betűtípus nevet."
+
+msgid "Set"
+msgstr "Beállítás"
+
+msgid "Auto"
+msgstr "Automatikus"
+
+msgid "Reset all fonts to default"
+msgstr "Összes betűtípus visszaállítása alapértelmezettre"
+
+msgid "Reset all fonts to their default values?"
+msgstr "Visszaállítod az összes betűtípust az alapértelmezett értékükre?"
+
+msgid "Default"
+msgstr "Alapértelmezett"
+
+msgid "Default (follows theme)"
+msgstr "Alapértelmezett (követi a témát)"
+
+msgid "Apply"
+msgstr "Alkalmaz"
+
+msgid "Brightness: %d%%"
+msgstr "Fényerő: %d%%"
+
+msgid "Pick with color wheel"
+msgstr "Kiválasztás színkerékkel"
+
+msgid "Enter a hex color code (e.g. #1E90FF), the way KOReader expects it. Leave empty to follow the card's usual background/theme color."
+msgstr "Add meg a hex színkódot (pl. #1E90FF) úgy, ahogy a KOReader elvárja. Hagyd üresen, hogy a kártya kövesse a szokásos háttér/téma színét."
+
+msgid "Not a valid hex color code, e.g. #1E90FF."
+msgstr "Ez nem érvényes hex színkód, pl. #1E90FF."
+
+msgid "Reset all colors to default"
+msgstr "Összes szín visszaállítása alapértelmezettre"
+
+msgid "Reset all colors to follow the theme again?"
+msgstr "Visszaállítod az összes színt, hogy újra a témát kövessék?"
+

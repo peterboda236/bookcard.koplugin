@@ -1,0 +1,425 @@
+# Book Card plugin translation (en)
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Book Card"
+msgstr "Book Card"
+
+msgid "Book Card: preview"
+msgstr "Book Card: preview"
+
+msgid "Book Card is a new sleep screen for KOReader, heavily inspired by the idea and visual design of CrossPoint's sleep screen implementation."
+msgstr "Book Card is a new sleep screen for KOReader, heavily inspired by the idea and visual design of CrossPoint's sleep screen implementation."
+
+msgid "About"
+msgstr "About"
+
+msgid "A sleep screen with a reading summary card: cover, reading time, progress, pace and streak."
+msgstr "A sleep screen with a reading summary card: cover, reading time, progress, pace and streak."
+
+msgid "Use as sleep screen"
+msgstr "Use as sleep screen"
+
+msgid "Preview"
+msgstr "Preview"
+
+msgid "Background"
+msgstr "Background"
+
+msgid "Follow night mode"
+msgstr "Follow night mode"
+
+msgid "Always light"
+msgstr "Always light"
+
+msgid "Always dark"
+msgstr "Always dark"
+
+msgid "Rounded cover corners"
+msgstr "Rounded cover corners"
+
+msgid "Cover / statistics spacing"
+msgstr "Cover / statistics spacing"
+
+msgid "Small (default)"
+msgstr "Small (default)"
+
+msgid "Large"
+msgstr "Large"
+
+msgid "Show battery"
+msgstr "Show battery"
+
+msgid "Show reading streak"
+msgstr "Show reading streak"
+
+msgid "Show reader type"
+msgstr "Show reader type"
+
+msgid "Card elements"
+msgstr "Card elements"
+
+msgid "Clear cached data"
+msgstr "Clear cached data"
+
+msgid "Cached data cleared."
+msgstr "Cached data cleared."
+
+msgid "No book data yet. Open a book and read a few pages first."
+msgstr "No book data yet. Open a book and read a few pages first."
+
+msgid "<1 min"
+msgstr "<1 min"
+
+msgid "%d min"
+msgstr "%d min"
+
+msgid "%dh %d min"
+msgstr "%dh %d min"
+
+msgid "Jan"
+msgstr "Jan"
+
+msgid "Feb"
+msgstr "Feb"
+
+msgid "Mar"
+msgstr "Mar"
+
+msgid "Apr"
+msgstr "Apr"
+
+msgid "May"
+msgstr "May"
+
+msgid "Jun"
+msgstr "Jun"
+
+msgid "Jul"
+msgstr "Jul"
+
+msgid "Aug"
+msgstr "Aug"
+
+msgid "Sep"
+msgstr "Sep"
+
+msgid "Oct"
+msgstr "Oct"
+
+msgid "Nov"
+msgstr "Nov"
+
+msgid "Dec"
+msgstr "Dec"
+
+msgid "{month} {day}"
+msgstr "{month} {day}"
+
+msgid "{month} {day}, {year}"
+msgstr "{month} {day}, {year}"
+
+msgid "Reading Time"
+msgstr "Reading Time"
+
+msgid "Time Left"
+msgstr "Time Left"
+
+msgid "Progress"
+msgstr "Progress"
+
+msgid "Pages"
+msgstr "Pages"
+
+msgid "Daily Avg"
+msgstr "Daily Avg"
+
+msgid "Pages/Min"
+msgstr "Pages/Min"
+
+msgid "Started {date}"
+msgstr "Started {date}"
+
+msgid "Started"
+msgstr "Started"
+
+msgid "Finished Date"
+msgstr "Finished Date"
+
+msgid "Est. Finish"
+msgstr "Est. Finish"
+
+msgid "%d day"
+msgstr "%d day"
+
+msgid "%d days"
+msgstr "%d days"
+
+msgid "%d day streak"
+msgstr "%d day streak"
+
+msgid "%d days streak"
+msgstr "%d days streak"
+
+msgid "%d week streak"
+msgstr "%d week streak"
+
+msgid "%d weeks streak"
+msgstr "%d weeks streak"
+
+msgid "Yesterday"
+msgstr "Yesterday"
+
+msgid "%d day ago"
+msgstr "%d day ago"
+
+msgid "%d days ago"
+msgstr "%d days ago"
+
+msgid "and"
+msgstr "and"
+
+msgid "{series} / #{index}"
+msgstr "{series} / #{index}"
+
+msgid "Night Reader"
+msgstr "Night Reader"
+
+msgid "Morning Reader"
+msgstr "Morning Reader"
+
+msgid "Afternoon Reader"
+msgstr "Afternoon Reader"
+
+msgid "Evening Reader"
+msgstr "Evening Reader"
+
+msgid "Updates"
+msgstr "Updates"
+
+msgid "Notify on wake when update available"
+msgstr "Notify on wake when update available"
+
+msgid "Update available"
+msgstr "Update available"
+
+msgid "Installed version"
+msgstr "Installed version"
+
+msgid "Developer updates"
+msgstr "Developer updates"
+
+msgid "Development branch"
+msgstr "Development branch"
+
+msgid "Branch name (leave empty for stable)"
+msgstr "Branch name (leave empty for stable)"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "Save"
+msgstr "Save"
+
+msgid "Check for updates"
+msgstr "Check for updates"
+
+msgid "Install branch"
+msgstr "Install branch"
+
+msgid "Reset to latest stable release"
+msgstr "Reset to latest stable release"
+
+msgid "Installed: v"
+msgstr "Installed: v"
+
+msgid "Reset"
+msgstr "Reset"
+
+msgid "This will clear the development branch setting and install the latest stable release of Book Card, then restart KOReader. Continue?"
+msgstr "This will clear the development branch setting and install the latest stable release of Book Card, then restart KOReader. Continue?"
+
+msgid "Book Card update available: v"
+msgstr "Book Card update available: v"
+
+msgid "No update source is configured yet."
+msgstr "No update source is configured yet."
+
+msgid "Open the releases page in a browser?"
+msgstr "Open the releases page in a browser?"
+
+msgid "Open"
+msgstr "Open"
+
+msgid "Checking for updates..."
+msgstr "Checking for updates..."
+
+msgid "Could not check for updates."
+msgstr "Could not check for updates."
+
+msgid "Book Card is up to date."
+msgstr "Book Card is up to date."
+
+msgid "Version: "
+msgstr "Version: "
+
+msgid "Close"
+msgstr "Close"
+
+msgid "Update and restart"
+msgstr "Update and restart"
+
+msgid "No download available for this release."
+msgstr "No download available for this release."
+
+msgid "Update available!"
+msgstr "Update available!"
+
+msgid "Installed: "
+msgstr "Installed: "
+
+msgid "Latest: "
+msgstr "Latest: "
+
+msgid "Downloading update..."
+msgstr "Downloading update..."
+
+msgid "Download failed."
+msgstr "Download failed."
+
+msgid "Installation failed: "
+msgstr "Installation failed: "
+
+msgid "Book Card updated to v"
+msgstr "Book Card updated to v"
+
+msgid "Restart KOReader now?"
+msgstr "Restart KOReader now?"
+
+msgid "Restart"
+msgstr "Restart"
+
+msgid "Could not install branch:"
+msgstr "Could not install branch:"
+
+msgid "Downloading latest release..."
+msgstr "Downloading latest release..."
+
+msgid "Could not fetch latest release."
+msgstr "Could not fetch latest release."
+
+msgid "Latest release has no downloadable zip."
+msgstr "Latest release has no downloadable zip."
+
+msgid "Fonts"
+msgstr "Fonts"
+
+msgid "Colors"
+msgstr "Colors"
+
+msgid "Title"
+msgstr "Title"
+
+msgid "Author"
+msgstr "Author"
+
+msgid "Series"
+msgstr "Series"
+
+msgid "Statistics values"
+msgstr "Statistics values"
+
+msgid "Statistics labels"
+msgstr "Statistics labels"
+
+msgid "Streak / reader type"
+msgstr "Streak / reader type"
+
+msgid "Battery percentage"
+msgstr "Battery percentage"
+
+msgid "Title color"
+msgstr "Title color"
+
+msgid "Author color"
+msgstr "Author color"
+
+msgid "Series color"
+msgstr "Series color"
+
+msgid "Statistics value color"
+msgstr "Statistics value color"
+
+msgid "Statistics label color"
+msgstr "Statistics label color"
+
+msgid "Streak / reader type color"
+msgstr "Streak / reader type color"
+
+msgid "Battery color"
+msgstr "Battery color"
+
+msgid "Font"
+msgstr "Font"
+
+msgid "Custom font name (type manually)"
+msgstr "Custom font name (type manually)"
+
+msgid "Font size"
+msgstr "Font size"
+
+msgid "Reset to default"
+msgstr "Reset to default"
+
+msgid "Choose a font"
+msgstr "Choose a font"
+
+msgid "Font name"
+msgstr "Font name"
+
+msgid "Enter a bundled font file name (e.g. NotoSans-Bold.ttf) or a KOReader font alias (e.g. tfont, cfont). If it can't be found, this role falls back to its default font."
+msgstr "Enter a bundled font file name (e.g. NotoSans-Bold.ttf) or a KOReader font alias (e.g. tfont, cfont). If it can't be found, this role falls back to its default font."
+
+msgid "Please enter a non-empty font name."
+msgstr "Please enter a non-empty font name."
+
+msgid "Set"
+msgstr "Set"
+
+msgid "Auto"
+msgstr "Auto"
+
+msgid "Reset all fonts to default"
+msgstr "Reset all fonts to default"
+
+msgid "Reset all fonts to their default values?"
+msgstr "Reset all fonts to their default values?"
+
+msgid "Default"
+msgstr "Default"
+
+msgid "Default (follows theme)"
+msgstr "Default (follows theme)"
+
+msgid "Apply"
+msgstr "Apply"
+
+msgid "Brightness: %d%%"
+msgstr "Brightness: %d%%"
+
+msgid "Pick with color wheel"
+msgstr "Pick with color wheel"
+
+msgid "Enter a hex color code (e.g. #1E90FF), the way KOReader expects it. Leave empty to follow the card's usual background/theme color."
+msgstr "Enter a hex color code (e.g. #1E90FF), the way KOReader expects it. Leave empty to follow the card's usual background/theme color."
+
+msgid "Not a valid hex color code, e.g. #1E90FF."
+msgstr "Not a valid hex color code, e.g. #1E90FF."
+
+msgid "Reset all colors to default"
+msgstr "Reset all colors to default"
+
+msgid "Reset all colors to follow the theme again?"
+msgstr "Reset all colors to follow the theme again?"
+
