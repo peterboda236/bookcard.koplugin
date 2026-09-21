@@ -24,6 +24,7 @@ Copy the `bookcard.koplugin` folder to `koreader/plugins/`, restart KOReader.
 - Tools > Book Card: Preview, Background (follow night mode / light / dark),
   rounded cover corners, battery / streak / reader type toggles, clear cache,
   Updates.
+- Assign a gesture to open it.
 
 ## Numbers
 All statistics are computed exactly like Reading Insights (same avg_time,
