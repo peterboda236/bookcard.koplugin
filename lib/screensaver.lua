@@ -25,6 +25,12 @@ as-is" instead of showing nothing half-drawn.
   Screensaver.install()                apply both patches + the menu entry
   Screensaver.buildWidget(ui)          the card widget for the current state
   Screensaver.isSelected()             is "Book Card" the chosen wallpaper?
+
+Orientation ("Advanced Settings > Orientation"): by default the card is
+drawn at whatever rotation the device already happens to be in (the
+existing behaviour). If the user forces "portrait" or "landscape" instead,
+the screen is rotated just before the card is drawn and rotated back to
+whatever it was as soon as the device wakes up again.
 ]]--
 
 local deps = ...
@@ -32,13 +38,58 @@ local Locale   = deps.Locale
 local Data     = deps.Data
 local Cache    = deps.Cache
 local CardView = deps.CardView
+local Prefs    = deps.Prefs
 
+local Device = require("device")
+local Screen = Device.screen
 local logger = require("logger")
 local _ = Locale._
 
 local M = {}
 
 M.TYPE = "bookcard"
+
+-- Canonical rotation modes (see koreader-base's ffi/framebuffer.lua):
+--   0 upright (portrait), 1 clockwise (landscape),
+--   2 upside-down (portrait), 3 counter-clockwise (landscape)
+local PORTRAIT_MODES  = { [0] = true, [2] = true }
+local LANDSCAPE_MODES = { [1] = true, [3] = true }
+
+-- Rotation mode we changed away from, so it can be restored on wake.
+-- nil means "we haven't touched it".
+M._saved_rotation = nil
+
+-- Rotates the screen to match "Advanced Settings > Orientation", if the
+-- user forced one and the screen isn't already in a matching mode.
+-- No-op when the setting is left at "default" (current behaviour).
+local function applyForcedOrientation()
+    local want = Prefs.read(CardView.SETTING_ORIENTATION, "default")
+    if want ~= "portrait" and want ~= "landscape" then return end
+
+    local ok_get, cur = pcall(function() return Screen:getRotationMode() end)
+    if not ok_get or cur == nil then return end
+
+    local already_ok = (want == "portrait" and PORTRAIT_MODES[cur])
+        or (want == "landscape" and LANDSCAPE_MODES[cur])
+    if already_ok then return end
+
+    local target = (want == "portrait")
+        and Screen.DEVICE_ROTATED_UPRIGHT
+        or Screen.DEVICE_ROTATED_CLOCKWISE
+    local ok_set = pcall(function() Screen:setRotationMode(target) end)
+    if ok_set then
+        M._saved_rotation = cur
+    end
+end
+
+-- Puts the screen rotation back the way it was before a forced orientation,
+-- if we changed it. Safe to call unconditionally (e.g. on every wake-up).
+function M.restoreOrientation()
+    if M._saved_rotation == nil then return end
+    local saved = M._saved_rotation
+    M._saved_rotation = nil
+    pcall(function() Screen:setRotationMode(saved) end)
+end
 
 function M.isSelected()
     return G_reader_settings:readSetting("screensaver_type") == M.TYPE
@@ -107,9 +158,12 @@ function M.patchCore()
         if not self._bookcard_active then return orig_show(self) end
         self._bookcard_active = false
 
+        applyForcedOrientation()
+
         local ok_build, widget = pcall(M.buildWidget, self.ui)
         if not ok_build or not widget then
             logger.warn("BookCard: could not build the card:", widget)
+            M.restoreOrientation()
             self.screensaver_type = "disable"
             return orig_show(self)
         end

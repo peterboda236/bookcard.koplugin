@@ -57,13 +57,15 @@ local Locale  = loadModule("lib/locale.lua", { PluginUtil = PluginUtil })
 local Data    = loadModule("lib/bookdata.lua", { StatsDb = StatsDb, Cache = Cache, Locale = Locale })
 local Colors  = loadModule("lib/colors.lua", { PluginUtil = PluginUtil, Locale = Locale, Prefs = Prefs })
 local Fonts   = loadModule("lib/fonts.lua",  { PluginUtil = PluginUtil, Locale = Locale, Prefs = Prefs })
+local Wallpaper = loadModule("lib/wallpaper.lua", { PluginUtil = PluginUtil, Locale = Locale, Prefs = Prefs })
 local CardView = loadModule("views/card_view.lua", {
     PluginUtil = PluginUtil, Locale = Locale, Prefs = Prefs, Cache = Cache, Colors = Colors, Fonts = Fonts,
+    Wallpaper = Wallpaper,
 })
 local Updater = loadModule("lib/updater.lua", { Locale = Locale, PluginUtil = PluginUtil })
 local About   = loadModule("views/about.lua", { Locale = Locale, Updater = Updater })
 local Sleep = loadModule("lib/screensaver.lua", {
-    Locale = Locale, Data = Data, Cache = Cache, CardView = CardView,
+    Locale = Locale, Data = Data, Cache = Cache, CardView = CardView, Prefs = Prefs,
 })
 
 local _ = Locale._
@@ -128,7 +130,9 @@ function BookCard:init()
 end
 
 function BookCard:onResume()
-    -- ...and after every wake-up.
+    -- Undo any orientation forced for the sleep screen before anything
+    -- else redraws, then check for updates as before.
+    Sleep.restoreOrientation()
     self:backgroundUpdateCheck()
 end
 
@@ -346,6 +350,16 @@ local function gapItem(label, value)
     }
 end
 
+local function orientationItem(label, value)
+    return {
+        text = label,
+        radio = true,
+        checked_func = function() return Prefs.read(CardView.SETTING_ORIENTATION, "default") == value end,
+        callback = function() Prefs.save(CardView.SETTING_ORIENTATION, value) end,
+        keep_menu_open = true,
+    }
+end
+
 function BookCard:addToMainMenu(menu_items)
     local battery = toggleSetting(CardView.SETTING_BATTERY, true)
     battery.text = _("Show battery")
@@ -367,6 +381,8 @@ function BookCard:addToMainMenu(menu_items)
     stat_time_left.text = _("Time Left")
     local stat_daily_avg = toggleSetting(CardView.SETTING_STAT_DAILY_AVG, true)
     stat_daily_avg.text = _("Daily Avg")
+    local stat_daily_avg_pages = toggleSetting(CardView.SETTING_STAT_DAILY_AVG_PAGES, false)
+    stat_daily_avg_pages.text = _("Daily Avg (pages)")
     local stat_pages_per_min = toggleSetting(CardView.SETTING_STAT_PAGES_PER_MIN, true)
     stat_pages_per_min.text = _("Pages/Min")
     local stat_started = toggleSetting(CardView.SETTING_STAT_STARTED, true)
@@ -395,6 +411,7 @@ function BookCard:addToMainMenu(menu_items)
                         G_reader_settings:saveSetting("screensaver_type", Sleep.TYPE)
                     end
                 end,
+                separator = true,
             },
             {
                 text = _("Updates"),
@@ -414,11 +431,27 @@ function BookCard:addToMainMenu(menu_items)
             },
             {
                 text = _("Background"),
-                sub_item_table = {
-                    themeItem(_("Follow night mode"), "auto"),
-                    themeItem(_("Always light"), "light"),
-                    themeItem(_("Always dark"), "dark"),
-                },
+                sub_item_table = (function()
+                    local dark_item = themeItem(_("Always dark"), "dark")
+                    dark_item.separator = true
+                    return {
+                        themeItem(_("Follow night mode"), "auto"),
+                        themeItem(_("Always light"), "light"),
+                        dark_item,
+                        {
+                            text_func = function()
+                                return _("Wallpaper") .. ": " .. Wallpaper.currentLabel()
+                            end,
+                            sub_item_table_func = function() return Wallpaper.buildPickerMenu() end,
+                        },
+                        {
+                            text_func = function()
+                                return _("Text background opacity") .. ": " .. Wallpaper.opacityLabel()
+                            end,
+                            sub_item_table_func = function() return Wallpaper.buildOpacityMenu() end,
+                        },
+                    }
+                end)(),
             },
             {
                 text = _("Cover"),
@@ -467,6 +500,7 @@ function BookCard:addToMainMenu(menu_items)
                             stat_reading_time,
                             stat_time_left,
                             stat_daily_avg,
+                            stat_daily_avg_pages,
                             stat_pages_per_min,
                             stat_started,
                             stat_finish,
@@ -477,11 +511,24 @@ function BookCard:addToMainMenu(menu_items)
                 separator = true,
             },
             {
-                text = _("Clear cached data"),
-                callback = function()
-                    Cache.clear()
-                    UIManager:show(InfoMessage:new{ text = _("Cached data cleared."), timeout = 2 })
-                end,
+                text = _("Advanced Settings"),
+                sub_item_table = {
+                    {
+                        text = _("Orientation"),
+                        sub_item_table = {
+                            orientationItem(_("Default"), "default"),
+                            orientationItem(_("Force portrait"), "portrait"),
+                            orientationItem(_("Force landscape"), "landscape"),
+                        },
+                    },
+                    {
+                        text = _("Clear cached data"),
+                        callback = function()
+                            Cache.clear()
+                            UIManager:show(InfoMessage:new{ text = _("Cached data cleared."), timeout = 2 })
+                        end,
+                    },
+                },
             },
         },
     }

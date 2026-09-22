@@ -39,6 +39,12 @@ msgstr "Mindig sötét"
 msgid "Rounded cover corners"
 msgstr "Lekerekített borítósarkok"
 
+msgid "Cover"
+msgstr "Borító"
+
+msgid "Cover shadow"
+msgstr "Borító árnyéka"
+
 msgid "Cover / statistics spacing"
 msgstr "Borító / statisztika térköz"
 
@@ -432,3 +438,52 @@ msgstr "Összes szín visszaállítása alapértelmezettre"
 msgid "Reset all colors to follow the theme again?"
 msgstr "Visszaállítod az összes színt, hogy újra a témát kövessék?"
 
+msgid "Wallpaper"
+msgstr "Háttérkép"
+
+msgid "None"
+msgstr "Nincs"
+
+msgid "No images in {dir}"
+msgstr "Nincs kép a következő mappában: {dir}"
+
+msgid "Images are loaded from {dir}"
+msgstr "A képek innen töltődnek be: {dir}"
+
+msgid "Text background opacity"
+msgstr "Szöveg mögötti háttér átlátszósága"
+
+msgid "Off"
+msgstr "Kikapcsolva"
+
+msgid "Low"
+msgstr "Alacsony"
+
+msgid "Moderate"
+msgstr "Közepes"
+
+msgid "High"
+msgstr "Magas"
+
+msgid "Solid"
+msgstr "Teljes"
+msgid "Daily Avg (pages)"
+msgstr "Napi átlag (oldal)"
+
+msgid "%d page"
+msgstr "%d oldal"
+
+msgid "%d pages"
+msgstr "%d oldal"
+
+msgid "Advanced Settings"
+msgstr "További beállítások"
+
+msgid "Orientation"
+msgstr "Tájolás"
+
+msgid "Force portrait"
+msgstr "Álló kényszerítése"
+
+msgid "Force landscape"
+msgstr "Fekvő kényszerítése"
