@@ -30,7 +30,7 @@ Copy the `bookcard.koplugin` folder to `koreader/plugins/`, restart KOReader.
 
 ## Orientation
 Tools > Book Card > Advanced Settings > Orientation:
-- **Default (current behavior)** - the card is drawn at whatever rotation
+- **Default** - the card is drawn at whatever rotation
   the device is already in when it falls asleep (no change from the
   original behaviour).
 - **Force portrait** / **Force landscape** - the screen is rotated to match

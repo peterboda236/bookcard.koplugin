@@ -482,9 +482,6 @@ msgstr "További beállítások"
 msgid "Orientation"
 msgstr "Tájolás"
 
-msgid "Default (current behavior)"
-msgstr "Alapértelmezett (jelenlegi működés)"
-
 msgid "Force portrait"
 msgstr "Álló kényszerítése"
 

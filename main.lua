@@ -516,7 +516,7 @@ function BookCard:addToMainMenu(menu_items)
                     {
                         text = _("Orientation"),
                         sub_item_table = {
-                            orientationItem(_("Default (current behavior)"), "default"),
+                            orientationItem(_("Default"), "default"),
                             orientationItem(_("Force portrait"), "portrait"),
                             orientationItem(_("Force landscape"), "landscape"),
                         },

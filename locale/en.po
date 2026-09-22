@@ -482,9 +482,6 @@ msgstr "Advanced Settings"
 msgid "Orientation"
 msgstr "Orientation"
 
-msgid "Default (current behavior)"
-msgstr "Default (current behavior)"
-
 msgid "Force portrait"
 msgstr "Force portrait"
 
