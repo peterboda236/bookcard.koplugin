@@ -371,6 +371,13 @@ function M.build(card, opts)
     -- actually showing and the opacity isn't "Off". Over a plain background
     -- this behaves exactly like place().
     local TEXT_BACKDROP_PAD_H, TEXT_BACKDROP_PAD_V = S(6), S(2)
+    -- True only when a translucent backdrop panel is actually being drawn
+    -- behind text (wallpaper up, opacity above "Off"). When it is, the
+    -- panels behind the title block and the statistics column stick out
+    -- past the text they wrap by this padding - so the cover, to look
+    -- aligned with them, has to start where the PANELS start, not where
+    -- the bare text would have. See cover_left/cover_top below.
+    local backdrop_active = wallpaper_bg and text_bg_opacity > 0
     local function placeText(widget, x, y)
         if wallpaper_bg and text_bg_opacity > 0 then
             local size = widget:getSize()
@@ -563,18 +570,24 @@ function M.build(card, opts)
     end
 
     -- The cover starts level with the first statistic (Progress), not with
-    -- the battery indicator above it.
+    -- the battery indicator above it - or, with a backdrop panel showing,
+    -- level with the TOP of that first statistic's panel, which sits
+    -- TEXT_BACKDROP_PAD_V above the text itself.
     local show_cover_shadow = Prefs.readBool(M.SETTING_COVER_SHADOW, true)
     -- Reserve space for the shadow offset so the cover doesn't overflow its column.
     local shadow_off = show_cover_shadow and S(4) or 0
-    local cover_top = stats_top
+    local cover_top = stats_top - (backdrop_active and TEXT_BACKDROP_PAD_V or 0)
     local cover_max_h = math.max(S(80), content_bottom - cover_top - text_h - S(10) - shadow_off)
     local cover_restore = wallpaper_bg and Wallpaper.restore or nil
     local cover, cover_w, cover_h = buildCover(card, left_w - shadow_off, cover_max_h, pal, shadow_off, cover_restore)
 
     -- Now that the cover's real height is known, spread the statistics rows
-    -- so the LAST one's bottom lines up with the bottom of the cover.
-    local stats_h = math.max(0, (cover_top + cover_h) - stats_top)
+    -- so the LAST one's bottom lines up with the bottom of the cover - or,
+    -- with a backdrop panel showing, so the BOTTOM of that last row's panel
+    -- (TEXT_BACKDROP_PAD_V below its text) lines up with the cover's bottom.
+    local cover_bottom = cover_top + cover_h
+    local stats_bottom_target = cover_bottom - (backdrop_active and TEXT_BACKDROP_PAD_V or 0)
+    local stats_h = math.max(0, stats_bottom_target - stats_top)
     local cells, cells_h = {}, 0
     for _idx, row in ipairs(rows) do
         local cell = StatCell:new{
@@ -586,13 +599,18 @@ function M.build(card, opts)
         cells_h = cells_h + cell:getSize().h
     end
     local gap = 0
+    local stat_y = stats_top
     if #cells > 1 then
         gap = math.max(0, math.floor((stats_h - cells_h) / (#cells - 1)))
+    elseif #cells == 1 then
+        -- Nothing to distribute a gap between, so center the single row in
+        -- the space instead of leaving it stuck to the top with the rest
+        -- of the column (down to the cover's bottom) sitting empty.
+        stat_y = stats_top + math.max(0, math.floor((stats_h - cells_h) / 2))
     end
     -- Placed one at a time (rather than as a single VerticalGroup) so a
     -- wallpaper backdrop panel can sit behind each row individually instead
     -- of one solid strip behind the whole column.
-    local stat_y = stats_top
     local stats_group = backdrop_grouped and newGroup() or nil
     for i, cell in ipairs(cells) do
         if i > 1 then stat_y = stat_y + gap end
@@ -605,6 +623,11 @@ function M.build(card, opts)
     end
     if stats_group then flushGroup(stats_group, TEXT_BACKDROP_PAD_H, TEXT_BACKDROP_PAD_V) end
 
+    -- Cover's left edge: level with pad_x normally, or with the title
+    -- block's backdrop panel (which sticks out TEXT_BACKDROP_PAD_H further
+    -- left than the text) when that panel is showing.
+    local cover_left = pad_x - (backdrop_active and TEXT_BACKDROP_PAD_H or 0)
+
     -- Cover drop shadow (painted first so the cover sits on top).
     if show_cover_shadow then
         local radius = Prefs.readBool(M.SETTING_ROUNDED, true) and S(4) or 0
@@ -616,10 +639,10 @@ function M.build(card, opts)
             bg     = pal.bg,
             restore = cover_restore,
         }
-        place(shadow, pad_x, cover_top)
+        place(shadow, cover_left, cover_top)
     end
 
-    place(cover, pad_x, cover_top)
+    place(cover, cover_left, cover_top)
 
     -- With a wallpaper backdrop behind each line, the plain S(3) line
     -- spacing is smaller than the panels' own vertical padding, so they'd
