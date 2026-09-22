@@ -69,6 +69,15 @@ msgstr "Card elements"
 msgid "Statistics"
 msgstr "Statistics"
 
+msgid "Text background grouping"
+msgstr "Text background grouping"
+
+msgid "Individually (default)"
+msgstr "Individually (default)"
+
+msgid "Grouped (battery / stats / title+author+series / streak / reader)"
+msgstr "Grouped (battery / stats / title+author+series / streak / reader)"
+
 msgid "Clear cached data"
 msgstr "Clear cached data"
 

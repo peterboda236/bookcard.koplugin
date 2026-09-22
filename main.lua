@@ -512,6 +512,18 @@ local function orientationItem(label, value)
     }
 end
 
+local function backdropGroupingItem(label, value)
+    return {
+        text = label,
+        radio = true,
+        checked_func = function()
+            return Prefs.read(CardView.SETTING_BACKDROP_GROUPING, "individual") == value
+        end,
+        callback = function() Prefs.save(CardView.SETTING_BACKDROP_GROUPING, value) end,
+        keep_menu_open = true,
+    }
+end
+
 function BookCard:addToMainMenu(menu_items)
     local battery = toggleSetting(CardView.SETTING_BATTERY, true)
     battery.text = _("Show battery")
@@ -601,6 +613,13 @@ function BookCard:addToMainMenu(menu_items)
                                 return _("Text background opacity") .. ": " .. Wallpaper.opacityLabel()
                             end,
                             sub_item_table_func = function() return Wallpaper.buildOpacityMenu() end,
+                        },
+                        {
+                            text = _("Text background grouping"),
+                            sub_item_table = {
+                                backdropGroupingItem(_("Individually (default)"), "individual"),
+                                backdropGroupingItem(_("Grouped (battery / stats / title+author+series / streak / reader)"), "grouped"),
+                            },
                         },
                     }
                 end)(),
