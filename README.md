@@ -21,10 +21,21 @@ Copy the `bookcard.koplugin` folder to `koreader/plugins/`, restart KOReader.
 - Locking from inside a book: live data (and the cache is refreshed).
 - Locking from the file manager: data cached from the last book that was open.
   If there is no cache, it is rebuilt from the book's sidecar + statistics DB.
-- Tools > Book Card: Preview, Background (follow night mode / light / dark),
-  rounded cover corners, battery / streak / reader type toggles, clear cache,
-  Updates.
+- Tools > Book Card: Preview, Background (follow night mode / light / dark,
+  wallpaper picture, text background opacity), rounded cover corners,
+  battery / streak / reader type toggles, clear cache, Updates.
 - Assign a gesture to open it.
+
+## Wallpaper
+Tools > Book Card > Background > Wallpaper lets you pick a background
+picture, read from `settings/bookcard/wallpapers/` (drop your own image
+files there - png/jpg/jpeg/bmp/gif/webp - then reopen the menu to see them
+listed; pick "None" to go back to the plain background). With a wallpaper
+set, a translucent panel is drawn behind each piece of text (title, author,
+series, statistics, battery, streak, reader type) so it stays legible over
+the picture - black in dark mode, white in light mode, matching whatever
+"Background" theme is in effect. Its strength is set separately under
+Background > Text background opacity (Off / Low / Moderate / High / Solid).
 
 ## Numbers
 All statistics are computed exactly like Reading Insights (same avg_time,
@@ -42,6 +53,7 @@ top-level folder is `bookcard.koplugin`.
 ## Files
 - `lib/screensaver.lua` sleep-screen hook, `lib/bookdata.lua` data, `lib/cache.lua` cache
 - `lib/updater.lua` GitHub updater, `lib/statsdb.lua` read-only stats DB access
+- `lib/wallpaper.lua` background picture + translucent text backdrop panels
 - `views/card_view.lua` layout, `widgets/` battery, stat cell, framed cover, svg icon
 - `icons/` svg, `locale/*.po` translations (en, hu)
 

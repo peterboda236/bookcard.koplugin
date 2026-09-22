@@ -39,6 +39,12 @@ msgstr "Always dark"
 msgid "Rounded cover corners"
 msgstr "Rounded cover corners"
 
+msgid "Cover"
+msgstr "Cover"
+
+msgid "Cover shadow"
+msgstr "Cover shadow"
+
 msgid "Cover / statistics spacing"
 msgstr "Cover / statistics spacing"
 
@@ -432,3 +438,40 @@ msgstr "Reset all colors to default"
 msgid "Reset all colors to follow the theme again?"
 msgstr "Reset all colors to follow the theme again?"
 
+msgid "Wallpaper"
+msgstr "Wallpaper"
+
+msgid "None"
+msgstr "None"
+
+msgid "No images in {dir}"
+msgstr "No images in {dir}"
+
+msgid "Images are loaded from {dir}"
+msgstr "Images are loaded from {dir}"
+
+msgid "Text background opacity"
+msgstr "Text background opacity"
+
+msgid "Off"
+msgstr "Off"
+
+msgid "Low"
+msgstr "Low"
+
+msgid "Moderate"
+msgstr "Moderate"
+
+msgid "High"
+msgstr "High"
+
+msgid "Solid"
+msgstr "Solid"
+msgid "Daily Avg (pages)"
+msgstr "Daily Avg (pages)"
+
+msgid "%d page"
+msgstr "%d page"
+
+msgid "%d pages"
+msgstr "%d pages"

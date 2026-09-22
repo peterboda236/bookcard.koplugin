@@ -37,6 +37,7 @@ local PluginDir = deps.PluginUtil.dir
 local Cache     = deps.Cache
 local Colors    = deps.Colors
 local Fonts     = deps.Fonts
+local Wallpaper = deps.Wallpaper
 
 local Blitbuffer = require("ffi/blitbuffer")
 local Device = require("device")
@@ -54,7 +55,6 @@ local TextBoxWidget = require("ui/widget/textboxwidget")
 local TextWidget = require("ui/widget/textwidget")
 local UIManager = require("ui/uimanager")
 local VerticalGroup = require("ui/widget/verticalgroup")
-local VerticalSpan = require("ui/widget/verticalspan")
 local logger = require("logger")
 local Screen = Device.screen
 
@@ -84,6 +84,7 @@ M.SETTING_STAT_PAGES         = "bookcard_stat_pages"
 M.SETTING_STAT_READING_TIME  = "bookcard_stat_reading_time"
 M.SETTING_STAT_TIME_LEFT     = "bookcard_stat_time_left"
 M.SETTING_STAT_DAILY_AVG     = "bookcard_stat_daily_avg"
+M.SETTING_STAT_DAILY_AVG_PAGES = "bookcard_stat_daily_avg_pages"  -- default OFF
 M.SETTING_STAT_PAGES_PER_MIN = "bookcard_stat_pages_per_min"
 M.SETTING_STAT_STARTED       = "bookcard_stat_started"
 M.SETTING_STAT_FINISH        = "bookcard_stat_finish"
@@ -155,7 +156,7 @@ end
 -- ---------------------------------------------------------------------------
 -- `max_w` x `max_h` is the box for the OUTER size (frame included).
 -- Returns the widget and its outer width and height.
-local function buildCover(card, max_w, max_h, pal, shadow_offset)
+local function buildCover(card, max_w, max_h, pal, shadow_offset, restore)
     local border = math.max(2, S(1))
     local radius = Prefs.readBool(M.SETTING_ROUNDED, true) and S(4) or 0
     local box_w, box_h = max_w - 2 * border, max_h - 2 * border
@@ -171,6 +172,9 @@ local function buildCover(card, max_w, max_h, pal, shadow_offset)
             -- shadow awareness: BR corner restores shadow grey instead of bg
             shadow_color  = soff > 0 and CoverFrame.SHADOW_GRAY or nil,
             shadow_offset = soff,
+            -- over a wallpaper, cut corners reveal the picture instead of a
+            -- flat bg square (see Wallpaper.restore)
+            restore = restore,
         }, outer_w, outer_h
     end
 
@@ -253,6 +257,18 @@ local function statRows(card)
         rows[#rows + 1] = { dur(card.daily_avg_secs), _("Daily Avg") }
     end
 
+    -- Same "Daily Avg" row, but in pages instead of time - off by default
+    -- (same reasoning as Highlights: a second row for the same idea should
+    -- be something the reader opts into, not something added for them).
+    if Prefs.readBool(M.SETTING_STAT_DAILY_AVG_PAGES, false) then
+        local pages_txt = DASH
+        if card.daily_avg_pages then
+            local n = math.floor(card.daily_avg_pages + 0.5)
+            pages_txt = string.format(N_("%d page", "%d pages", n), n)
+        end
+        rows[#rows + 1] = { pages_txt, _("Daily Avg") }
+    end
+
     if Prefs.readBool(M.SETTING_STAT_PAGES_PER_MIN, true) then
         local ppm = card.pages_per_min
         local ppm_text = DASH
@@ -304,6 +320,15 @@ function M.build(card, opts)
     local dp = Screen:scaleBySize(100) / 100          -- px per KOReader unit
     local pal = palette()
 
+    -- Wallpaper (optional): a picture behind the whole card, with a
+    -- translucent backdrop panel behind each piece of text so it stays
+    -- legible over it. Neither exists unless a picture is actually chosen -
+    -- with none set, the card looks exactly as it did before this feature.
+    local wallpaper_bg = Wallpaper.isActive()
+        and Wallpaper.bg(W, H, Screen.night_mode and true or false)
+        or nil
+    local text_bg_opacity = Wallpaper.opacity()
+
     local pad_x = S(28)
     local pad_top = S(22)
     local pad_bottom = S(26)
@@ -324,6 +349,25 @@ function M.build(card, opts)
         return widget
     end
 
+    -- The picture, if any, goes in first so it sits behind everything else.
+    if wallpaper_bg then place(wallpaper_bg, 0, 0) end
+
+    -- placeText(widget, x, y): like place(), but first drops a translucent
+    -- panel (pal.bg tinted at text_bg_opacity) just behind the widget, sized
+    -- to its own footprint plus a small margin - only when a wallpaper is
+    -- actually showing and the opacity isn't "Off". Over a plain background
+    -- this behaves exactly like place().
+    local TEXT_BACKDROP_PAD_H, TEXT_BACKDROP_PAD_V = S(6), S(2)
+    local function placeText(widget, x, y)
+        if wallpaper_bg and text_bg_opacity > 0 then
+            local size = widget:getSize()
+            local panel = Wallpaper.panel(size.w + 2 * TEXT_BACKDROP_PAD_H, size.h + 2 * TEXT_BACKDROP_PAD_V,
+                                          pal.bg, text_bg_opacity, S(3))
+            if panel then place(panel, x - TEXT_BACKDROP_PAD_H, y - TEXT_BACKDROP_PAD_V) end
+        end
+        return place(widget, x, y)
+    end
+
     -- Battery, top right: KOReader's own battery glyph + percentage, same
     -- symbol the stock footer/screensaver use (Device:getPowerDevice():
     -- getBatterySymbol), so it matches the device's native battery icon.
@@ -339,7 +383,7 @@ function M.build(card, opts)
             local pct_text = text(batt_symbol .. capacity .. "%", pct_face, battery_color)
             local size = pct_text:getSize()
             battery_h = size.h
-            place(pct_text, W - pad_x - size.w, pad_top)
+            placeText(pct_text, W - pad_x - size.w, pad_top)
         end
     end
 
@@ -382,11 +426,11 @@ function M.build(card, opts)
     local content_bottom = H - pad_bottom - bottom_h - (bottom_h > 0 and S(18) or 0)
 
     if streak_row then
-        place(streak_row, pad_x, H - pad_bottom - bottom_h
+        placeText(streak_row, pad_x, H - pad_bottom - bottom_h
             + math.floor((bottom_h - streak_row:getSize().h) / 2))
     end
     if reader_row then
-        place(reader_row, W - pad_x - reader_w, H - pad_bottom - bottom_h
+        placeText(reader_row, W - pad_x - reader_w, H - pad_bottom - bottom_h
             + math.floor((bottom_h - reader_row:getSize().h) / 2))
     end
 
@@ -427,6 +471,15 @@ function M.build(card, opts)
     local series_color = Colors.getColor("series", pal.fg)
 
     local title_line_h = math.floor((1 + 0.3) * title_face.size + 0.5)
+    -- TextBoxWidget (needed here for wrapping across up to 2 lines, unlike
+    -- the single-line TextWidget the rest of the card's text uses) always
+    -- fills itself with bgcolor and blits the result as a SOLID block - it
+    -- has no transparent mode. Over a plain background that solid fill in
+    -- pal.bg is exactly right; over a wallpaper it would paint an opaque box
+    -- that hides both the picture and the translucent panel placeText()
+    -- puts behind it. So with a wallpaper up, build it in throwaway
+    -- black-on-white "mask space" instead and let Wallpaper.mask() recolour
+    -- just the glyphs, leaving the panel visible around them.
     local title = TextBoxWidget:new{
         text = card.title or "",
         face = title_face,
@@ -435,9 +488,10 @@ function M.build(card, opts)
         height_adjust = true,
         height_overflow_show_ellipsis = true,
         alignment = "left",
-        fgcolor = title_color,
-        bgcolor = pal.bg,
+        fgcolor = wallpaper_bg and Blitbuffer.COLOR_BLACK or title_color,
+        bgcolor = wallpaper_bg and Blitbuffer.COLOR_WHITE or pal.bg,
     }
+    title = Wallpaper.mask(wallpaper_bg ~= nil, title, title_color)
     local text_blocks = { title }
     if card.authors and card.authors ~= "" then
         text_blocks[#text_blocks + 1] = text(card.authors, author_face, author_color, left_w)
@@ -461,7 +515,8 @@ function M.build(card, opts)
     local shadow_off = show_cover_shadow and S(4) or 0
     local cover_top = stats_top
     local cover_max_h = math.max(S(80), content_bottom - cover_top - text_h - S(10) - shadow_off)
-    local cover, cover_w, cover_h = buildCover(card, left_w - shadow_off, cover_max_h, pal, shadow_off)
+    local cover_restore = wallpaper_bg and Wallpaper.restore or nil
+    local cover, cover_w, cover_h = buildCover(card, left_w - shadow_off, cover_max_h, pal, shadow_off, cover_restore)
 
     -- Now that the cover's real height is known, spread the statistics rows
     -- so the LAST one's bottom lines up with the bottom of the cover.
@@ -480,12 +535,15 @@ function M.build(card, opts)
     if #cells > 1 then
         gap = math.max(0, math.floor((stats_h - cells_h) / (#cells - 1)))
     end
-    local column = VerticalGroup:new{ align = "right" }
+    -- Placed one at a time (rather than as a single VerticalGroup) so a
+    -- wallpaper backdrop panel can sit behind each row individually instead
+    -- of one solid strip behind the whole column.
+    local stat_y = stats_top
     for i, cell in ipairs(cells) do
-        if i > 1 then table.insert(column, VerticalSpan:new{ width = gap }) end
-        table.insert(column, cell)
+        if i > 1 then stat_y = stat_y + gap end
+        placeText(cell, W - pad_x - right_w, stat_y)
+        stat_y = stat_y + cell:getSize().h
     end
-    place(column, W - pad_x - right_w, stats_top)
 
     -- Cover drop shadow (painted first so the cover sits on top).
     if show_cover_shadow then
@@ -496,16 +554,30 @@ function M.build(card, opts)
             offset = shadow_off,
             radius = radius,
             bg     = pal.bg,
+            restore = cover_restore,
         }
         place(shadow, pad_x, cover_top)
     end
 
     place(cover, pad_x, cover_top)
 
+    -- With a wallpaper backdrop behind each line, the plain S(3) line
+    -- spacing is smaller than the panels' own vertical padding, so they'd
+    -- butt right up against each other (or overlap) with no visible gap
+    -- between title/author/series. Widen the spacing in that case so a
+    -- small gap survives between the panels, not just between the lines.
+    local text_block_gap = S(3)
+    if wallpaper_bg and text_bg_opacity > 0 then
+        -- 2 * TEXT_BACKDROP_PAD_V of that is eaten by the panels reaching
+        -- toward each other; the rest (S(2)) is the gap that actually ends
+        -- up visible between them.
+        text_block_gap = 2 * TEXT_BACKDROP_PAD_V + S(2)
+    end
+
     local y = cover_top + cover_h + S(20)
     for i, block in ipairs(text_blocks) do
-        if i > 1 then y = y + S(3) end
-        place(block, pad_x, y)
+        if i > 1 then y = y + text_block_gap end
+        placeText(block, pad_x, y)
         y = y + block:getSize().h
     end
 

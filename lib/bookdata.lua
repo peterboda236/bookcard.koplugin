@@ -42,7 +42,7 @@ card fields:
   highlights_count
   cover_file / has_cover
  derived by finalize():
-  finished, time_left_secs, daily_avg_secs, pages_per_min,
+  finished, time_left_secs, daily_avg_secs, daily_avg_pages, pages_per_min,
   est_finish_ts, finished_ts, span_days
 ]]--
 
@@ -442,6 +442,13 @@ function M.finalize(card)
     card.daily_avg_secs = nil
     if card.total_time and card.total_time > 0 and card.days_read and card.days_read > 0 then
         card.daily_avg_secs = card.total_time / card.days_read
+    end
+
+    -- Pages/day, the same "total / days actively read" shape as the time
+    -- average above, just counting pages instead of seconds.
+    card.daily_avg_pages = nil
+    if card.pages_read and card.pages_read > 0 and card.days_read and card.days_read > 0 then
+        card.daily_avg_pages = card.pages_read / card.days_read
     end
 
     card.pages_per_min = nil
