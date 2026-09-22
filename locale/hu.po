@@ -69,6 +69,15 @@ msgstr "Kártyaelemek"
 msgid "Statistics"
 msgstr "Statisztikák"
 
+msgid "Text background grouping"
+msgstr "Szöveghátér csoportosítása"
+
+msgid "Individually (default)"
+msgstr "Egyenként (alapértelmezett)"
+
+msgid "Grouped (battery / stats / title+author+series / streak / reader)"
+msgstr "Csoportosítva (akku / statisztikák / cím+szerző+sorozat / streak / olvasó típusa)"
+
 msgid "Clear cached data"
 msgstr "Gyorsítótár törlése"
 
@@ -487,3 +496,67 @@ msgstr "Álló kényszerítése"
 
 msgid "Force landscape"
 msgstr "Fekvő kényszerítése"
+
+msgid "Image export (for Android wallpaper)"
+msgstr "Kép exportálása (Android háttérképhez)"
+
+msgid "Save as image, kept up to date"
+msgstr "Mentés képként, folyamatosan frissítve"
+
+msgid "On Android, KOReader's own sleep screen (above) never shows, because locking the screen hands over to Android's own lock screen instead. Turn this on and Book Card keeps a picture of the card on disk, refreshed automatically; set that picture as your Android wallpaper the normal way (from the Photos/Gallery app, or a wallpaper-changer app pointed at the folder below)."
+msgstr "Androidon a KOReader saját alvóképernyője (fent) sosem jelenik meg, mert képernyőzáráskor Android saját zárolási képernyője veszi át a helyét. Ezt bekapcsolva a Book Card egy képet tart a lemezen a kártyáról, amit automatikusan frissít; ezt a képet a szokásos módon állíthatod be Android háttérképként (a Galéria/Fotók alkalmazásból, vagy egy háttérkép-váltogató appal, amely az alábbi mappát figyeli)."
+
+msgid "Refresh interval"
+msgstr "Frissítési gyakoriság"
+
+msgid "Every 5 minutes"
+msgstr "5 percenként"
+
+msgid "Every 15 minutes"
+msgstr "15 percenként"
+
+msgid "Every 30 minutes"
+msgstr "30 percenként"
+
+msgid "Every hour"
+msgstr "Óránként"
+
+msgid "min"
+msgstr "perc"
+
+msgid "Also copy to folder"
+msgstr "Másolás ide is"
+
+msgid "Also copy to a shared folder…"
+msgstr "Másolás egy megosztott mappába is…"
+
+msgid "Choose a folder to also save the image to"
+msgstr "Válaszd ki a mappát, ahova a kép is bekerüljön"
+
+msgid "Image will also be copied to:\n{path}\n\nOn Android, point your system wallpaper picker (or a wallpaper-changer app) at this folder."
+msgstr "A kép ide is bemásolódik:\n{path}\n\nAndroidon a rendszer háttérkép-választóját (vagy egy háttérkép-váltogató appot) irányítsd erre a mappára."
+
+msgid "Stop copying to that extra folder"
+msgstr "Extra mappába másolás leállítása"
+
+msgid "Save image now"
+msgstr "Kép mentése most"
+
+msgid "Image saved to: {path}"
+msgstr "A kép ide mentődik: {path}"
+
+msgid "Image updated."
+msgstr "A kép frissült."
+
+msgid "Could not update the image."
+msgstr "A kép frissítése nem sikerült."
+
+msgid "Could not create the image export folder."
+msgstr "Nem sikerült létrehozni a kép exportálási mappáját."
+
+
+msgid "Could not write the image file."
+msgstr "Nem sikerült írni a képfájlt."
+
+msgid "Could not draw the card as an image (see the log for details)."
+msgstr "Nem sikerült a kártyát képként megrajzolni (a részletekért lásd a naplót)."

@@ -67,6 +67,7 @@ local About   = loadModule("views/about.lua", { Locale = Locale, Updater = Updat
 local Sleep = loadModule("lib/screensaver.lua", {
     Locale = Locale, Data = Data, Cache = Cache, CardView = CardView, Prefs = Prefs,
 })
+local PngExport = loadModule("lib/pngexport.lua", { Locale = Locale, Prefs = Prefs, Sleep = Sleep })
 
 local _ = Locale._
 
@@ -96,6 +97,10 @@ function BookCard:init()
     self:onDispatcherRegisterActions()
     -- Silent update check at start-up (opt-in, at most once an hour).
     self:backgroundUpdateCheck()
+    -- Image export (see lib/pngexport.lua): resume the periodic refresh if
+    -- it was left on from a previous session. Guarded by a global flag so
+    -- only one of the reader/file-manager instantiations runs the timer.
+    self:_startImageExportTimer()
     -- Force this plugin's entry to the 2nd slot of the Tools menu (both in
     -- Reader view and in the File manager), same technique as Reading
     -- Insights (which uses slot 1). Wrapped in scheduleIn(1, ...) so it
@@ -136,6 +141,64 @@ function BookCard:onResume()
     self:backgroundUpdateCheck()
 end
 
+function BookCard:onSuspend()
+    -- Refresh the exported image right before sleeping, same moment Ink
+    -- Stain Wallpaper refreshes its own - the freshest possible picture for
+    -- whatever ends up showing (KOReader's own sleep screen elsewhere, or
+    -- just this file waiting to be picked up as an Android wallpaper).
+    if not PngExport.isEnabled() then return end
+    local ok, err = PngExport.write(self.ui)
+    if not ok then logger.warn("BookCard: image export on suspend failed:", err) end
+end
+
+-- ---------------------------------------------------------------------------
+-- Image export (lib/pngexport.lua): a PNG of the card, refreshed on a
+-- timer and on the events below, for use outside KOReader's own sleep
+-- screen (chiefly: setting it as the Android system/lock-screen wallpaper).
+-- ---------------------------------------------------------------------------
+function BookCard:refreshExportedImage(quiet)
+    local ok, err = PngExport.write(self.ui)
+    if not quiet then
+        if ok then
+            UIManager:show(InfoMessage:new{ text = _("Image updated."), timeout = 2 })
+        else
+            UIManager:show(InfoMessage:new{
+                text = err or _("Could not update the image."),
+                timeout = 3,
+            })
+        end
+    elseif not ok then
+        logger.warn("BookCard: image export failed:", err)
+    end
+    return ok
+end
+
+-- The timer always renders from the cache (ui = nil), same source the
+-- sleep screen itself falls back to outside a book - so it never holds on
+-- to a ReaderUI/FileManager instance across the interval.
+function BookCard:_scheduleImageExportTimer()
+    if not PngExport.isEnabled() then
+        _G._bookcard_export_timer_active = false
+        return
+    end
+    UIManager:scheduleIn(PngExport.interval(), function()
+        if not PngExport.isEnabled() then
+            _G._bookcard_export_timer_active = false
+            return
+        end
+        local ok, err = PngExport.write(nil)
+        if not ok then logger.warn("BookCard: periodic image export failed:", err) end
+        self:_scheduleImageExportTimer()
+    end)
+end
+
+function BookCard:_startImageExportTimer()
+    if _G._bookcard_export_timer_active then return end
+    if not PngExport.isEnabled() then return end
+    _G._bookcard_export_timer_active = true
+    self:_scheduleImageExportTimer()
+end
+
 function BookCard:onDispatcherRegisterActions()
     Dispatcher:registerAction("bookcard_preview", {
         category = "none",
@@ -146,14 +209,20 @@ function BookCard:onDispatcherRegisterActions()
 end
 
 -- Snapshot the card whenever a book is closed, so the file manager (which
--- has no reading state) can show it from the cache afterwards.
+-- has no reading state) can show it from the cache afterwards. Needed both
+-- for the native sleep screen and for image export - the two are
+-- independent, since image export is the one that matters on Android,
+-- where the native sleep screen never appears at all (see lib/pngexport.lua).
 function BookCard:onCloseDocument()
-    if not Sleep.isSelected() then return end
+    if not (Sleep.isSelected() or PngExport.isEnabled()) then return end
     local ok, err = pcall(function()
         local card = Data.collectLive(self.ui)
         if card then Cache.save(card) end
     end)
     if not ok then logger.warn("BookCard: cache refresh on close failed:", err) end
+    if PngExport.isEnabled() then
+        self:refreshExportedImage(true)
+    end
 end
 
 function BookCard:onShowBookCard()
@@ -328,6 +397,89 @@ function BookCard:_updateSubItems()
 end
 
 -- ---------------------------------------------------------------------------
+-- Image export submenu (see lib/pngexport.lua)
+-- ---------------------------------------------------------------------------
+function BookCard:_imageExportSubItems()
+    local outer = self
+    return {
+        {
+            text = _("Save as image, kept up to date"),
+            checked_func = PngExport.isEnabled,
+            keep_menu_open = true,
+            callback = function()
+                local turning_on = not PngExport.isEnabled()
+                PngExport.setEnabled(turning_on)
+                if turning_on then
+                    outer:_startImageExportTimer()
+                    outer:refreshExportedImage(true)
+                end
+            end,
+            separator = true,
+        },
+        {
+            text = _("On Android, KOReader's own sleep screen (above) never shows, "
+                .. "because locking the screen hands over to Android's own lock "
+                .. "screen instead. Turn this on and Book Card keeps a picture of "
+                .. "the card on disk, refreshed automatically; set that picture as "
+                .. "your Android wallpaper the normal way (from the Photos/Gallery "
+                .. "app, or a wallpaper-changer app pointed at the folder below)."),
+            enabled = false,
+            separator = true,
+        },
+        {
+            text_func = function()
+                return _("Refresh interval") .. ": " .. PngExport.intervalLabel()
+            end,
+            enabled_func = PngExport.isEnabled,
+            sub_item_table_func = function() return PngExport.buildIntervalMenu() end,
+        },
+        {
+            text_func = function()
+                local custom = Prefs.read(PngExport.SETTING_SAVE_PATH, "")
+                if type(custom) == "string" and custom ~= "" then
+                    return _("Also copy to folder") .. ": " .. custom
+                end
+                return _("Also copy to a shared folder\xE2\x80\xA6")
+            end,
+            keep_menu_open = true,
+            callback = function(touchmenu_instance)
+                UIManager:show(PngExport.buildPathChooser(function(path)
+                    outer:refreshExportedImage(false)
+                    UIManager:show(InfoMessage:new{
+                        text = Locale.tpl(
+                            _("Image will also be copied to:\n{path}\n\nOn Android, point your system wallpaper picker (or a wallpaper-changer app) at this folder."),
+                            { path = path }),
+                        timeout = 6,
+                    })
+                    if touchmenu_instance then touchmenu_instance:updateItems() end
+                end))
+            end,
+        },
+        {
+            text = _("Stop copying to that extra folder"),
+            enabled_func = function() return PngExport.customFile() ~= nil end,
+            keep_menu_open = true,
+            callback = function(touchmenu_instance)
+                PngExport.clearCustomPath()
+                if touchmenu_instance then touchmenu_instance:updateItems() end
+            end,
+            separator = true,
+        },
+        {
+            text = _("Save image now"),
+            keep_menu_open = true,
+            callback = function() outer:refreshExportedImage(false) end,
+        },
+        {
+            text_func = function()
+                return Locale.tpl(_("Image saved to: {path}"), { path = PngExport.outputFile() })
+            end,
+            enabled = false,
+        },
+    }
+end
+
+-- ---------------------------------------------------------------------------
 -- Menu: Tools > Book Card
 -- ---------------------------------------------------------------------------
 local function themeItem(label, value)
@@ -356,6 +508,18 @@ local function orientationItem(label, value)
         radio = true,
         checked_func = function() return Prefs.read(CardView.SETTING_ORIENTATION, "default") == value end,
         callback = function() Prefs.save(CardView.SETTING_ORIENTATION, value) end,
+        keep_menu_open = true,
+    }
+end
+
+local function backdropGroupingItem(label, value)
+    return {
+        text = label,
+        radio = true,
+        checked_func = function()
+            return Prefs.read(CardView.SETTING_BACKDROP_GROUPING, "individual") == value
+        end,
+        callback = function() Prefs.save(CardView.SETTING_BACKDROP_GROUPING, value) end,
         keep_menu_open = true,
     }
 end
@@ -450,6 +614,13 @@ function BookCard:addToMainMenu(menu_items)
                             end,
                             sub_item_table_func = function() return Wallpaper.buildOpacityMenu() end,
                         },
+                        {
+                            text = _("Text background grouping"),
+                            sub_item_table = {
+                                backdropGroupingItem(_("Individually (default)"), "individual"),
+                                backdropGroupingItem(_("Grouped (battery / stats / title+author+series / streak / reader)"), "grouped"),
+                            },
+                        },
                     }
                 end)(),
             },
@@ -527,6 +698,11 @@ function BookCard:addToMainMenu(menu_items)
                             Cache.clear()
                             UIManager:show(InfoMessage:new{ text = _("Cached data cleared."), timeout = 2 })
                         end,
+                        separator = true,
+                    },
+                    {
+                        text = _("Image export (for Android wallpaper)"),
+                        sub_item_table_func = function() return self:_imageExportSubItems() end,
                     },
                 },
             },

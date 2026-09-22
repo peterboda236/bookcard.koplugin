@@ -77,6 +77,9 @@ M.SETTING_GAP         = "bookcard_cover_stats_gap"       -- "small" (default) | 
 M.SETTING_COVER_SHADOW = "bookcard_cover_shadow"          -- default on
 M.SETTING_HIGHLIGHTS   = "bookcard_show_highlights"      -- default OFF
 M.SETTING_ORIENTATION  = "bookcard_orientation"          -- "default" (current behaviour) | "portrait" | "landscape"
+M.SETTING_BACKDROP_GROUPING = "bookcard_backdrop_grouping" -- "individual" (default) | "grouped" - only
+                                                          -- matters with a wallpaper + text background
+                                                          -- opacity > 0; see placeText()/flushGroup() below
 
 -- Individual statistics-column rows, in the order they are drawn (all
 -- default on, except SETTING_HIGHLIGHTS above, which stays off by default).
@@ -329,6 +332,15 @@ function M.build(card, opts)
         and Wallpaper.bg(W, H, Screen.night_mode and true or false)
         or nil
     local text_bg_opacity = Wallpaper.opacity()
+    -- "individual" (default): every line/row gets its own backdrop panel,
+    -- exactly as before. "grouped": five logical groups - battery, the
+    -- statistics column, title+author+series, the streak, and the morning
+    -- reader label - each get ONE panel sized to their own combined
+    -- bounding box instead. Battery/streak/reader are already a single
+    -- widget each, so this only actually changes the stats column and the
+    -- title block (see the newGroup()/groupAdd()/flushGroup() helpers and
+    -- their two call sites below).
+    local backdrop_grouped = Prefs.read(M.SETTING_BACKDROP_GROUPING, "individual") == "grouped"
 
     local pad_x = S(28)
     local pad_top = S(22)
@@ -375,6 +387,39 @@ function M.build(card, opts)
             if panel then place(panel, x - TEXT_BACKDROP_PAD_H, y - TEXT_BACKDROP_PAD_V) end
         end
         return place(widget, x, y)
+    end
+
+    -- Grouped-mode helpers: newGroup() collects members without placing
+    -- them yet (their combined bounding box isn't known until the last one
+    -- is added); flushGroup() then drops a single panel behind that box
+    -- (same padding/opacity/radius as placeText()'s per-widget one) and
+    -- only then places every member on top of it, in the order they were
+    -- added. With no wallpaper, or opacity "Off", this is a no-op wrapper
+    -- around plain place() - same as placeText() in that case.
+    local function newGroup()
+        return { members = {} }
+    end
+
+    local function groupAdd(group, widget, x, y)
+        local size = widget:getSize()
+        local w = (widget.contentWidth and widget:contentWidth()) or size.w
+        group.members[#group.members + 1] = { widget = widget, x = x, y = y }
+        local x2, y2 = x + w, y + size.h
+        group.min_x = group.min_x and math.min(group.min_x, x) or x
+        group.min_y = group.min_y and math.min(group.min_y, y) or y
+        group.max_x = group.max_x and math.max(group.max_x, x2) or x2
+        group.max_y = group.max_y and math.max(group.max_y, y2) or y2
+    end
+
+    local function flushGroup(group, pad_h, pad_v)
+        if #group.members == 0 then return end
+        if wallpaper_bg and text_bg_opacity > 0 then
+            local panel = Wallpaper.panel(group.max_x - group.min_x + 2 * pad_h,
+                                           group.max_y - group.min_y + 2 * pad_v,
+                                           pal.bg, text_bg_opacity, S(3))
+            if panel then place(panel, group.min_x - pad_h, group.min_y - pad_v) end
+        end
+        for _i, m in ipairs(group.members) do place(m.widget, m.x, m.y) end
     end
 
     -- Battery, top right: KOReader's own battery glyph + percentage, same
@@ -548,11 +593,17 @@ function M.build(card, opts)
     -- wallpaper backdrop panel can sit behind each row individually instead
     -- of one solid strip behind the whole column.
     local stat_y = stats_top
+    local stats_group = backdrop_grouped and newGroup() or nil
     for i, cell in ipairs(cells) do
         if i > 1 then stat_y = stat_y + gap end
-        placeText(cell, W - pad_x - right_w, stat_y)
+        if stats_group then
+            groupAdd(stats_group, cell, W - pad_x - right_w, stat_y)
+        else
+            placeText(cell, W - pad_x - right_w, stat_y)
+        end
         stat_y = stat_y + cell:getSize().h
     end
+    if stats_group then flushGroup(stats_group, TEXT_BACKDROP_PAD_H, TEXT_BACKDROP_PAD_V) end
 
     -- Cover drop shadow (painted first so the cover sits on top).
     if show_cover_shadow then
@@ -576,19 +627,26 @@ function M.build(card, opts)
     -- between title/author/series. Widen the spacing in that case so a
     -- small gap survives between the panels, not just between the lines.
     local text_block_gap = S(3)
-    if wallpaper_bg and text_bg_opacity > 0 then
+    if wallpaper_bg and text_bg_opacity > 0 and not backdrop_grouped then
         -- 2 * TEXT_BACKDROP_PAD_V of that is eaten by the panels reaching
         -- toward each other; the rest (S(2)) is the gap that actually ends
-        -- up visible between them.
+        -- up visible between them. Grouped mode has one panel behind the
+        -- whole block instead, so the plain S(3) spacing is fine there.
         text_block_gap = 2 * TEXT_BACKDROP_PAD_V + S(2)
     end
 
     local y = cover_top + cover_h + S(20)
+    local title_group = backdrop_grouped and newGroup() or nil
     for i, block in ipairs(text_blocks) do
         if i > 1 then y = y + text_block_gap end
-        placeText(block, pad_x, y)
+        if title_group then
+            groupAdd(title_group, block, pad_x, y)
+        else
+            placeText(block, pad_x, y)
+        end
         y = y + block:getSize().h
     end
+    if title_group then flushGroup(title_group, TEXT_BACKDROP_PAD_H, TEXT_BACKDROP_PAD_V) end
 
     local canvas = OverlapGroup:new{
         dimen = Geom:new{ w = W, h = H },
