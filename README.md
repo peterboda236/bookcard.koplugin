@@ -87,4 +87,4 @@ top-level folder is `bookcard.koplugin`.
 - Idea from statistics page from [crosspoint-reader](https://github.com/crosspoint-reader/crosspoint-reader).
 - Statistics based on [quanganhdo/koreader-user-patches](https://github.com/quanganhdo/koreader-user-patches).
 - Colorwheel from [Euphoriyy/KOReader.patches](https://github.com/Euphoriyy/KOReader.patches#-colorwheelwidgetlua).
-- In-plugin updater, cover shadows and over look comes from [AndyHazz/bookshelf.koplugin](https://github.com/AndyHazz/bookshelf.koplugin).
+- In-plugin updater, cover shadows, backgrounds, and cover look comes from [AndyHazz/bookshelf.koplugin](https://github.com/AndyHazz/bookshelf.koplugin).
