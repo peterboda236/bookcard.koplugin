@@ -22,9 +22,25 @@ Copy the `bookcard.koplugin` folder to `koreader/plugins/`, restart KOReader.
 - Locking from the file manager: data cached from the last book that was open.
   If there is no cache, it is rebuilt from the book's sidecar + statistics DB.
 - Tools > Book Card: Preview, Background (follow night mode / light / dark,
-  wallpaper picture, text background opacity), rounded cover corners,
-  battery / streak / reader type toggles, clear cache, Updates.
+  wallpaper picture, text background opacity), Cover (rounded corners,
+  shadow, cover/statistics spacing), Colors, Fonts, Card elements
+  (battery / streak / reader type toggles, statistics rows), Advanced
+  Settings (orientation, clear cache), Updates.
 - Assign a gesture to open it.
+
+## Orientation
+Tools > Book Card > Advanced Settings > Orientation:
+- **Default (current behavior)** - the card is drawn at whatever rotation
+  the device is already in when it falls asleep (no change from the
+  original behaviour).
+- **Force portrait** / **Force landscape** - the screen is rotated to match
+  right before the sleep screen is drawn, and rotated back to whatever it
+  was as soon as the device wakes up.
+
+This only affects the actual sleep screen. Tools > Book Card > Preview opens
+the card in a popup while you are actively using KOReader, so it never
+rotates the screen - it always renders at the screen's current orientation,
+regardless of this setting.
 
 ## Wallpaper
 Tools > Book Card > Background > Wallpaper lets you pick a background
@@ -51,7 +67,8 @@ that no source is configured. Releases need a `.zip` asset whose single
 top-level folder is `bookcard.koplugin`.
 
 ## Files
-- `lib/screensaver.lua` sleep-screen hook, `lib/bookdata.lua` data, `lib/cache.lua` cache
+- `lib/screensaver.lua` sleep-screen hook (also forces/restores orientation),
+  `lib/bookdata.lua` data, `lib/cache.lua` cache
 - `lib/updater.lua` GitHub updater, `lib/statsdb.lua` read-only stats DB access
 - `lib/wallpaper.lua` background picture + translucent text backdrop panels
 - `views/card_view.lua` layout, `widgets/` battery, stat cell, framed cover, svg icon
@@ -59,8 +76,12 @@ top-level folder is `bookcard.koplugin`.
 
 ## Notes
 - Needs KOReader's Statistics plugin enabled for time/pace/streak figures.
-- Cache: `settings/bookcard_cache.lua` and `cache/bookcard/cover.png`.
+- Cache: `settings/bookcard_cache.lua` and `cache/bookcard/cover.png`, cleared
+  from Advanced Settings > Clear cached data.
 - If you disable the plugin while "Book Card" is selected, pick another wallpaper.
+- Forced orientation only takes effect on the real sleep screen; if KOReader
+  is killed or crashes while asleep (skipping the normal wake-up event), the
+  screen can stay in the forced rotation until you rotate it yourself.
 
 ## Acknowledgements
 - Idea from statistics page from [crosspoint-reader](https://github.com/crosspoint-reader/crosspoint-reader).

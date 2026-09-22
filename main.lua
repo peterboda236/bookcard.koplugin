@@ -65,7 +65,7 @@ local CardView = loadModule("views/card_view.lua", {
 local Updater = loadModule("lib/updater.lua", { Locale = Locale, PluginUtil = PluginUtil })
 local About   = loadModule("views/about.lua", { Locale = Locale, Updater = Updater })
 local Sleep = loadModule("lib/screensaver.lua", {
-    Locale = Locale, Data = Data, Cache = Cache, CardView = CardView,
+    Locale = Locale, Data = Data, Cache = Cache, CardView = CardView, Prefs = Prefs,
 })
 
 local _ = Locale._
@@ -130,7 +130,9 @@ function BookCard:init()
 end
 
 function BookCard:onResume()
-    -- ...and after every wake-up.
+    -- Undo any orientation forced for the sleep screen before anything
+    -- else redraws, then check for updates as before.
+    Sleep.restoreOrientation()
     self:backgroundUpdateCheck()
 end
 
@@ -348,6 +350,16 @@ local function gapItem(label, value)
     }
 end
 
+local function orientationItem(label, value)
+    return {
+        text = label,
+        radio = true,
+        checked_func = function() return Prefs.read(CardView.SETTING_ORIENTATION, "default") == value end,
+        callback = function() Prefs.save(CardView.SETTING_ORIENTATION, value) end,
+        keep_menu_open = true,
+    }
+end
+
 function BookCard:addToMainMenu(menu_items)
     local battery = toggleSetting(CardView.SETTING_BATTERY, true)
     battery.text = _("Show battery")
@@ -399,6 +411,7 @@ function BookCard:addToMainMenu(menu_items)
                         G_reader_settings:saveSetting("screensaver_type", Sleep.TYPE)
                     end
                 end,
+                separator = true,
             },
             {
                 text = _("Updates"),
@@ -498,11 +511,24 @@ function BookCard:addToMainMenu(menu_items)
                 separator = true,
             },
             {
-                text = _("Clear cached data"),
-                callback = function()
-                    Cache.clear()
-                    UIManager:show(InfoMessage:new{ text = _("Cached data cleared."), timeout = 2 })
-                end,
+                text = _("Advanced Settings"),
+                sub_item_table = {
+                    {
+                        text = _("Orientation"),
+                        sub_item_table = {
+                            orientationItem(_("Default (current behavior)"), "default"),
+                            orientationItem(_("Force portrait"), "portrait"),
+                            orientationItem(_("Force landscape"), "landscape"),
+                        },
+                    },
+                    {
+                        text = _("Clear cached data"),
+                        callback = function()
+                            Cache.clear()
+                            UIManager:show(InfoMessage:new{ text = _("Cached data cleared."), timeout = 2 })
+                        end,
+                    },
+                },
             },
         },
     }

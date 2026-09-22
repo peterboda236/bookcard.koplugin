@@ -76,6 +76,7 @@ M.SETTING_THEME       = "bookcard_theme"                 -- "auto" (default) | "
 M.SETTING_GAP         = "bookcard_cover_stats_gap"       -- "small" (default) | "large"
 M.SETTING_COVER_SHADOW = "bookcard_cover_shadow"          -- default on
 M.SETTING_HIGHLIGHTS   = "bookcard_show_highlights"      -- default OFF
+M.SETTING_ORIENTATION  = "bookcard_orientation"          -- "default" (current behaviour) | "portrait" | "landscape"
 
 -- Individual statistics-column rows, in the order they are drawn (all
 -- default on, except SETTING_HIGHLIGHTS above, which stays off by default).
@@ -361,7 +362,15 @@ function M.build(card, opts)
     local function placeText(widget, x, y)
         if wallpaper_bg and text_bg_opacity > 0 then
             local size = widget:getSize()
-            local panel = Wallpaper.panel(size.w + 2 * TEXT_BACKDROP_PAD_H, size.h + 2 * TEXT_BACKDROP_PAD_V,
+            -- widget:getSize().w is the widget's full box width, which for
+            -- a plain TextWidget is already its real text width - but for
+            -- the (Mask-wrapped) title it is the whole column width
+            -- regardless of how short the title is. When the widget can
+            -- tell us its real content width (title only), use that
+            -- instead, so its panel hugs the text just like every other
+            -- row's does.
+            local panel_w = (widget.contentWidth and widget:contentWidth()) or size.w
+            local panel = Wallpaper.panel(panel_w + 2 * TEXT_BACKDROP_PAD_H, size.h + 2 * TEXT_BACKDROP_PAD_V,
                                           pal.bg, text_bg_opacity, S(3))
             if panel then place(panel, x - TEXT_BACKDROP_PAD_H, y - TEXT_BACKDROP_PAD_V) end
         end

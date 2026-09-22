@@ -475,3 +475,18 @@ msgstr "%d page"
 
 msgid "%d pages"
 msgstr "%d pages"
+
+msgid "Advanced Settings"
+msgstr "Advanced Settings"
+
+msgid "Orientation"
+msgstr "Orientation"
+
+msgid "Default (current behavior)"
+msgstr "Default (current behavior)"
+
+msgid "Force portrait"
+msgstr "Force portrait"
+
+msgid "Force landscape"
+msgstr "Force landscape"

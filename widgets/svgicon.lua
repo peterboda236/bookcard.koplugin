@@ -45,10 +45,27 @@ function SvgIcon:paintTo(bb, x, y)
         self.image:paintTo(bb, x, y)
         return
     end
-    local scratch = Blitbuffer.new(self.size, self.size, bb:getType())
+    -- Night/dark mode: paint the icon in white instead of its native black.
+    --
+    -- The previous approach filled a scratch buffer with white, painted the
+    -- icon onto it, then blitted the whole thing inverted. invertblitFrom
+    -- is a solid blit - it has no idea which pixels were "icon" and which
+    -- were just the white filler - so it painted the ENTIRE size x size
+    -- square (as black, after inversion) instead of just the icon. That
+    -- solid square is the black box that showed up behind these icons in
+    -- night mode.
+    --
+    -- Fix: build a coverage mask instead (same trick Wallpaper.mask() uses
+    -- for text). Render the icon (black on white) onto an 8bpp scratch,
+    -- invert it so the icon's own pixels become the bright values, then
+    -- paint using that as an ALPHA channel: colorblitFrom only paints
+    -- where the icon actually drew something, leaving the background -
+    -- and whatever is behind it - alone.
+    local scratch = Blitbuffer.new(self.size, self.size, Blitbuffer.TYPE_BB8)
     scratch:fill(Blitbuffer.COLOR_WHITE)
     self.image:paintTo(scratch, 0, 0)
-    bb:invertblitFrom(scratch, x, y, 0, 0, self.size, self.size)
+    scratch:invertRect(0, 0, self.size, self.size)
+    bb:colorblitFrom(scratch, x, y, 0, 0, self.size, self.size, Blitbuffer.COLOR_WHITE)
     scratch:free()
 end
 

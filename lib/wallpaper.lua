@@ -380,6 +380,40 @@ function Mask:paintTo(target, x, y)
     end)
 end
 
+-- contentWidth() -> the width of the actual rendered text (the widest of
+-- its lines, up to the first 2 - this card never shows more), or nil if it
+-- can't be determined. Mask:getSize() always reports the FULL width of the
+-- box the inner TextBoxWidget was given (that is what TextBoxWidget itself
+-- returns: it is a box of a fixed width, not shrink-wrapped to its
+-- content). For a short title that meant the backdrop panel behind it
+-- stretched all the way to the edge of the column, well past where the
+-- title text itself ends - unlike the author/series lines below it, which
+-- use plain TextWidgets sized to their own real text width, so their
+-- panels hug the text exactly. This reads TextBoxWidget's own per-line
+-- layout (vertical_string_list[n].width, the same numbers it uses
+-- internally to center/align each line) to get that same tight fit for
+-- the title. Wrapped in pcall and returns nil on failure, so a caller can
+-- always fall back to the full box width.
+function Mask:contentWidth()
+    local inner = self.inner
+    if type(inner) ~= "table" then return nil end
+    local ok, w = pcall(function()
+        if inner.getSize then inner:getSize() end -- forces layout, fills vertical_string_list
+        local list = inner.vertical_string_list
+        if type(list) ~= "table" then return nil end
+        local max_w = 0
+        for i = 1, math.min(#list, 2) do
+            local line = list[i]
+            if line and type(line.width) == "number" and line.width > max_w then
+                max_w = line.width
+            end
+        end
+        return max_w > 0 and max_w or nil
+    end)
+    if ok and type(w) == "number" then return w end
+    return nil
+end
+
 function Mask:free()
     if self._mask then
         pcall(function() if self._mask.free then self._mask:free() end end)

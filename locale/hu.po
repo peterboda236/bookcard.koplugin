@@ -475,3 +475,18 @@ msgstr "%d oldal"
 
 msgid "%d pages"
 msgstr "%d oldal"
+
+msgid "Advanced Settings"
+msgstr "További beállítások"
+
+msgid "Orientation"
+msgstr "Tájolás"
+
+msgid "Default (current behavior)"
+msgstr "Alapértelmezett (jelenlegi működés)"
+
+msgid "Force portrait"
+msgstr "Álló kényszerítése"
+
+msgid "Force landscape"
+msgstr "Fekvő kényszerítése"
