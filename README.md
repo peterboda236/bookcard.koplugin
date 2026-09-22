@@ -6,7 +6,9 @@ title, author, series, reading time, time left, progress, daily average,
 pages/min, days + start date, finish date (or estimated finish), battery,
 daily + weekly reading streak and reader type.
 
-<img width="510" height="680" alt="FileManager_2026-09-21_094858" src="https://github.com/user-attachments/assets/6cdde237-53d2-47be-9189-af41912ccf8b" />
+<img width="382" height="510" alt="FileManager_2026-09-22_091600" src="https://github.com/user-attachments/assets/2834619a-9e49-4826-9b2c-d76099bb9dae" />
+<img width="382" height="510" alt="Reader_The Wild Robot 1  - The Wild Robot - Brown, Peter #p(128) epub_p6_2026-09-22_084553" src="https://github.com/user-attachments/assets/10d84b60-9a52-43ee-aab2-eaabb1ff7c3f" />
+
 
 <br>Settings screen in the menu<br>
 <img width="255" height="340" alt="FileManager_2026-09-21_094916" src="https://github.com/user-attachments/assets/aa3e40a1-41d5-4551-8ef4-b24f6992d7bc" />
