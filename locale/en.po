@@ -487,3 +487,67 @@ msgstr "Force portrait"
 
 msgid "Force landscape"
 msgstr "Force landscape"
+
+msgid "Image export (for Android wallpaper)"
+msgstr "Image export (for Android wallpaper)"
+
+msgid "Save as image, kept up to date"
+msgstr "Save as image, kept up to date"
+
+msgid "On Android, KOReader's own sleep screen (above) never shows, because locking the screen hands over to Android's own lock screen instead. Turn this on and Book Card keeps a picture of the card on disk, refreshed automatically; set that picture as your Android wallpaper the normal way (from the Photos/Gallery app, or a wallpaper-changer app pointed at the folder below)."
+msgstr "On Android, KOReader's own sleep screen (above) never shows, because locking the screen hands over to Android's own lock screen instead. Turn this on and Book Card keeps a picture of the card on disk, refreshed automatically; set that picture as your Android wallpaper the normal way (from the Photos/Gallery app, or a wallpaper-changer app pointed at the folder below)."
+
+msgid "Refresh interval"
+msgstr "Refresh interval"
+
+msgid "Every 5 minutes"
+msgstr "Every 5 minutes"
+
+msgid "Every 15 minutes"
+msgstr "Every 15 minutes"
+
+msgid "Every 30 minutes"
+msgstr "Every 30 minutes"
+
+msgid "Every hour"
+msgstr "Every hour"
+
+msgid "min"
+msgstr "min"
+
+msgid "Also copy to folder"
+msgstr "Also copy to folder"
+
+msgid "Also copy to a shared folder…"
+msgstr "Also copy to a shared folder…"
+
+msgid "Choose a folder to also save the image to"
+msgstr "Choose a folder to also save the image to"
+
+msgid "Image will also be copied to:\n{path}\n\nOn Android, point your system wallpaper picker (or a wallpaper-changer app) at this folder."
+msgstr "Image will also be copied to:\n{path}\n\nOn Android, point your system wallpaper picker (or a wallpaper-changer app) at this folder."
+
+msgid "Stop copying to that extra folder"
+msgstr "Stop copying to that extra folder"
+
+msgid "Save image now"
+msgstr "Save image now"
+
+msgid "Image saved to: {path}"
+msgstr "Image saved to: {path}"
+
+msgid "Image updated."
+msgstr "Image updated."
+
+msgid "Could not update the image."
+msgstr "Could not update the image."
+
+msgid "Could not create the image export folder."
+msgstr "Could not create the image export folder."
+
+
+msgid "Could not write the image file."
+msgstr "Could not write the image file."
+
+msgid "Could not draw the card as an image (see the log for details)."
+msgstr "Could not draw the card as an image (see the log for details)."

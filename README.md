@@ -30,6 +30,30 @@ Copy the `bookcard.koplugin` folder to `koreader/plugins/`, restart KOReader.
   Settings (orientation, clear cache), Updates.
 - Assign a gesture to open it.
 
+## Android
+KOReader's own sleep screen (the "Use as sleep screen" option above) only
+ever appears on platforms where KOReader itself owns the "device is
+asleep" screen, such as Kindle or Kobo. On Android, locking the screen
+hands control to Android's own lock screen instead, so the native Book
+Card sleep screen is never shown there.
+
+For Android, use **Tools > Book Card > Advanced Settings > Image export
+(for Android wallpaper)** instead:
+- **Save as image, kept up to date** - turns on a background PNG export of
+  the card, refreshed automatically (Save image now / refresh interval,
+  both in the same menu).
+- **Also copy to a shared folder…** - optionally also writes the same
+  picture into a folder you pick (e.g. a shared `Pictures` folder), so it
+  shows up in Android's own gallery/wallpaper picker, or so a
+  wallpaper-changer app can watch that folder and keep applying the latest
+  version automatically.
+- The always-on copy lives at
+  `koreader/screensaver/bookcard_png/bookcard_wallpaper.png` regardless of
+  whether an extra folder is set.
+
+This mirrors how the Ink Stain Wallpaper plugin handles the same
+Android limitation.
+
 ## Orientation
 Tools > Book Card > Advanced Settings > Orientation:
 - **Default** - the card is drawn at whatever rotation
