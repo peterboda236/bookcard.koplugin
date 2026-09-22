@@ -114,3 +114,4 @@ top-level folder is `bookcard.koplugin`.
 - Statistics based on [quanganhdo/koreader-user-patches](https://github.com/quanganhdo/koreader-user-patches).
 - Colorwheel from [Euphoriyy/KOReader.patches](https://github.com/Euphoriyy/KOReader.patches#-colorwheelwidgetlua).
 - In-plugin updater, cover shadows, backgrounds, and cover look comes from [AndyHazz/bookshelf.koplugin](https://github.com/AndyHazz/bookshelf.koplugin).
+- Android support [Estela-Zelin84/inkstain.koplugin](https://github.com/Estela-Zelin84/inkstain.koplugin).
