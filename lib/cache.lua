@@ -1,5 +1,5 @@
 --[[
-Book Card - persistent cache of the last-read book's card data.
+Book card - persistent cache of the last-read book's card data.
 
 Why a cache: when the device is locked from the file manager there is no
 open document, so KOReader's live reading state (progress, pace, page

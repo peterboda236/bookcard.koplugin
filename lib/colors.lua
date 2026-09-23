@@ -1,5 +1,5 @@
 --[[
-Book Card - user-configurable text/battery colors.
+Book card - user-configurable text/battery colors.
 
 The card already follows KOReader's night mode / "Background" setting
 (see card_view.lua's palette()), so "default" here means "follow that

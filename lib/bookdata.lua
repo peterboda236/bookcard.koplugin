@@ -1,5 +1,5 @@
 --[[
-Book Card - gathers everything the card shows into one plain table ("card").
+Book card - gathers everything the card shows into one plain table ("card").
 
 Every number is computed the way the Reading Insights plugin computes it
 (views/book_stats_view.lua + lib/book_stats_data.lua + lib/insights_data.lua),

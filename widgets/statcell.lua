@@ -1,5 +1,5 @@
 --[[
-Book Card - one right-aligned "big value over small label" cell, as used in
+Book card - one right-aligned "big value over small label" cell, as used in
 the statistics column of the card.
 
   StatCell:new{

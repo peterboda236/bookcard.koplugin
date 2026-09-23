@@ -4,8 +4,8 @@ local _ = require("gettext")
 -- NOT run through gettext: the plugin manager reads _meta.lua before the
 -- plugin's own locale/*.po files are loaded.
 local DESCRIPTIONS = {
-    en = "Book Card is a new sleep screen for KOReader, heavily inspired by the idea and visual design of CrossPoint's sleep screen implementation.",
-    hu = "A Book Card egy új alvóképernyő a KOReaderhez, amelyet nagyban ihletett a CrossPoint alvóképernyő-megvalósításának ötlete és vizuális megjelenése.",
+    en = "Book card is a new sleep screen for KOReader, heavily inspired by the idea and visual design of CrossPoint's sleep screen implementation.",
+    hu = "A Book card egy új alvóképernyő a KOReaderhez, amelyet nagyban ihletett a CrossPoint alvóképernyő-megvalósításának ötlete és vizuális megjelenése.",
 }
 
 local function pickDescription()
@@ -21,7 +21,7 @@ return {
     -- Keep `name`: some KOReader releases key the plugin-manager
     -- enable/disable toggle off what they find here.
     name = "bookcard",
-    fullname = _("Book Card"),
+    fullname = _("Book card"),
     description = pickDescription(),
-    version = "1.3.2",
+    version = "1.3.3",
 }

@@ -1,4 +1,4 @@
-# Book Card 
+# Book card 
 A new KOReader Sleep Screen
 
 Sleep screen showing a reading summary card: cover (framed, rounded corners),
@@ -18,12 +18,12 @@ daily + weekly reading streak and reader type.
 Copy the `bookcard.koplugin` folder to `koreader/plugins/`, restart KOReader.
 
 ## Use
-- Settings > Screen > Sleep screen > Wallpaper > **Book Card**
-  (or Tools > Book Card > Use as sleep screen).
+- Settings > Screen > Sleep screen > Wallpaper > **Book card**
+  (or Tools > Book card > Use as sleep screen).
 - Locking from inside a book: live data (and the cache is refreshed).
 - Locking from the file manager: data cached from the last book that was open.
   If there is no cache, it is rebuilt from the book's sidecar + statistics DB.
-- Tools > Book Card: Preview, Background (follow night mode / light / dark,
+- Tools > Book card: Preview, Background (follow night mode / light / dark,
   wallpaper picture, text background opacity), Cover (rounded corners,
   shadow, cover/statistics spacing), Colors, Fonts, Card elements
   (battery / streak / reader type toggles, statistics rows), Advanced
@@ -37,7 +37,7 @@ asleep" screen, such as Kindle or Kobo. On Android, locking the screen
 hands control to Android's own lock screen instead, so the native Book
 Card sleep screen is never shown there.
 
-For Android, use **Tools > Book Card > Advanced Settings > Image export
+For Android, use **Tools > Book card > Advanced Settings > Image export
 (for Android wallpaper)** instead:
 - **Save as image, kept up to date** - turns on a background PNG export of
   the card, refreshed automatically (Save image now / refresh interval,
@@ -55,7 +55,7 @@ This mirrors how the Ink Stain Wallpaper plugin handles the same
 Android limitation.
 
 ## Orientation
-Tools > Book Card > Advanced Settings > Orientation:
+Tools > Book card > Advanced Settings > Orientation:
 - **Default** - the card is drawn at whatever rotation
   the device is already in when it falls asleep (no change from the
   original behaviour).
@@ -63,13 +63,13 @@ Tools > Book Card > Advanced Settings > Orientation:
   right before the sleep screen is drawn, and rotated back to whatever it
   was as soon as the device wakes up.
 
-This only affects the actual sleep screen. Tools > Book Card > Preview opens
+This only affects the actual sleep screen. Tools > Book card > Preview opens
 the card in a popup while you are actively using KOReader, so it never
 rotates the screen - it always renders at the screen's current orientation,
 regardless of this setting.
 
 ## Wallpaper
-Tools > Book Card > Background > Wallpaper lets you pick a background
+Tools > Book card > Background > Wallpaper lets you pick a background
 picture, read from `settings/bookcard/wallpapers/` (drop your own image
 files there - png/jpg/jpeg/bmp/gif/webp - then reopen the menu to see them
 listed; pick "None" to go back to the plain background). With a wallpaper
@@ -104,7 +104,7 @@ top-level folder is `bookcard.koplugin`.
 - Needs KOReader's Statistics plugin enabled for time/pace/streak figures.
 - Cache: `settings/bookcard_cache.lua` and `cache/bookcard/cover.png`, cleared
   from Advanced Settings > Clear cached data.
-- If you disable the plugin while "Book Card" is selected, pick another wallpaper.
+- If you disable the plugin while "Book card" is selected, pick another wallpaper.
 - Forced orientation only takes effect on the real sleep screen; if KOReader
   is killed or crashes while asleep (skipping the normal wake-up event), the
   screen can stay in the forced rotation until you rotate it yourself.

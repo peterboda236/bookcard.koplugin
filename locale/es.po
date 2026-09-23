@@ -1,17 +1,17 @@
-# Book Card plugin translation (es)
+# Book card plugin translation (es)
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language: es\n"
 
-msgid "Book Card"
-msgstr "Book Card"
+msgid "Book card"
+msgstr "Book card"
 
-msgid "Book Card: preview"
-msgstr "Book Card: vista previa"
+msgid "Book card: preview"
+msgstr "Book card: vista previa"
 
-msgid "Book Card is a new sleep screen for KOReader, heavily inspired by the idea and visual design of CrossPoint's sleep screen implementation."
-msgstr "Book Card es una nueva pantalla de suspensión para KOReader, inspirada en gran medida en la idea y el diseño visual de la implementación de pantalla de suspensión de CrossPoint."
+msgid "Book card is a new sleep screen for KOReader, heavily inspired by the idea and visual design of CrossPoint's sleep screen implementation."
+msgstr "Book card es una nueva pantalla de suspensión para KOReader, inspirada en gran medida en la idea y el diseño visual de la implementación de pantalla de suspensión de CrossPoint."
 
 msgid "About"
 msgstr "Acerca de"
@@ -262,11 +262,11 @@ msgstr "Instalada: v"
 msgid "Reset"
 msgstr "Restablecer"
 
-msgid "This will clear the development branch setting and install the latest stable release of Book Card, then restart KOReader. Continue?"
-msgstr "Esto borrará el ajuste de la rama de desarrollo e instalará la última versión estable de Book Card; después reiniciará KOReader. ¿Continuar?"
+msgid "This will clear the development branch setting and install the latest stable release of Book card, then restart KOReader. Continue?"
+msgstr "Esto borrará el ajuste de la rama de desarrollo e instalará la última versión estable de Book card; después reiniciará KOReader. ¿Continuar?"
 
-msgid "Book Card update available: v"
-msgstr "Actualización de Book Card disponible: v"
+msgid "Book card update available: v"
+msgstr "Actualización de Book card disponible: v"
 
 msgid "No update source is configured yet."
 msgstr "Aún no se ha configurado ninguna fuente de actualizaciones."
@@ -283,8 +283,8 @@ msgstr "Buscando actualizaciones..."
 msgid "Could not check for updates."
 msgstr "No se pudieron buscar actualizaciones."
 
-msgid "Book Card is up to date."
-msgstr "Book Card está actualizado."
+msgid "Book card is up to date."
+msgstr "Book card está actualizado."
 
 msgid "Version: "
 msgstr "Versión: "
@@ -316,8 +316,8 @@ msgstr "Error al descargar."
 msgid "Installation failed: "
 msgstr "Error de instalación: "
 
-msgid "Book Card updated to v"
-msgstr "Book Card actualizado a v"
+msgid "Book card updated to v"
+msgstr "Book card actualizado a v"
 
 msgid "Restart KOReader now?"
 msgstr "¿Reiniciar KOReader ahora?"
@@ -517,8 +517,8 @@ msgstr "Exportación de imagen (para el fondo de Android)"
 msgid "Save as image, kept up to date"
 msgstr "Guardar como imagen y mantener actualizada"
 
-msgid "On Android, KOReader's own sleep screen (above) never shows, because locking the screen hands over to Android's own lock screen instead. Turn this on and Book Card keeps a picture of the card on disk, refreshed automatically; set that picture as your Android wallpaper the normal way (from the Photos/Gallery app, or a wallpaper-changer app pointed at the folder below)."
-msgstr "En Android, la pantalla de suspensión propia de KOReader (arriba) nunca se muestra, porque al bloquear la pantalla se pasa a la pantalla de bloqueo de Android. Activa esta opción y Book Card mantendrá una imagen de la tarjeta en el disco, actualizada automáticamente; establece esa imagen como fondo de Android de la forma habitual (desde la aplicación Fotos/Galería o una aplicación que cambie el fondo y apunte a la carpeta siguiente)."
+msgid "On Android, KOReader's own sleep screen (above) never shows, because locking the screen hands over to Android's own lock screen instead. Turn this on and Book card keeps a picture of the card on disk, refreshed automatically; set that picture as your Android wallpaper the normal way (from the Photos/Gallery app, or a wallpaper-changer app pointed at the folder below)."
+msgstr "En Android, la pantalla de suspensión propia de KOReader (arriba) nunca se muestra, porque al bloquear la pantalla se pasa a la pantalla de bloqueo de Android. Activa esta opción y Book card mantendrá una imagen de la tarjeta en el disco, actualizada automáticamente; establece esa imagen como fondo de Android de la forma habitual (desde la aplicación Fotos/Galería o una aplicación que cambie el fondo y apunte a la carpeta siguiente)."
 
 msgid "Refresh interval"
 msgstr "Intervalo de actualización"

@@ -1,5 +1,5 @@
 --[[
-Book Card - read-only access to KOReader's statistics.sqlite3.
+Book card - read-only access to KOReader's statistics.sqlite3.
 
 This plugin never writes to the statistics database; it only SELECTs.
 

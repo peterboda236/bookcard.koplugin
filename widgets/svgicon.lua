@@ -1,5 +1,5 @@
 --[[
-Book Card - a small SVG icon that follows the card's colour scheme.
+Book card - a small SVG icon that follows the card's colour scheme.
 
 KOReader renders black SVGs. On a light card that is what we want; when the
 card is painted "flipped" (white on black, see card_view's palette) the icon

@@ -1,5 +1,5 @@
 --[[
-Book Card - shared plugin bootstrap helper.
+Book card - shared plugin bootstrap helper.
 
 The plugin's own files live in <koreader>/plugins/bookcard.koplugin/, which is
 NOT on package.path, so require() cannot find sibling files. This module
@@ -19,7 +19,7 @@ function M.load(name, ...)
     local path = M.dir .. name
     local chunk, err = loadfile(path)
     if not chunk then
-        error(("Book Card: failed to load %s: %s"):format(name, tostring(err)))
+        error(("Book card: failed to load %s: %s"):format(name, tostring(err)))
     end
     return chunk(...)
 end

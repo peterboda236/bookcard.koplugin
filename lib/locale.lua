@@ -1,5 +1,5 @@
 --[[
-Book Card - localisation and number/date/duration formatting.
+Book card - localisation and number/date/duration formatting.
 
 Translations live in locale/<lang>.po and are looked up BEFORE KOReader's own
 gettext, so the plugin can add strings without touching KOReader's catalogs.

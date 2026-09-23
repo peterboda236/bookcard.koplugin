@@ -1,5 +1,5 @@
 --[[
-Book Card - in-app updater.
+Book card - in-app updater.
 
 Lets the user check for and install new releases of this plugin directly
 from GitHub, without having to plug the device into a computer. Also
@@ -326,7 +326,7 @@ function Updater.check(on_success)
 
         if #new_releases == 0 then
             UIManager:show(InfoMessage:new{
-                text = _("Book Card is up to date.") .. "\n\n" ..
+                text = _("Book card is up to date.") .. "\n\n" ..
                     _("Version: ") .. "v" .. installed_version,
                 timeout = 3,
             })
@@ -486,7 +486,7 @@ function Updater.install(zip_url, old_version, new_version, on_success, error_la
 
         -- Restart KOReader to load the new version
         UIManager:show(ConfirmBox:new{
-            text = _("Book Card updated to v") .. new_version .. ".\n\n" ..
+            text = _("Book card updated to v") .. new_version .. ".\n\n" ..
                 _("Restart KOReader now?"),
             ok_text = _("Restart"),
             ok_callback = function()

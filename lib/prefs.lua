@@ -1,5 +1,5 @@
 --[[
-Book Card - thin, nil-guarded wrappers around KOReader's G_reader_settings.
+Book card - thin, nil-guarded wrappers around KOReader's G_reader_settings.
 
   Prefs.read(key, default)       raw value, `default` if unset
   Prefs.readBool(key, default)   boolean (only a stored `true` counts as true)

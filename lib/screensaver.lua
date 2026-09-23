@@ -1,7 +1,7 @@
 --[[
-Book Card - integration with KOReader's sleep screen ("Wallpaper" setting).
+Book card - integration with KOReader's sleep screen ("Wallpaper" setting).
 
-"Book Card" becomes a real entry of Settings > Screen > Sleep screen >
+"Book card" becomes a real entry of Settings > Screen > Sleep screen >
 Wallpaper (screensaver_type == "bookcard"). Two small, self-restoring
 patches make core render it - core keeps doing everything else (rotation,
 "tap to exit" / delay / gesture-lock, extra flashes, the optional sleep
@@ -24,7 +24,7 @@ as-is" instead of showing nothing half-drawn.
   Screensaver.TYPE                     "bookcard"
   Screensaver.install()                apply both patches + the menu entry
   Screensaver.buildWidget(ui)          the card widget for the current state
-  Screensaver.isSelected()             is "Book Card" the chosen wallpaper?
+  Screensaver.isSelected()             is "Book card" the chosen wallpaper?
 
 Orientation ("Advanced Settings > Orientation"): by default the card is
 drawn at whatever rotation the device already happens to be in (the
@@ -177,7 +177,7 @@ function M.patchCore()
     end
 end
 
--- Adds "Book Card" to core's Sleep screen > Wallpaper radio group. Core
+-- Adds "Book card" to core's Sleep screen > Wallpaper radio group. Core
 -- builds that menu with dofile() (fresh each time), so the dofile() call for
 -- that one file is wrapped and our entry is inserted into its result.
 function M.patchMenu()
@@ -190,7 +190,7 @@ function M.patchMenu()
         if type(path) == "string" and path:match("ui/elements/screensaver_menu%.lua$")
                 and type(result) == "table" then
             local entry = {
-                text = _("Book Card"),
+                text = _("Book card"),
                 keep_menu_open = true,
                 radio = true,
                 checked_func = M.isSelected,

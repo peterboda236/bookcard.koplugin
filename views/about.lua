@@ -1,7 +1,7 @@
 --[[
-Book Card - About dialog.
+Book card - About dialog.
 
-Shown from Tools > Book Card > About (see main.lua's addToMainMenu, where
+Shown from Tools > Book card > About (see main.lua's addToMainMenu, where
 this entry is placed right after "Updates").
 
 A small, tap-anywhere-to-close box centered on screen with:
@@ -126,7 +126,7 @@ function M.show()
     local link_face    = loadFace("NotoSans-Bold.ttf", BODY_SIZE)
 
     local title_w = TextWidget:new{
-        text = _("Book Card"),
+        text = _("Book card"),
         face = title_face,
     }
 

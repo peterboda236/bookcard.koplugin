@@ -1,5 +1,5 @@
 --[[
-Book Card (plugin entry point)
+Book card (plugin entry point)
 
 A sleep screen ("lock screen") that summarises the book you are reading:
 cover, title, author, reading time, time left, progress, daily average,
@@ -44,7 +44,7 @@ do
     local dir = src:match("^@(.*/)") or "./"
     local chunk, err = loadfile(dir .. "pluginutil.lua")
     if not chunk then
-        error(("Book Card: failed to load pluginutil.lua: %s"):format(tostring(err)))
+        error(("Book card: failed to load pluginutil.lua: %s"):format(tostring(err)))
     end
     PluginUtil = chunk()
 end
@@ -203,7 +203,7 @@ function BookCard:onDispatcherRegisterActions()
     Dispatcher:registerAction("bookcard_preview", {
         category = "none",
         event = "ShowBookCard",
-        title = _("Book Card: preview"),
+        title = _("Book card: preview"),
         general = true,
     })
 end
@@ -301,7 +301,7 @@ end
 function BookCard:resetToStableRelease()
     local ConfirmBox = require("ui/widget/confirmbox")
     UIManager:show(ConfirmBox:new{
-        text = _("This will clear the development branch setting and install the latest stable release of Book Card, then restart KOReader. Continue?"),
+        text = _("This will clear the development branch setting and install the latest stable release of Book card, then restart KOReader. Continue?"),
         ok_text = _("Reset"),
         ok_callback = function()
             saveDevBranch("")
@@ -317,7 +317,7 @@ function BookCard:backgroundUpdateCheck()
     if not readCheckUpdates() then return end
     Updater.checkBackground(function(ver)
         local Notification = require("ui/widget/notification")
-        Notification:notify(_("Book Card update available: v") .. ver,
+        Notification:notify(_("Book card update available: v") .. ver,
             Notification.SOURCE_ALWAYS_SHOW)
     end)
 end
@@ -419,7 +419,7 @@ function BookCard:_imageExportSubItems()
         {
             text = _("On Android, KOReader's own sleep screen (above) never shows, "
                 .. "because locking the screen hands over to Android's own lock "
-                .. "screen instead. Turn this on and Book Card keeps a picture of "
+                .. "screen instead. Turn this on and Book card keeps a picture of "
                 .. "the card on disk, refreshed automatically; set that picture as "
                 .. "your Android wallpaper the normal way (from the Photos/Gallery "
                 .. "app, or a wallpaper-changer app pointed at the folder below)."),
@@ -480,7 +480,7 @@ function BookCard:_imageExportSubItems()
 end
 
 -- ---------------------------------------------------------------------------
--- Menu: Tools > Book Card
+-- Menu: Tools > Book card
 -- ---------------------------------------------------------------------------
 local function themeItem(label, value)
     return {
@@ -557,7 +557,7 @@ function BookCard:addToMainMenu(menu_items)
     highlights.text = _("Highlights")
 
     menu_items.bookcard = {
-        text = _("Book Card"),
+        text = _("Book card"),
         sorting_hint = "tools",
         sub_item_table = {
             {

@@ -1,16 +1,16 @@
-# Book Card plugin translation (en)
+# Book card plugin translation (en)
 msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
-msgid "Book Card"
-msgstr "Book Card"
+msgid "Book card"
+msgstr "Book card"
 
-msgid "Book Card: preview"
-msgstr "Book Card: preview"
+msgid "Book card: preview"
+msgstr "Book card: preview"
 
-msgid "Book Card is a new sleep screen for KOReader, heavily inspired by the idea and visual design of CrossPoint's sleep screen implementation."
-msgstr "Book Card is a new sleep screen for KOReader, heavily inspired by the idea and visual design of CrossPoint's sleep screen implementation."
+msgid "Book card is a new sleep screen for KOReader, heavily inspired by the idea and visual design of CrossPoint's sleep screen implementation."
+msgstr "Book card is a new sleep screen for KOReader, heavily inspired by the idea and visual design of CrossPoint's sleep screen implementation."
 
 msgid "About"
 msgstr "About"
@@ -261,11 +261,11 @@ msgstr "Installed: v"
 msgid "Reset"
 msgstr "Reset"
 
-msgid "This will clear the development branch setting and install the latest stable release of Book Card, then restart KOReader. Continue?"
-msgstr "This will clear the development branch setting and install the latest stable release of Book Card, then restart KOReader. Continue?"
+msgid "This will clear the development branch setting and install the latest stable release of Book card, then restart KOReader. Continue?"
+msgstr "This will clear the development branch setting and install the latest stable release of Book card, then restart KOReader. Continue?"
 
-msgid "Book Card update available: v"
-msgstr "Book Card update available: v"
+msgid "Book card update available: v"
+msgstr "Book card update available: v"
 
 msgid "No update source is configured yet."
 msgstr "No update source is configured yet."
@@ -282,8 +282,8 @@ msgstr "Checking for updates..."
 msgid "Could not check for updates."
 msgstr "Could not check for updates."
 
-msgid "Book Card is up to date."
-msgstr "Book Card is up to date."
+msgid "Book card is up to date."
+msgstr "Book card is up to date."
 
 msgid "Version: "
 msgstr "Version: "
@@ -315,8 +315,8 @@ msgstr "Download failed."
 msgid "Installation failed: "
 msgstr "Installation failed: "
 
-msgid "Book Card updated to v"
-msgstr "Book Card updated to v"
+msgid "Book card updated to v"
+msgstr "Book card updated to v"
 
 msgid "Restart KOReader now?"
 msgstr "Restart KOReader now?"
@@ -515,8 +515,8 @@ msgstr "Image export (for Android wallpaper)"
 msgid "Save as image, kept up to date"
 msgstr "Save as image, kept up to date"
 
-msgid "On Android, KOReader's own sleep screen (above) never shows, because locking the screen hands over to Android's own lock screen instead. Turn this on and Book Card keeps a picture of the card on disk, refreshed automatically; set that picture as your Android wallpaper the normal way (from the Photos/Gallery app, or a wallpaper-changer app pointed at the folder below)."
-msgstr "On Android, KOReader's own sleep screen (above) never shows, because locking the screen hands over to Android's own lock screen instead. Turn this on and Book Card keeps a picture of the card on disk, refreshed automatically; set that picture as your Android wallpaper the normal way (from the Photos/Gallery app, or a wallpaper-changer app pointed at the folder below)."
+msgid "On Android, KOReader's own sleep screen (above) never shows, because locking the screen hands over to Android's own lock screen instead. Turn this on and Book card keeps a picture of the card on disk, refreshed automatically; set that picture as your Android wallpaper the normal way (from the Photos/Gallery app, or a wallpaper-changer app pointed at the folder below)."
+msgstr "On Android, KOReader's own sleep screen (above) never shows, because locking the screen hands over to Android's own lock screen instead. Turn this on and Book card keeps a picture of the card on disk, refreshed automatically; set that picture as your Android wallpaper the normal way (from the Photos/Gallery app, or a wallpaper-changer app pointed at the folder below)."
 
 msgid "Refresh interval"
 msgstr "Refresh interval"

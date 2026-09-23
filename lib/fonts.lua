@@ -1,5 +1,5 @@
 --[[
-Book Card - user-configurable fonts, for these text roles:
+Book card - user-configurable fonts, for these text roles:
 
   title       book title
   author      author line

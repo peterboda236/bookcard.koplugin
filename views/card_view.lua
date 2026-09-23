@@ -1,5 +1,5 @@
 --[[
-Book Card - the card itself.
+Book card - the card itself.
 
   CardView.build(card, opts)   full-screen widget showing `card`
   CardView.Popup               tap-to-close wrapper, used by "Preview"

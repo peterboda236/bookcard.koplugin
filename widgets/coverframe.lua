@@ -1,5 +1,5 @@
 --[[
-Book Card - a cover with a frame and (optionally) rounded corners.
+Book card - a cover with a frame and (optionally) rounded corners.
 
 KOReader's FrameContainer paints its child as a plain rectangle, so a cover
 inside a rounded FrameContainer pokes out past the rounded border. This

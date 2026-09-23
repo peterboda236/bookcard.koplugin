@@ -1,9 +1,9 @@
 --[[
-Book Card - a background picture behind the whole card, plus translucent
+Book card - a background picture behind the whole card, plus translucent
 "backdrop" panels so text stays legible over it.
 
 Modeled after Bookshelf's lib/bookshelf_wallpaper.lua, trimmed down to what
-Book Card actually needs: ONE full-screen picture (there is only one card,
+Book card actually needs: ONE full-screen picture (there is only one card,
 not a library of shelves), and a single opacity knob for the panels behind
 each piece of text, instead of a whole scrim/panel system.
 

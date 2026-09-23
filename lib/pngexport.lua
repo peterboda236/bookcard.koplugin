@@ -1,15 +1,15 @@
 --[[
-Book Card - export the card as a PNG file that refreshes itself.
+Book card - export the card as a PNG file that refreshes itself.
 
 Why this exists: KOReader's own sleep screen (what lib/screensaver.lua hooks)
 only ever appears on platforms where KOReader itself owns the "device is
 asleep" screen - Kindle, Kobo, and similar. On Android, locking the screen
 hands control to Android's own lock screen; KOReader is just backgrounded,
-so a live KOReader widget (the normal Book Card sleep screen) is never
+so a live KOReader widget (the normal Book card sleep screen) is never
 drawn there at all. Ink Stain Wallpaper works around exactly this by
 rendering its wallpaper to a plain PNG file that the user sets as the
 Android system/lock-screen wallpaper by hand (or with a wallpaper-rotation
-app that watches a folder); this module gives Book Card the same escape
+app that watches a folder); this module gives Book card the same escape
 hatch, reusing the exact card layout from lib/screensaver.lua.
 
   <KOReader data dir>/screensaver/bookcard_png/bookcard_wallpaper.png
