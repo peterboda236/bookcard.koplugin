@@ -6,6 +6,7 @@ local _ = require("gettext")
 local DESCRIPTIONS = {
     en = "Book card is a new sleep screen for KOReader, heavily inspired by the idea and visual design of CrossPoint's sleep screen implementation.",
     hu = "A Book card egy új alvóképernyő a KOReaderhez, amelyet nagyban ihletett a CrossPoint alvóképernyő-megvalósításának ötlete és vizuális megjelenése.",
+    uk = "Book card — новий екран сну для KOReader, натхненний ідеєю та візуальним дизайном реалізації екрана сну CrossPoint.",
 }
 
 local function pickDescription()
