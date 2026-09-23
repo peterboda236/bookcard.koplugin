@@ -1,0 +1,630 @@
+# Ukrainian translation of Book card plugin (KOReader)
+# Copyright (C) 2026
+# This file is distributed under the same license as the Book card package.
+# advokatb <igor.butsky@gmail.com>, 2026.
+msgid ""
+msgstr ""
+"Project-Id-Version: book-card\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-09-23 07:40+0200\n"
+"Last-Translator: advokatb <igor.butsky@gmail.com>\n"
+"Language-Team: advokatb <igor.butsky@gmail.com>\n"
+"Language: uk\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+msgid "Book card"
+msgstr "Book card"
+
+msgid "Book card: preview"
+msgstr "Book card: попередній перегляд"
+
+msgid ""
+"Book card is a new sleep screen for KOReader, heavily inspired by the idea "
+"and visual design of CrossPoint's sleep screen implementation."
+msgstr ""
+"Book card — новий екран сну для KOReader, натхненний ідеєю та візуальним "
+"дизайном реалізації екрана сну CrossPoint."
+
+msgid "About"
+msgstr "Про програму"
+
+msgid ""
+"A sleep screen with a reading summary card: cover, reading time, progress, "
+"pace and streak."
+msgstr ""
+"Екран сну з карткою підсумку читання: обкладинка, час читання, прогрес, темп"
+" і серія."
+
+msgid "Use as sleep screen"
+msgstr "Використовувати як екран сну"
+
+msgid "Preview"
+msgstr "Попередній перегляд"
+
+msgid "Background"
+msgstr "Фон"
+
+msgid "Follow night mode"
+msgstr "Слідувати нічному режиму"
+
+msgid "Always light"
+msgstr "Завжди світлий"
+
+msgid "Always dark"
+msgstr "Завжди темний"
+
+msgid "Rounded cover corners"
+msgstr "Заокруглені кути обкладинки"
+
+msgid "Cover"
+msgstr "Обкладинка"
+
+msgid "Cover shadow"
+msgstr "Тінь обкладинки"
+
+msgid "Cover / statistics spacing"
+msgstr "Відступ між обкладинкою і статистикою"
+
+msgid "Small (default)"
+msgstr "Малий (за замовчуванням)"
+
+msgid "Large"
+msgstr "Великий"
+
+msgid "Show battery"
+msgstr "Показувати батарею"
+
+msgid "Show reading streak"
+msgstr "Показувати серію читання"
+
+msgid "Show reader type"
+msgstr "Показувати тип читача"
+
+msgid "Card elements"
+msgstr "Елементи картки"
+
+msgid "Statistics"
+msgstr "Статистика"
+
+msgid "Text background grouping"
+msgstr "Групування фону тексту"
+
+msgid "Individually (default)"
+msgstr "Окремо (за замовчуванням)"
+
+msgid "Grouped (battery / stats / title+author+series / streak / reader)"
+msgstr ""
+"Групами (батарея / статистика / назва+автор+серія / серія читання / тип "
+"читача)"
+
+msgid "Clear cached data"
+msgstr "Очистити кешовані дані"
+
+msgid "Cached data cleared."
+msgstr "Кешовані дані очищено."
+
+msgid "No book data yet. Open a book and read a few pages first."
+msgstr ""
+"Даних про книгу ще немає. Спочатку відкрийте книгу і прочитайте кілька "
+"сторінок."
+
+msgid "<1 min"
+msgstr "<1 хв"
+
+msgid "%d min"
+msgstr "%d хв"
+
+msgid "%dh %d min"
+msgstr "%dг %d хв"
+
+msgid "Jan"
+msgstr "Січ"
+
+msgid "Feb"
+msgstr "Лют"
+
+msgid "Mar"
+msgstr "Бер"
+
+msgid "Apr"
+msgstr "Кві"
+
+msgid "May"
+msgstr "Тра"
+
+msgid "Jun"
+msgstr "Чер"
+
+msgid "Jul"
+msgstr "Лип"
+
+msgid "Aug"
+msgstr "Сер"
+
+msgid "Sep"
+msgstr "Вер"
+
+msgid "Oct"
+msgstr "Жов"
+
+msgid "Nov"
+msgstr "Лис"
+
+msgid "Dec"
+msgstr "Гру"
+
+msgid "{month} {day}"
+msgstr "{day} {month}"
+
+msgid "{month} {day}, {year}"
+msgstr "{day} {month} {year}"
+
+msgid "Reading Time"
+msgstr "Час читання"
+
+msgid "Time Left"
+msgstr "Залишилось часу"
+
+msgid "Progress"
+msgstr "Прогрес"
+
+msgid "Pages"
+msgstr "Сторінки"
+
+msgid "Daily Avg"
+msgstr "Серед. на день"
+
+msgid "Pages/Min"
+msgstr "Сторінок/хв"
+
+msgid "Started {date}"
+msgstr "Розпочато {date}"
+
+msgid "Started"
+msgstr "Розпочато"
+
+msgid "Finished Date"
+msgstr "Дата завершення"
+
+msgid "Est. Finish"
+msgstr "Орієнт. завершення"
+
+msgid "Highlights"
+msgstr "Виділення"
+
+msgid "%d day"
+msgstr "%d день"
+
+msgid "%d days"
+msgstr "%d днів"
+
+msgid "%d day streak"
+msgstr "%d день поспіль"
+
+msgid "%d days streak"
+msgstr "%d днів поспіль"
+
+msgid "%d week streak"
+msgstr "%d тиждень поспіль"
+
+msgid "%d weeks streak"
+msgstr "%d тижнів поспіль"
+
+msgid "Today"
+msgstr "Сьогодні"
+
+msgid "Yesterday"
+msgstr "Вчора"
+
+msgid "%d day ago"
+msgstr "%d день тому"
+
+msgid "%d days ago"
+msgstr "%d днів тому"
+
+msgid "and"
+msgstr "та"
+
+msgid "{series} / #{index}"
+msgstr "{series} / №{index}"
+
+msgid "Night Reader"
+msgstr "Нічний читач"
+
+msgid "Morning Reader"
+msgstr "Ранковий читач"
+
+msgid "Afternoon Reader"
+msgstr "Денний читач"
+
+msgid "Evening Reader"
+msgstr "Вечірній читач"
+
+msgid "Updates"
+msgstr "Оновлення"
+
+msgid "Notify on wake when update available"
+msgstr "Сповіщати при пробудженні, якщо є оновлення"
+
+msgid "Update available"
+msgstr "Доступне оновлення"
+
+msgid "Installed version"
+msgstr "Встановлена версія"
+
+msgid "Developer updates"
+msgstr "Оновлення для розробників"
+
+msgid "Development branch"
+msgstr "Гілка розробки"
+
+msgid "Branch name (leave empty for stable)"
+msgstr "Назва гілки (залиште порожнім для стабільної)"
+
+msgid "Cancel"
+msgstr "Скасувати"
+
+msgid "Save"
+msgstr "Зберегти"
+
+msgid "Check for updates"
+msgstr "Перевірити оновлення"
+
+msgid "Install branch"
+msgstr "Встановити гілку"
+
+msgid "Reset to latest stable release"
+msgstr "Скинути до останнього стабільного випуску"
+
+msgid "Installed: v"
+msgstr "Встановлено: v"
+
+msgid "Reset"
+msgstr "Скинути"
+
+msgid ""
+"This will clear the development branch setting and install the latest stable"
+" release of Book card, then restart KOReader. Continue?"
+msgstr ""
+"Це очистить налаштування гілки розробки та встановить останній стабільний "
+"випуск Book card, потім перезапустить KOReader. Продовжити?"
+
+msgid "Book card update available: v"
+msgstr "Доступне оновлення Book card: v"
+
+msgid "No update source is configured yet."
+msgstr "Джерело оновлень ще не налаштовано."
+
+msgid "Open the releases page in a browser?"
+msgstr "Відкрити сторінку релізів у браузері?"
+
+msgid "Open"
+msgstr "Відкрити"
+
+msgid "Checking for updates..."
+msgstr "Перевірка оновлень..."
+
+msgid "Could not check for updates."
+msgstr "Не вдалося перевірити оновлення."
+
+msgid "Book card is up to date."
+msgstr "Book card оновлено до останньої версії."
+
+msgid "Version: "
+msgstr "Версія: "
+
+msgid "Close"
+msgstr "Закрити"
+
+msgid "Update and restart"
+msgstr "Оновити й перезапустити"
+
+msgid "No download available for this release."
+msgstr "Для цього релізу немає доступного завантаження."
+
+msgid "Update available!"
+msgstr "Доступне оновлення!"
+
+msgid "Installed: "
+msgstr "Встановлено: "
+
+msgid "Latest: "
+msgstr "Останнє: "
+
+msgid "Downloading update..."
+msgstr "Завантаження оновлення..."
+
+msgid "Download failed."
+msgstr "Не вдалося завантажити."
+
+msgid "Installation failed: "
+msgstr "Не вдалося встановити: "
+
+msgid "Book card updated to v"
+msgstr "Book card оновлено до v"
+
+msgid "Restart KOReader now?"
+msgstr "Перезапустити KOReader зараз?"
+
+msgid "Restart"
+msgstr "Перезапустити"
+
+msgid "Could not install branch:"
+msgstr "Не вдалося встановити гілку:"
+
+msgid "Downloading latest release..."
+msgstr "Завантаження останнього релізу..."
+
+msgid "Could not fetch latest release."
+msgstr "Не вдалося отримати останній реліз."
+
+msgid "Latest release has no downloadable zip."
+msgstr "В останньому релізі немає завантажуваного zip."
+
+msgid "Fonts"
+msgstr "Шрифти"
+
+msgid "Colors"
+msgstr "Кольори"
+
+msgid "Title"
+msgstr "Назва"
+
+msgid "Author"
+msgstr "Автор"
+
+msgid "Series"
+msgstr "Серія"
+
+msgid "Statistics values"
+msgstr "Значення статистики"
+
+msgid "Statistics labels"
+msgstr "Мітки статистики"
+
+msgid "Streak / reader type"
+msgstr "Серія / тип читача"
+
+msgid "Battery percentage"
+msgstr "Відсоток заряду батареї"
+
+msgid "Title color"
+msgstr "Колір назви"
+
+msgid "Author color"
+msgstr "Колір автора"
+
+msgid "Series color"
+msgstr "Колір серії"
+
+msgid "Statistics value color"
+msgstr "Колір значення статистики"
+
+msgid "Statistics label color"
+msgstr "Колір мітки статистики"
+
+msgid "Streak / reader type color"
+msgstr "Колір серії / типу читача"
+
+msgid "Battery color"
+msgstr "Колір батареї"
+
+msgid "Font"
+msgstr "Шрифт"
+
+msgid "Custom font name (type manually)"
+msgstr "Користувацька назва шрифту (введіть вручну)"
+
+msgid "Font size"
+msgstr "Розмір шрифту"
+
+msgid "Reset to default"
+msgstr "Скинути до значень за замовчуванням"
+
+msgid "Choose a font"
+msgstr "Вибрати шрифт"
+
+msgid "Font name"
+msgstr "Назва шрифту"
+
+msgid ""
+"Enter a bundled font file name (e.g. NotoSans-Bold.ttf) or a KOReader font "
+"alias (e.g. tfont, cfont). If it can't be found, this role falls back to its"
+" default font."
+msgstr ""
+"Введіть назву вбудованого файлу шрифту (напр., NotoSans-Bold.ttf) або "
+"псевдонім шрифту KOReader (напр., tfont, cfont). Якщо його не знайдено, ця "
+"роль повертається до свого шрифту за замовчуванням."
+
+msgid "Please enter a non-empty font name."
+msgstr "Будь ласка, введіть непорожню назву шрифту."
+
+msgid "Set"
+msgstr "Встановити"
+
+msgid "Auto"
+msgstr "Авто"
+
+msgid "Reset all fonts to default"
+msgstr "Скинути всі шрифти до значень за замовчуванням"
+
+msgid "Reset all fonts to their default values?"
+msgstr "Скинути всі шрифти до значень за замовчуванням?"
+
+msgid "Default"
+msgstr "За замовчуванням"
+
+msgid "Default (follows theme)"
+msgstr "За замовчуванням (слідує темі)"
+
+msgid "Apply"
+msgstr "Застосувати"
+
+msgid "Brightness: %d%%"
+msgstr "Яскравість: %d%%"
+
+msgid "Pick with color wheel"
+msgstr "Вибрати за допомогою кольорового кола"
+
+msgid ""
+"Enter a hex color code (e.g. #1E90FF), the way KOReader expects it. Leave "
+"empty to follow the card's usual background/theme color."
+msgstr ""
+"Введіть HEX-код кольору (напр., #1E90FF) у форматі, який очікує KOReader. "
+"Залиште порожнім, щоб використовувати звичайний фон/колір теми картки."
+
+msgid "Not a valid hex color code, e.g. #1E90FF."
+msgstr "Недійсний HEX-код кольору, напр., #1E90FF."
+
+msgid "Reset all colors to default"
+msgstr "Скинути всі кольори до значень за замовчуванням"
+
+msgid "Reset all colors to follow the theme again?"
+msgstr "Скинути всі кольори, щоб знову слідувати темі?"
+
+msgid "Wallpaper"
+msgstr "Шпалери"
+
+msgid "None"
+msgstr "Немає"
+
+msgid "No images in {dir}"
+msgstr "Немає зображень у {dir}"
+
+msgid "Images are loaded from {dir}"
+msgstr "Зображення завантажуються з {dir}"
+
+msgid "Text background opacity"
+msgstr "Непрозорість фону тексту"
+
+msgid "Off"
+msgstr "Вимкнено"
+
+msgid "Low"
+msgstr "Низька"
+
+msgid "Moderate"
+msgstr "Середня"
+
+msgid "High"
+msgstr "Висока"
+
+msgid "Solid"
+msgstr "Суцільна"
+
+msgid "Daily Avg (pages)"
+msgstr "Серед. на день (сторінок)"
+
+msgid "%d page"
+msgstr "%d сторінка"
+
+msgid "%d pages"
+msgstr "%d сторінок"
+
+msgid "Advanced Settings"
+msgstr "Розширені налаштування"
+
+msgid "Orientation"
+msgstr "Орієнтація"
+
+msgid "Force portrait"
+msgstr "Примусово книжкова"
+
+msgid "Force landscape"
+msgstr "Примусово альбомна"
+
+msgid "Margins"
+msgstr "Поля"
+
+msgid "Side padding"
+msgstr "Бічний відступ"
+
+msgid "Top padding"
+msgstr "Верхній відступ"
+
+msgid "Bottom padding"
+msgstr "Нижній відступ"
+
+msgid "Image export (for Android wallpaper)"
+msgstr "Експорт зображення (для шпалер Android)"
+
+msgid "Save as image, kept up to date"
+msgstr "Зберігати як зображення, що завжди актуальне"
+
+msgid ""
+"On Android, KOReader's own sleep screen (above) never shows, because locking"
+" the screen hands over to Android's own lock screen instead. Turn this on "
+"and Book card keeps a picture of the card on disk, refreshed automatically; "
+"set that picture as your Android wallpaper the normal way (from the "
+"Photos/Gallery app, or a wallpaper-changer app pointed at the folder below)."
+msgstr ""
+"На Android власний екран сну KOReader (вище) ніколи не показується, оскільки"
+" блокування екрана передається екрану блокування Android. Увімкніть це, і "
+"Book card зберігатиме зображення картки на диску, автоматично оновлюючи "
+"його; встановіть це зображення як шпалери Android звичайним способом (через "
+"застосунок «Фото»/«Галерея» або застосунок для зміни шпалер, спрямований на "
+"папку нижче)."
+
+msgid "Refresh interval"
+msgstr "Інтервал оновлення"
+
+msgid "Every 5 minutes"
+msgstr "Кожні 5 хвилин"
+
+msgid "Every 15 minutes"
+msgstr "Кожні 15 хвилин"
+
+msgid "Every 30 minutes"
+msgstr "Кожні 30 хвилин"
+
+msgid "Every hour"
+msgstr "Щогодини"
+
+msgid "min"
+msgstr "хв"
+
+msgid "Also copy to folder"
+msgstr "Також копіювати до папки"
+
+msgid "Also copy to a shared folder…"
+msgstr "Також копіювати до спільної папки…"
+
+msgid "Choose a folder to also save the image to"
+msgstr "Виберіть папку, куди також зберігати зображення"
+
+msgid ""
+"Image will also be copied to:\n"
+"{path}\n"
+"\n"
+"On Android, point your system wallpaper picker (or a wallpaper-changer app) at this folder."
+msgstr ""
+"Зображення також буде скопійовано до:\n"
+"{path}\n"
+"\n"
+"На Android вкажіть цю папку в системному виборі шпалер (або в застосунку для зміни шпалер)."
+
+msgid "Stop copying to that extra folder"
+msgstr "Припинити копіювання до цієї додаткової папки"
+
+msgid "Save image now"
+msgstr "Зберегти зображення зараз"
+
+msgid "Image saved to: {path}"
+msgstr "Зображення збережено до: {path}"
+
+msgid "Image updated."
+msgstr "Зображення оновлено."
+
+msgid "Could not update the image."
+msgstr "Не вдалося оновити зображення."
+
+msgid "Could not create the image export folder."
+msgstr "Не вдалося створити папку експорту зображення."
+
+msgid "Could not write the image file."
+msgstr "Не вдалося записати файл зображення."
+
+msgid "Could not draw the card as an image (see the log for details)."
+msgstr "Не вдалося намалювати картку як зображення (деталі в журналі)."
