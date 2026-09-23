@@ -459,6 +459,9 @@ msgstr "Háttérkép"
 msgid "None"
 msgstr "Nincs"
 
+msgid "Random"
+msgstr "Véletlenszerű"
+
 msgid "No images in {dir}"
 msgstr "Nincs kép a következő mappában: {dir}"
 

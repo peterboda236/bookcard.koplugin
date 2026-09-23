@@ -459,6 +459,9 @@ msgstr "Wallpaper"
 msgid "None"
 msgstr "None"
 
+msgid "Random"
+msgstr "Random"
+
 msgid "No images in {dir}"
 msgstr "No images in {dir}"
 

@@ -451,6 +451,7 @@ function M.build(card, opts)
     -- translucent backdrop panel behind each piece of text so it stays
     -- legible over it. Neither exists unless a picture is actually chosen -
     -- with none set, the card looks exactly as it did before this feature.
+    Wallpaper.reroll()   -- "Random" mode: pick a fresh picture for this card
     local wallpaper_bg = Wallpaper.isActive()
         and Wallpaper.bg(W, H, Screen.night_mode and true or false)
         or nil

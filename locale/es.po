@@ -460,6 +460,9 @@ msgstr "Imagen de fondo"
 msgid "None"
 msgstr "Ninguno"
 
+msgid "Random"
+msgstr "Aleatorio"
+
 msgid "No images in {dir}"
 msgstr "No hay imágenes en {dir}"
 

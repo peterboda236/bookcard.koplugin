@@ -50,6 +50,7 @@ M.SETTING         = "bookcard_wallpaper"
 M.OPACITY_SETTING = "bookcard_text_bg_opacity"
 M.SUBDIR          = "bookcard/wallpapers"
 M.DEFAULT_OPACITY = 0.6
+M.RANDOM          = "*random*"   -- stored in SETTING when "Random" is chosen
 
 M.EXTS = { png = true, jpg = true, jpeg = true, bmp = true, gif = true, webp = true }
 
@@ -117,14 +118,52 @@ function M.selectedName()
     return nil
 end
 
-function M.isActive()
+function M.isRandom()
+    return M.selectedName() == M.RANDOM
+end
+
+-- reroll() -- forget the current random pick, so the next activeName() picks
+-- a fresh picture. Called each time a card is built. Harmless when "Random"
+-- is not the chosen mode.
+function M.reroll()
+    M._random_name = nil
+end
+
+-- activeName() -> the file name to actually draw: the chosen one, or (in
+-- Random mode) one picked at random from the folder. The pick is kept until
+-- reroll() so isActive() and bg() within one build agree on the picture.
+-- Returns nil when there is nothing to draw.
+function M.activeName()
     local name = M.selectedName()
+    if name ~= M.RANDOM then return name end
+    if M._random_name and M.pathFor(M._random_name) then
+        return M._random_name
+    end
+    local list = M.list()
+    if #list == 0 then return nil end
+    -- Avoid showing the very same picture twice in a row when there is a choice.
+    local pool = list
+    if #list > 1 and M._last_random_name then
+        pool = {}
+        for _i, it in ipairs(list) do
+            if it.name ~= M._last_random_name then pool[#pool + 1] = it end
+        end
+    end
+    local pick = pool[math.random(#pool)]
+    M._random_name = pick.name
+    M._last_random_name = pick.name
+    return pick.name
+end
+
+function M.isActive()
+    local name = M.activeName()
     return name ~= nil and M.pathFor(name) ~= nil
 end
 
 function M.currentLabel()
     local name = M.selectedName()
     if not name then return _("None") end
+    if name == M.RANDOM then return _("Random") end
     for _i, it in ipairs(M.list()) do
         if it.name == name then return it.label end
     end
@@ -192,7 +231,7 @@ end
 -- at refresh when it is on, so a picture that should look like itself has to
 -- be painted pre-inverted, exactly like the cover.
 function M.bg(w, h, night)
-    local name = M.selectedName()
+    local name = M.activeName()
     if not name or not w or not h or w <= 0 or h <= 0 then return nil end
     local path = M.pathFor(name)
     if not path then return nil end
@@ -435,7 +474,9 @@ end
 -- ---------------------------------------------------------------------------
 
 -- buildPickerMenu() -> sub_item_table for "Wallpaper": "None" first (so
--- turning it off never depends on finding a row in a long list), then every
+-- turning it off never depends on finding a row in a long list), then
+-- "Random" (a different picture from the folder each time the card is
+-- built), a separator line, then every
 -- picture found in the folder, then a disabled footnote naming the folder -
 -- shown whether or not it is empty, so a reader who already has one never
 -- has to delete it to discover where to add their own.
@@ -451,6 +492,19 @@ function M.buildPickerMenu()
             M.free()
             if touchmenu_instance then touchmenu_instance:updateItems() end
         end,
+    }
+    items[#items + 1] = {
+        text = _("Random"),
+        radio = true,
+        checked_func = function() return M.isRandom() end,
+        keep_menu_open = true,
+        callback = function(touchmenu_instance)
+            Prefs.save(M.SETTING, M.RANDOM)
+            M.reroll()
+            M.free()
+            if touchmenu_instance then touchmenu_instance:updateItems() end
+        end,
+        separator = true,
     }
     local list = M.list()
     for i, it in ipairs(list) do

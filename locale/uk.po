@@ -496,6 +496,9 @@ msgstr "Шпалери"
 msgid "None"
 msgstr "Немає"
 
+msgid "Random"
+msgstr "Випадково"
+
 msgid "No images in {dir}"
 msgstr "Немає зображень у {dir}"
 
