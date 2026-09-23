@@ -499,6 +499,18 @@ msgstr "Forzar vertical"
 msgid "Force landscape"
 msgstr "Forzar horizontal"
 
+msgid "Margins"
+msgstr "Márgenes"
+
+msgid "Side padding"
+msgstr "Margen lateral"
+
+msgid "Top padding"
+msgstr "Margen superior"
+
+msgid "Bottom padding"
+msgstr "Margen inferior"
+
 msgid "Image export (for Android wallpaper)"
 msgstr "Exportación de imagen (para el fondo de Android)"
 

@@ -51,6 +51,7 @@ local HorizontalSpan = require("ui/widget/horizontalspan")
 local ImageWidget = require("ui/widget/imagewidget")
 local InputContainer = require("ui/widget/container/inputcontainer")
 local OverlapGroup = require("ui/widget/overlapgroup")
+local SpinWidget = require("ui/widget/spinwidget")
 local TextBoxWidget = require("ui/widget/textboxwidget")
 local TextWidget = require("ui/widget/textwidget")
 local UIManager = require("ui/uimanager")
@@ -80,6 +81,21 @@ M.SETTING_ORIENTATION  = "bookcard_orientation"          -- "default" (current b
 M.SETTING_BACKDROP_GROUPING = "bookcard_backdrop_grouping" -- "individual" (default) | "grouped" - only
                                                           -- matters with a wallpaper + text background
                                                           -- opacity > 0; see placeText()/flushGroup() below
+
+-- Top/bottom/side padding (unscaled units, same convention as S() below -
+-- see pad_top/pad_bottom/pad_x in M.build). User-configurable so content
+-- can be pulled in from curved/notched screen edges where the corners
+-- aren't fully visible; the defaults reproduce the previous fixed layout
+-- (side padding, and top padding, were already 28/22 - only the bottom
+-- default changes here, from 26 to 22, to match).
+M.SETTING_MARGIN_TOP    = "bookcard_margin_top"
+M.SETTING_MARGIN_BOTTOM = "bookcard_margin_bottom"
+M.SETTING_MARGIN_SIDE   = "bookcard_margin_side"
+M.DEFAULT_MARGIN_TOP    = 22
+M.DEFAULT_MARGIN_BOTTOM = 22
+M.DEFAULT_MARGIN_SIDE   = 28
+M.MARGIN_MIN = 0
+M.MARGIN_MAX = 160
 
 -- Individual statistics-column rows, in the order they are drawn (all
 -- default on, except SETTING_HIGHLIGHTS above, which stays off by default).
@@ -342,9 +358,13 @@ function M.build(card, opts)
     -- their two call sites below).
     local backdrop_grouped = Prefs.read(M.SETTING_BACKDROP_GROUPING, "individual") == "grouped"
 
-    local pad_x = S(28)
-    local pad_top = S(22)
-    local pad_bottom = S(26)
+    -- User-configurable (see M.SETTING_MARGIN_TOP/BOTTOM/SIDE): raising any
+    -- of these pulls the content in from that edge, e.g. to shift it toward
+    -- the middle of the screen on devices whose curved glass hides the very
+    -- edge of the display.
+    local pad_x = S(Prefs.read(M.SETTING_MARGIN_SIDE, M.DEFAULT_MARGIN_SIDE))
+    local pad_top = S(Prefs.read(M.SETTING_MARGIN_TOP, M.DEFAULT_MARGIN_TOP))
+    local pad_bottom = S(Prefs.read(M.SETTING_MARGIN_BOTTOM, M.DEFAULT_MARGIN_BOTTOM))
     -- Cover <-> statistics gap: user-configurable ("small" is the default).
     local col_gap = Prefs.read(M.SETTING_GAP, "small") == "large" and S(42) or S(22)
 
@@ -726,5 +746,62 @@ function Popup:onCloseWidget()
 end
 
 M.Popup = Popup
+
+-- ---------------------------------------------------------------------------
+-- "Margins" submenu (top/bottom padding)
+-- ---------------------------------------------------------------------------
+local function marginSpinner(setting, default, title_text, touchmenu_instance)
+    UIManager:show(SpinWidget:new{
+        title_text    = title_text,
+        value         = Prefs.read(setting, default),
+        value_min     = M.MARGIN_MIN,
+        value_max     = M.MARGIN_MAX,
+        value_step    = 1,
+        value_hold_step = 10,
+        default_value = default,
+        ok_text       = _("Set"),
+        callback      = function(spin)
+            Prefs.save(setting, spin.value)
+            if touchmenu_instance then touchmenu_instance:updateItems() end
+        end,
+    })
+end
+
+-- Returns the sub_item_table for the "Margins" menu entry. All three
+-- values default to the previous fixed layout; raising any of them pulls
+-- the content in from that edge (handy on curved-glass screens whose
+-- edges aren't fully visible - raising top and bottom together shifts the
+-- card toward the middle of the screen).
+function M.buildMarginsMenu()
+    return {
+        {
+            text_func = function()
+                return _("Side padding") .. ": " .. Prefs.read(M.SETTING_MARGIN_SIDE, M.DEFAULT_MARGIN_SIDE)
+            end,
+            keep_menu_open = true,
+            callback = function(touchmenu_instance)
+                marginSpinner(M.SETTING_MARGIN_SIDE, M.DEFAULT_MARGIN_SIDE, _("Side padding"), touchmenu_instance)
+            end,
+        },
+        {
+            text_func = function()
+                return _("Top padding") .. ": " .. Prefs.read(M.SETTING_MARGIN_TOP, M.DEFAULT_MARGIN_TOP)
+            end,
+            keep_menu_open = true,
+            callback = function(touchmenu_instance)
+                marginSpinner(M.SETTING_MARGIN_TOP, M.DEFAULT_MARGIN_TOP, _("Top padding"), touchmenu_instance)
+            end,
+        },
+        {
+            text_func = function()
+                return _("Bottom padding") .. ": " .. Prefs.read(M.SETTING_MARGIN_BOTTOM, M.DEFAULT_MARGIN_BOTTOM)
+            end,
+            keep_menu_open = true,
+            callback = function(touchmenu_instance)
+                marginSpinner(M.SETTING_MARGIN_BOTTOM, M.DEFAULT_MARGIN_BOTTOM, _("Bottom padding"), touchmenu_instance)
+            end,
+        },
+    }
+end
 
 return M

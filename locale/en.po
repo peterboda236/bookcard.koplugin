@@ -497,6 +497,18 @@ msgstr "Force portrait"
 msgid "Force landscape"
 msgstr "Force landscape"
 
+msgid "Margins"
+msgstr "Margins"
+
+msgid "Side padding"
+msgstr "Side padding"
+
+msgid "Top padding"
+msgstr "Top padding"
+
+msgid "Bottom padding"
+msgstr "Bottom padding"
+
 msgid "Image export (for Android wallpaper)"
 msgstr "Image export (for Android wallpaper)"
 

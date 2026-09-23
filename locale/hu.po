@@ -497,6 +497,18 @@ msgstr "Álló kényszerítése"
 msgid "Force landscape"
 msgstr "Fekvő kényszerítése"
 
+msgid "Margins"
+msgstr "Margók"
+
+msgid "Side padding"
+msgstr "Oldalsó margó"
+
+msgid "Top padding"
+msgstr "Felső margó"
+
+msgid "Bottom padding"
+msgstr "Alsó margó"
+
 msgid "Image export (for Android wallpaper)"
 msgstr "Kép exportálása (Android háttérképhez)"
 

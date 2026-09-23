@@ -693,16 +693,19 @@ function BookCard:addToMainMenu(menu_items)
                         },
                     },
                     {
+                        text = _("Margins"),
+                        sub_item_table_func = function() return CardView.buildMarginsMenu() end,
+                    },
+                    {
+                        text = _("Image export (for Android wallpaper)"),
+                        sub_item_table_func = function() return self:_imageExportSubItems() end,
+                    },
+                    {
                         text = _("Clear cached data"),
                         callback = function()
                             Cache.clear()
                             UIManager:show(InfoMessage:new{ text = _("Cached data cleared."), timeout = 2 })
                         end,
-                        separator = true,
-                    },
-                    {
-                        text = _("Image export (for Android wallpaper)"),
-                        sub_item_table_func = function() return self:_imageExportSubItems() end,
                     },
                 },
             },
