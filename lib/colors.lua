@@ -11,6 +11,7 @@ theme color as a fallback for that reason.
   title       book title
   author      author line
   series      series / #index line
+  quote       the random highlighted quote (Card elements > Highlighted quote)
   stat_value  the big numbers in the statistics column (and the title, which
               shares its size with them, uses its own "title" key above)
   stat_label  the small labels under each statistic
@@ -55,7 +56,7 @@ local ColorWheelWidget = PluginUtil.load("widgets/colorwheelwidget.lua")
 -- Order the "Colors" menu is built in; matches the Fonts menu's KEY_ORDER
 -- (lib/fonts.lua) role for role.
 local KEY_ORDER = {
-    "title", "author", "series", "stat_value", "stat_label", "bottom", "battery",
+    "title", "author", "series", "quote", "stat_value", "stat_label", "bottom", "battery",
 }
 
 local SETTINGS_PREFIX = "bookcard_color_"
@@ -159,6 +160,7 @@ local function labelFor(key)
         title      = _("Title color"),
         author     = _("Author color"),
         series     = _("Series color"),
+        quote      = _("Quote color"),
         stat_value = _("Statistics value color"),
         stat_label = _("Statistics label color"),
         bottom     = _("Streak / reader type color"),

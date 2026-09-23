@@ -40,6 +40,9 @@ card fields:
   started_ts, last_read_ts, finished_date
   streak_days, streak_weeks, hour_bucket, book_id
   highlights_count
+  quote_text     one random highlighted quote for this book, re-picked every
+                 time the card is (re)built (collectLive/collectFromFile/
+                 prepare) - nil if the book has no highlights with text
   cover_file / has_cover
  derived by finalize():
   finished, time_left_secs, daily_avg_secs, daily_avg_pages, pages_per_min,
@@ -56,6 +59,15 @@ local Math = require("optmath")
 local M = {}
 
 local DAY = 86400
+
+-- Seeded once (module-level, guarded by a global flag so re-loading the
+-- module - e.g. across KOReader instantiations - doesn't reseed) so
+-- M.finalize's/pickRandomQuote's math.random() doesn't always return the
+-- same "random" quote in a given session.
+if not _G._bookcard_random_seeded then
+    math.randomseed(os.time())
+    _G._bookcard_random_seeded = true
+end
 
 local function num(v)
     local n = tonumber(v)
@@ -172,6 +184,45 @@ local function countHighlights(ds)
     return count
 end
 
+-- Highlighted quote texts: works with either KOReader annotation format
+-- (see countHighlights above), but - unlike the plain count - only counts
+-- entries that actually carry highlighted text, since a random EMPTY
+-- "quote" would be worse than showing none.
+local function collectHighlightTexts(ds)
+    local texts = {}
+    local function add(raw)
+        if type(raw) ~= "string" then return end
+        local trimmed = raw:match("^%s*(.-)%s*$")
+        if trimmed ~= "" then texts[#texts + 1] = trimmed end
+    end
+
+    local annotations = ds:readSetting("annotations")
+    if type(annotations) == "table" then
+        for _, item in ipairs(annotations) do
+            if type(item) == "table" and item.drawer then add(item.text) end
+        end
+        return texts
+    end
+    local highlight = ds:readSetting("highlight")
+    if type(highlight) == "table" then
+        for _, items in pairs(highlight) do
+            if type(items) == "table" then
+                for _, item in ipairs(items) do
+                    if type(item) == "table" then add(item.text) end
+                end
+            end
+        end
+    end
+    return texts
+end
+
+-- One random highlighted quote for `ds`, or nil if the book has none.
+local function pickRandomQuote(ds)
+    local ok, texts = pcall(collectHighlightTexts, ds)
+    if not ok or #texts == 0 then return nil end
+    return texts[math.random(#texts)]
+end
+
 -- The statistics plugin's per-page cap (settings > statistics > max_sec).
 local function maxSec()
     local s = G_reader_settings and G_reader_settings:readSetting("statistics")
@@ -225,6 +276,7 @@ function M.readSidecar(file)
     sc.md5 = ds:readSetting("partial_md5_checksum")
     sc.props = ds:readSetting("doc_props")
     sc.highlights = countHighlights(ds)
+    sc.quote = pickRandomQuote(ds)
     return sc
 end
 
@@ -528,10 +580,12 @@ function M.collectLive(ui)
     if ok_left then card.pages_left = num(pages_left) end
     if live_avg and live_avg > 0 then card.avg_time = live_avg end
 
-    -- Highlight count: from the live, in-memory settings (most current).
+    -- Highlight count + a random quote: from the live, in-memory settings
+    -- (most current).
     if ui.doc_settings then
         local ok_hl, hl = pcall(countHighlights, ui.doc_settings)
         if ok_hl then card.highlights_count = hl end
+        card.quote_text = pickRandomQuote(ui.doc_settings)
     end
 
     local book_id = stats and stats.id_curr_book
@@ -579,6 +633,7 @@ function M.collectFromFile(file, ui)
     card.status = sc.status
     card.finished_date = sc.modified
     card.highlights_count = sc.highlights
+    card.quote_text = sc.quote
 
     StatsDb.withDb(nil, function(conn)
         local book_id = findBookId(conn, file, sc, props.title, props.authors)
@@ -616,6 +671,10 @@ function M.prepare(card)
         if sc.status then card.status = sc.status end
         if sc.modified then card.finished_date = sc.modified end
         if sc.highlights then card.highlights_count = sc.highlights end
+        -- Re-picked every time (not "if sc.quote then"): a book that lost
+        -- its last highlight since the previous snapshot should lose its
+        -- quote too, and a fresh pick is exactly what "random" means here.
+        card.quote_text = sc.quote
     end
     -- The snapshot is taken in onCloseDocument, which runs BEFORE the
     -- statistics plugin writes the last page (its own onCloseDocument does

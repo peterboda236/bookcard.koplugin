@@ -4,7 +4,7 @@ Book card (plugin entry point)
 A sleep screen ("lock screen") that summarises the book you are reading:
 cover, title, author, reading time, time left, progress, daily average,
 pages per minute, start / finish date, reading streak, reader type and
-(optionally) highlight count.
+(optionally) highlight count / a random highlighted quote.
 
 It works both when you lock the device from inside a book (live data) and
 from the file manager (data cached the last time a book was open - the file
@@ -533,28 +533,12 @@ function BookCard:addToMainMenu(menu_items)
     rtype.text = _("Show reader type")
     local rounded = toggleSetting(CardView.SETTING_ROUNDED, true)
     rounded.text = _("Rounded cover corners")
+    local quote = toggleSetting(CardView.SETTING_QUOTE, false)
+    quote.text = _("Highlighted quote")
 
-    -- Statistics-column rows, in the order they are drawn on the card.
-    local stat_progress = toggleSetting(CardView.SETTING_STAT_PROGRESS, true)
-    stat_progress.text = _("Progress")
-    local stat_pages = toggleSetting(CardView.SETTING_STAT_PAGES, true)
-    stat_pages.text = _("Pages")
-    local stat_reading_time = toggleSetting(CardView.SETTING_STAT_READING_TIME, true)
-    stat_reading_time.text = _("Reading Time")
-    local stat_time_left = toggleSetting(CardView.SETTING_STAT_TIME_LEFT, true)
-    stat_time_left.text = _("Time Left")
-    local stat_daily_avg = toggleSetting(CardView.SETTING_STAT_DAILY_AVG, true)
-    stat_daily_avg.text = _("Daily Avg")
-    local stat_daily_avg_pages = toggleSetting(CardView.SETTING_STAT_DAILY_AVG_PAGES, false)
-    stat_daily_avg_pages.text = _("Daily Avg (pages)")
-    local stat_pages_per_min = toggleSetting(CardView.SETTING_STAT_PAGES_PER_MIN, true)
-    stat_pages_per_min.text = _("Pages/Min")
-    local stat_started = toggleSetting(CardView.SETTING_STAT_STARTED, true)
-    stat_started.text = _("Started")
-    local stat_finish = toggleSetting(CardView.SETTING_STAT_FINISH, true)
-    stat_finish.text = _("Est. Finish")
-    local highlights = toggleSetting(CardView.SETTING_HIGHLIGHTS, false)
-    highlights.text = _("Highlights")
+    -- Statistics-column rows: toggles and their draw order both now live in
+    -- CardView (see M.buildStatisticsMenu / M.getStatOrder there), so the
+    -- reader can rearrange them from the "Reorder" entry in that submenu.
 
     menu_items.bookcard = {
         text = _("Book card"),
@@ -663,20 +647,10 @@ function BookCard:addToMainMenu(menu_items)
                     battery,
                     streak,
                     rtype,
+                    quote,
                     {
                         text = _("Statistics"),
-                        sub_item_table = {
-                            stat_progress,
-                            stat_pages,
-                            stat_reading_time,
-                            stat_time_left,
-                            stat_daily_avg,
-                            stat_daily_avg_pages,
-                            stat_pages_per_min,
-                            stat_started,
-                            stat_finish,
-                            highlights,
-                        },
+                        sub_item_table_func = function() return CardView.buildStatisticsMenu() end,
                     },
                 },
                 separator = true,

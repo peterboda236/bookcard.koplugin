@@ -70,6 +70,12 @@ msgstr "Elementos de la tarjeta"
 msgid "Statistics"
 msgstr "Estadísticas"
 
+msgid "Reorder"
+msgstr "Reordenar"
+
+msgid "Reorder statistics"
+msgstr "Reordenar estadísticas"
+
 msgid "Text background grouping"
 msgstr "Agrupación del fondo de texto"
 
@@ -573,3 +579,9 @@ msgstr "No se pudo escribir el archivo de imagen."
 
 msgid "Could not draw the card as an image (see the log for details)."
 msgstr "No se pudo dibujar la tarjeta como imagen (consulta el registro para obtener detalles)."
+
+msgid "Highlighted quote"
+msgstr "Cita destacada"
+
+msgid "Quote color"
+msgstr "Color de la cita"

@@ -4,6 +4,7 @@ Book card - user-configurable fonts, for these text roles:
   title       book title
   author      author line
   series      series / #index line
+  quote       the random highlighted quote (Card elements > Highlighted quote)
   stat_value  the big numbers in the statistics column
   stat_label  the small labels under each statistic
   bottom      the streak text and the reader-type text (bottom row)
@@ -57,7 +58,7 @@ local _ = Locale._
 -- Order the "Fonts" menu is built in; matches the Colors menu's KEY_ORDER
 -- (lib/colors.lua) role for role.
 local KEY_ORDER = {
-    "title", "author", "series", "stat_value", "stat_label", "bottom", "battery",
+    "title", "author", "series", "quote", "stat_value", "stat_label", "bottom", "battery",
 }
 
 -- Defaults: NotoSans (regular/bold/italic and friends) for every role,
@@ -66,6 +67,7 @@ local DEFAULT_NAME = {
     title      = "NotoSans-Bold.ttf",
     author     = "NotoSans-Italic.ttf",
     series     = "NotoSans-Bold.ttf",
+    quote      = "NotoSans-Italic.ttf",
     stat_value = "NotoSans-Bold.ttf",
     stat_label = "NotoSans-Regular.ttf",
     bottom     = "NotoSans-Regular.ttf",
@@ -91,6 +93,7 @@ local SPINNER_START_SIZE = {
     title      = 22,
     author     = 13,
     series     = 13,
+    quote      = 13,
     stat_value = 22,
     stat_label = 13,
 }
@@ -327,6 +330,7 @@ function labelFor(key)
         title      = _("Title"),
         author     = _("Author"),
         series     = _("Series"),
+        quote      = _("Highlighted quote"),
         stat_value = _("Statistics values"),
         stat_label = _("Statistics labels"),
         bottom     = _("Streak / reader type"),

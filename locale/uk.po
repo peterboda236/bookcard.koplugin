@@ -88,6 +88,12 @@ msgstr "Елементи картки"
 msgid "Statistics"
 msgstr "Статистика"
 
+msgid "Reorder"
+msgstr "Змінити порядок"
+
+msgid "Reorder statistics"
+msgstr "Порядок статистики"
+
 msgid "Text background grouping"
 msgstr "Групування фону тексту"
 
@@ -628,3 +634,9 @@ msgstr "Не вдалося записати файл зображення."
 
 msgid "Could not draw the card as an image (see the log for details)."
 msgstr "Не вдалося намалювати картку як зображення (деталі в журналі)."
+
+msgid "Highlighted quote"
+msgstr "Виділена цитата"
+
+msgid "Quote color"
+msgstr "Колір цитати"

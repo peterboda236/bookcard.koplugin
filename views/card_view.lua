@@ -50,7 +50,9 @@ local HorizontalGroup = require("ui/widget/horizontalgroup")
 local HorizontalSpan = require("ui/widget/horizontalspan")
 local ImageWidget = require("ui/widget/imagewidget")
 local InputContainer = require("ui/widget/container/inputcontainer")
+local LineWidget = require("ui/widget/linewidget")
 local OverlapGroup = require("ui/widget/overlapgroup")
+local SortWidget = require("ui/widget/sortwidget")
 local SpinWidget = require("ui/widget/spinwidget")
 local TextBoxWidget = require("ui/widget/textboxwidget")
 local TextWidget = require("ui/widget/textwidget")
@@ -77,6 +79,10 @@ M.SETTING_THEME       = "bookcard_theme"                 -- "auto" (default) | "
 M.SETTING_GAP         = "bookcard_cover_stats_gap"       -- "small" (default) | "large"
 M.SETTING_COVER_SHADOW = "bookcard_cover_shadow"          -- default on
 M.SETTING_HIGHLIGHTS   = "bookcard_show_highlights"      -- default OFF
+M.SETTING_QUOTE        = "bookcard_show_quote"           -- default OFF - a
+                                                          -- random highlighted
+                                                          -- quote under
+                                                          -- title/author/series
 M.SETTING_ORIENTATION  = "bookcard_orientation"          -- "default" (current behaviour) | "portrait" | "landscape"
 M.SETTING_BACKDROP_GROUPING = "bookcard_backdrop_grouping" -- "individual" (default) | "grouped" - only
                                                           -- matters with a wallpaper + text background
@@ -108,6 +114,11 @@ M.SETTING_STAT_DAILY_AVG_PAGES = "bookcard_stat_daily_avg_pages"  -- default OFF
 M.SETTING_STAT_PAGES_PER_MIN = "bookcard_stat_pages_per_min"
 M.SETTING_STAT_STARTED       = "bookcard_stat_started"
 M.SETTING_STAT_FINISH        = "bookcard_stat_finish"
+
+-- The reader's chosen order for the statistics rows above (a list of the
+-- `id`s used in STAT_DEFS below). Unset until the reader opens "Reorder"
+-- for the first time; see M.getStatOrder().
+M.SETTING_STAT_ORDER = "bookcard_stat_order"
 
 local DASH = "\u{2013}"  -- en dash: "no value"
 
@@ -248,85 +259,181 @@ end
 
 -- ---------------------------------------------------------------------------
 -- The statistics column
+--
+-- Each entry is one possible row: `setting`/`default` is its on/off toggle
+-- (Card elements > Statistics), `label()` names it in that menu, and
+-- `build(card, ctx)` returns the {value, label} row to draw, or nil to skip
+-- it (e.g. "Pages" needs current_page/total_pages to be known). The table's
+-- own order is only the *default* order (and where a future row gets
+-- appended); the order actually drawn is M.getStatOrder(), which the reader
+-- can change from the "Reorder" entry at the top of that same menu.
 -- ---------------------------------------------------------------------------
-local function statRows(card)
-    local percent = card.percent
-    local rows = {}
+local STAT_DEFS = {
+    {
+        id = "progress", setting = M.SETTING_STAT_PROGRESS, default = true,
+        label = function() return _("Progress") end,
+        build = function(card, ctx)
+            return { ctx.percent and (tostring(ctx.percent) .. "%") or DASH, _("Progress") }
+        end,
+    },
+    {
+        id = "pages", setting = M.SETTING_STAT_PAGES, default = true,
+        label = function() return _("Pages") end,
+        build = function(card, ctx)
+            if not (card.current_page and card.total_pages) then return nil end
+            return { string.format("%d / %d", card.current_page, card.total_pages), _("Pages") }
+        end,
+    },
+    {
+        id = "reading_time", setting = M.SETTING_STAT_READING_TIME, default = true,
+        label = function() return _("Reading Time") end,
+        build = function(card, ctx)
+            return { ctx.dur(card.total_time), _("Reading Time") }
+        end,
+    },
+    {
+        id = "time_left", setting = M.SETTING_STAT_TIME_LEFT, default = true,
+        label = function() return _("Time Left") end,
+        build = function(card, ctx)
+            return { card.finished and DASH or ctx.dur(card.time_left_secs), _("Time Left") }
+        end,
+    },
+    {
+        id = "daily_avg", setting = M.SETTING_STAT_DAILY_AVG, default = true,
+        label = function() return _("Daily Avg") end,
+        build = function(card, ctx)
+            return { ctx.dur(card.daily_avg_secs), _("Daily Avg") }
+        end,
+    },
+    {
+        -- Same "Daily Avg" row, but in pages instead of time - off by
+        -- default (same reasoning as Highlights: a second row for the same
+        -- idea should be something the reader opts into, not something
+        -- added for them).
+        id = "daily_avg_pages", setting = M.SETTING_STAT_DAILY_AVG_PAGES, default = false,
+        label = function() return _("Daily Avg (pages)") end,
+        build = function(card, ctx)
+            local pages_txt = DASH
+            if card.daily_avg_pages then
+                local n = math.floor(card.daily_avg_pages + 0.5)
+                pages_txt = string.format(N_("%d page", "%d pages", n), n)
+            end
+            return { pages_txt, _("Daily Avg") }
+        end,
+    },
+    {
+        id = "pages_per_min", setting = M.SETTING_STAT_PAGES_PER_MIN, default = true,
+        label = function() return _("Pages/Min") end,
+        build = function(card, ctx)
+            local ppm = card.pages_per_min
+            local ppm_text = DASH
+            if ppm then ppm_text = Locale.formatNumber(ppm, ppm >= 1 and 1 or 2) end
+            return { ppm_text, _("Pages/Min") }
+        end,
+    },
+    {
+        -- "Started": 1 day ago reads as "Yesterday", 2+ as "N days ago".
+        id = "started", setting = M.SETTING_STAT_STARTED, default = true,
+        label = function() return _("Started") end,
+        build = function(card, ctx)
+            local span = card.span_days
+            local started = Locale.shortDate(card.started_ts)
+            local span_text = DASH
+            if span then
+                if span == 0 then
+                    span_text = _("Today")
+                elseif span == 1 then
+                    span_text = _("Yesterday")
+                else
+                    span_text = string.format(N_("%d day ago", "%d days ago", span), span)
+                end
+            end
+            return {
+                span_text,
+                started and Locale.tpl(_("Started {date}"), { date = started }) or _("Started"),
+            }
+        end,
+    },
+    {
+        id = "finish", setting = M.SETTING_STAT_FINISH, default = true,
+        label = function() return _("Est. Finish") end,
+        build = function(card, ctx)
+            if card.finished then
+                return { Locale.shortDate(card.finished_ts) or DASH, _("Finished Date") }
+            end
+            return { Locale.shortDate(card.est_finish_ts) or DASH, _("Est. Finish") }
+        end,
+    },
+    {
+        -- Off by default: how many highlights this book has.
+        id = "highlights", setting = M.SETTING_HIGHLIGHTS, default = false,
+        label = function() return _("Highlights") end,
+        build = function(card, ctx)
+            return { tostring(card.highlights_count or 0), _("Highlights") }
+        end,
+    },
+}
 
-    local function dur(secs)
-        return Locale.formatDuration(secs) or DASH
-    end
+local STAT_DEFS_BY_ID, DEFAULT_STAT_ORDER = {}, {}
+for i = 1, #STAT_DEFS do
+    STAT_DEFS_BY_ID[STAT_DEFS[i].id] = STAT_DEFS[i]
+    DEFAULT_STAT_ORDER[i] = STAT_DEFS[i].id
+end
 
-    -- Progress goes first (top of the column), the page count right under it.
-    if Prefs.readBool(M.SETTING_STAT_PROGRESS, true) then
-        rows[#rows + 1] = { percent and (tostring(percent) .. "%") or DASH, _("Progress") }
-    end
-    if Prefs.readBool(M.SETTING_STAT_PAGES, true) and card.current_page and card.total_pages then
-        rows[#rows + 1] = {
-            string.format("%d / %d", card.current_page, card.total_pages),
-            _("Pages"),
-        }
-    end
-    if Prefs.readBool(M.SETTING_STAT_READING_TIME, true) then
-        rows[#rows + 1] = { dur(card.total_time), _("Reading Time") }
-    end
-    if Prefs.readBool(M.SETTING_STAT_TIME_LEFT, true) then
-        rows[#rows + 1] = { card.finished and DASH or dur(card.time_left_secs), _("Time Left") }
-    end
-    if Prefs.readBool(M.SETTING_STAT_DAILY_AVG, true) then
-        rows[#rows + 1] = { dur(card.daily_avg_secs), _("Daily Avg") }
-    end
-
-    -- Same "Daily Avg" row, but in pages instead of time - off by default
-    -- (same reasoning as Highlights: a second row for the same idea should
-    -- be something the reader opts into, not something added for them).
-    if Prefs.readBool(M.SETTING_STAT_DAILY_AVG_PAGES, false) then
-        local pages_txt = DASH
-        if card.daily_avg_pages then
-            local n = math.floor(card.daily_avg_pages + 0.5)
-            pages_txt = string.format(N_("%d page", "%d pages", n), n)
-        end
-        rows[#rows + 1] = { pages_txt, _("Daily Avg") }
-    end
-
-    if Prefs.readBool(M.SETTING_STAT_PAGES_PER_MIN, true) then
-        local ppm = card.pages_per_min
-        local ppm_text = DASH
-        if ppm then ppm_text = Locale.formatNumber(ppm, ppm >= 1 and 1 or 2) end
-        rows[#rows + 1] = { ppm_text, _("Pages/Min") }
-    end
-
-    -- "Started": 1 day ago reads as "Yesterday", 2+ as "N days ago".
-    if Prefs.readBool(M.SETTING_STAT_STARTED, true) then
-        local span = card.span_days
-        local started = Locale.shortDate(card.started_ts)
-        local span_text = DASH
-        if span then
-            if span == 0 then
-                span_text = _("Today")
-            elseif span == 1 then
-                span_text = _("Yesterday")
-            else
-                span_text = string.format(N_("%d day ago", "%d days ago", span), span)
+--- The reader's chosen row order: a list of the `id`s above. Falls back to
+--- DEFAULT_STAT_ORDER, and any id missing from a saved order (a new row
+--- added by a later version of the plugin, or a stale/corrupt setting) is
+--- appended at the end in its default position, so it isn't silently lost
+--- and every id is always present exactly once.
+function M.getStatOrder()
+    local saved = Prefs.read(M.SETTING_STAT_ORDER, nil)
+    local order, seen = {}, {}
+    if type(saved) == "table" then
+        for i = 1, #saved do
+            local id = saved[i]
+            if STAT_DEFS_BY_ID[id] and not seen[id] then
+                order[#order + 1] = id
+                seen[id] = true
             end
         end
-        rows[#rows + 1] = {
-            span_text,
-            started and Locale.tpl(_("Started {date}"), { date = started }) or _("Started"),
-        }
     end
-
-    if Prefs.readBool(M.SETTING_STAT_FINISH, true) then
-        if card.finished then
-            rows[#rows + 1] = { Locale.shortDate(card.finished_ts) or DASH, _("Finished Date") }
-        else
-            rows[#rows + 1] = { Locale.shortDate(card.est_finish_ts) or DASH, _("Est. Finish") }
+    for i = 1, #DEFAULT_STAT_ORDER do
+        local id = DEFAULT_STAT_ORDER[i]
+        if not seen[id] then
+            order[#order + 1] = id
+            seen[id] = true
         end
     end
+    return order
+end
 
-    -- Off by default: how many highlights this book has.
-    if Prefs.readBool(M.SETTING_HIGHLIGHTS, false) then
-        rows[#rows + 1] = { tostring(card.highlights_count or 0), _("Highlights") }
+--- Persists a new row order (see M.getStatOrder). Unknown ids and repeats
+--- are dropped, matching the guards in the getter above.
+function M.setStatOrder(order)
+    local clean, seen = {}, {}
+    for i = 1, #order do
+        local id = order[i]
+        if STAT_DEFS_BY_ID[id] and not seen[id] then
+            clean[#clean + 1] = id
+            seen[id] = true
+        end
+    end
+    Prefs.save(M.SETTING_STAT_ORDER, clean)
+end
+
+local function statRows(card)
+    local ctx = {
+        percent = card.percent,
+        dur = function(secs) return Locale.formatDuration(secs) or DASH end,
+    }
+    local rows = {}
+    local order = M.getStatOrder()
+    for i = 1, #order do
+        local def = STAT_DEFS_BY_ID[order[i]]
+        if Prefs.readBool(def.setting, def.default) then
+            local row = def.build(card, ctx)
+            if row then rows[#rows + 1] = row end
+        end
     end
     return rows
 end
@@ -552,41 +659,206 @@ function M.build(card, opts)
     local series_color = Colors.getColor("series", pal.fg)
 
     local title_line_h = math.floor((1 + 0.3) * title_face.size + 0.5)
-    -- TextBoxWidget (needed here for wrapping across up to 2 lines, unlike
-    -- the single-line TextWidget the rest of the card's text uses) always
-    -- fills itself with bgcolor and blits the result as a SOLID block - it
-    -- has no transparent mode. Over a plain background that solid fill in
-    -- pal.bg is exactly right; over a wallpaper it would paint an opaque box
-    -- that hides both the picture and the translucent panel placeText()
-    -- puts behind it. So with a wallpaper up, build it in throwaway
-    -- black-on-white "mask space" instead and let Wallpaper.mask() recolour
-    -- just the glyphs, leaving the panel visible around them.
-    local title = TextBoxWidget:new{
-        text = card.title or "",
-        face = title_face,
-        width = left_w,
-        height = 2 * title_line_h,
-        height_adjust = true,
-        height_overflow_show_ellipsis = true,
-        alignment = "left",
-        fgcolor = wallpaper_bg and Blitbuffer.COLOR_BLACK or title_color,
-        bgcolor = wallpaper_bg and Blitbuffer.COLOR_WHITE or pal.bg,
+
+    -- Quote characters (several common opening/closing pairs) that might
+    -- already wrap a highlighted passage straight from the book - dialogue
+    -- most often. Stripped before we add our own curly quotes below, so a
+    -- highlight like `"Hello," she said.` doesn't come out double-quoted
+    -- as `""Hello," she said.""`.
+    local QUOTE_PAIRS = {
+        { open = "\"",       close = "\"" },
+        { open = "\u{201C}", close = "\u{201D}" }, -- “ ”
+        { open = "\u{2018}", close = "\u{2019}" }, -- ‘ ’
+        { open = "\u{201E}", close = "\u{201C}" }, -- „ “
+        { open = "\u{201E}", close = "\"" },       -- „ "
+        { open = "\u{00AB}", close = "\u{00BB}" }, -- « »
+        { open = "\u{2039}", close = "\u{203A}" }, -- ‹ ›
     }
-    title = Wallpaper.mask(wallpaper_bg ~= nil, title, title_color)
-    local text_blocks = { title }
-    if card.authors and card.authors ~= "" then
-        text_blocks[#text_blocks + 1] = text(card.authors, author_face, author_color, left_w)
-    end
-    if card.series and card.series ~= "" then
-        local line = card.series
-        if card.series_index then
-            line = Locale.tpl(_("{series} / #{index}"), { series = card.series, index = card.series_index })
+    local function stripOuterQuotes(s)
+        for _, pair in ipairs(QUOTE_PAIRS) do
+            local ol, cl = #pair.open, #pair.close
+            if #s > ol + cl and s:sub(1, ol) == pair.open and s:sub(-cl) == pair.close then
+                return s:sub(ol + 1, -cl - 1)
+            end
         end
-        text_blocks[#text_blocks + 1] = text(line, series_face, series_color, left_w)
+        return s
     end
+
+    -- Whether one shared "grouped" backdrop panel sits behind the whole
+    -- title/author/series/quote block (as opposed to: no backdrop at all,
+    -- a transparent one, or separate "individual" per-line panels).
+    local grouped_backdrop_showing = backdrop_active and backdrop_grouped
+
+    -- Full width the quote is allowed to use when it's free to run past
+    -- the cover: unlike title/author/series (kept aligned to the cover's
+    -- own width via max_w below), the quote sits on its own row
+    -- underneath the cover+stats band, so nothing stops it from reaching
+    -- all the way out to the side margin - EXCEPT when one shared grouped
+    -- backdrop panel is showing behind the whole text block, where the
+    -- quote has to stay the same width as title/author/series so the
+    -- panel's right edge doesn't jog outward just for the quote's line.
+    -- No backdrop-padding subtraction here: the BARE text should reach
+    -- exactly to W - pad_x, same as the statistics/reader-type rows do -
+    -- if a per-line backdrop panel is showing, it's then free to overshoot
+    -- the margin by TEXT_BACKDROP_PAD_H on its own, exactly like the
+    -- statistics/reader panels already do (see placeText above).
+    local quote_full_w = W - 2 * pad_x
+
+    -- Builds the title/author/series/quote stack at a given width. Called
+    -- twice below: once at left_w, purely to measure how tall the stack is
+    -- (those heights don't actually depend on width - title/quote are
+    -- height-capped with an ellipsis, author/series are always a single
+    -- line - so this is safe to do before the cover's real on-screen width
+    -- is known), and again once that width IS known, to rebuild the stack
+    -- narrow enough that it never reaches further right than the cover
+    -- does (see cover_reach_w below). The quote block uses quote_full_w
+    -- (full margin-to-margin width) instead of max_w, unless a grouped
+    -- backdrop is showing, in which case it matches max_w like the rest.
+    --
+    -- Returns the block list and the index of the quote block within it
+    -- (nil if there is no quote), so callers can single out the (larger)
+    -- gap above the quote from the gaps between title/author/series.
+    local function buildTextBlocks(max_w)
+        local quote_max_w = grouped_backdrop_showing and max_w or quote_full_w
+        -- TextBoxWidget (needed here for wrapping across up to 2 lines,
+        -- unlike the single-line TextWidget the rest of the card's text
+        -- uses) always fills itself with bgcolor and blits the result as a
+        -- SOLID block - it has no transparent mode. Over a plain background
+        -- that solid fill in pal.bg is exactly right; over a wallpaper it
+        -- would paint an opaque box that hides both the picture and the
+        -- translucent panel placeText() puts behind it. So with a wallpaper
+        -- up, build it in throwaway black-on-white "mask space" instead and
+        -- let Wallpaper.mask() recolour just the glyphs, leaving the panel
+        -- visible around them.
+        local title_w = TextBoxWidget:new{
+            text = card.title or "",
+            face = title_face,
+            width = max_w,
+            height = 2 * title_line_h,
+            height_adjust = true,
+            height_overflow_show_ellipsis = true,
+            alignment = "left",
+            fgcolor = wallpaper_bg and Blitbuffer.COLOR_BLACK or title_color,
+            bgcolor = wallpaper_bg and Blitbuffer.COLOR_WHITE or pal.bg,
+        }
+        title_w = Wallpaper.mask(wallpaper_bg ~= nil, title_w, title_color)
+        local blocks = { title_w }
+        if card.authors and card.authors ~= "" then
+            blocks[#blocks + 1] = text(card.authors, author_face, author_color, max_w)
+        end
+        if card.series and card.series ~= "" then
+            local line = card.series
+            if card.series_index then
+                line = Locale.tpl(_("{series} / #{index}"), { series = card.series, index = card.series_index })
+            end
+            blocks[#blocks + 1] = text(line, series_face, series_color, max_w)
+        end
+
+        -- Random highlighted quote (opt-in: "Card elements > Highlighted
+        -- quote", default off). Appended to `blocks` below, so from that
+        -- point on title, author, series and the quote are one and the same
+        -- block: the same shared backdrop panel in "grouped" mode, the same
+        -- left edge - never a separate box. Nothing is added (and the cover
+        -- stays its normal size) unless the setting is on AND this
+        -- particular book actually has a quote to show.
+        local quote_idx = nil
+        if Prefs.readBool(M.SETTING_QUOTE, false) then
+            local quote_text = card.quote_text
+            if type(quote_text) == "string" and quote_text:match("%S") then
+                local quote_face = Fonts.getFace("quote", label_size)
+                local quote_color = Colors.getColor("quote", author_color)
+                local quote_line_h = math.floor((1 + 0.3) * quote_face.size + 0.5)
+                local quote_bar_w = S(2)
+                local quote_gap_w = S(6)
+                local quote_clean = stripOuterQuotes(quote_text:gsub("%s+", " "))
+                local quote_widget = TextBoxWidget:new{
+                    text = "\u{201C}" .. quote_clean .. "\u{201D}",
+                    face = quote_face,
+                    width = quote_max_w - quote_bar_w - quote_gap_w,
+                    height = 2 * quote_line_h,
+                    height_adjust = true,
+                    height_overflow_show_ellipsis = true,
+                    alignment = "left",
+                    fgcolor = wallpaper_bg and Blitbuffer.COLOR_BLACK or quote_color,
+                    bgcolor = wallpaper_bg and Blitbuffer.COLOR_WHITE or pal.bg,
+                }
+                quote_widget = Wallpaper.mask(wallpaper_bg ~= nil, quote_widget, quote_color)
+                -- Bar spans exactly the quote's own (measured) height, so it
+                -- runs the full length of however many lines the quote wraps
+                -- to - no more, no less. Always quote_color (never forced
+                -- black): unlike the text above, this bar is painted
+                -- directly, not through Wallpaper.mask, so a hardcoded
+                -- black here would ignore the night/dark theme whenever a
+                -- wallpaper is active.
+                local quote_bar = LineWidget:new{
+                    background = quote_color,
+                    dimen = Geom:new{ w = quote_bar_w, h = quote_widget:getSize().h },
+                }
+                blocks[#blocks + 1] = HorizontalGroup:new{
+                    align = "top",
+                    quote_bar,
+                    HorizontalSpan:new{ width = quote_gap_w },
+                    quote_widget,
+                }
+                quote_idx = #blocks
+            end
+        end
+        return blocks, quote_idx
+    end
+
+    -- First pass, at the full left-column width, just to measure the
+    -- stack's height for the cover-sizing math below.
+    local text_blocks, quote_index = buildTextBlocks(left_w)
+
+    -- Gap between title/author/series, and the (separate, larger) gap
+    -- above the quote. The tiered spacing below - tight lines, quote held
+    -- further apart - only makes sense when one shared backdrop panel sits
+    -- behind the whole block ("grouped" mode): that's the only case where
+    -- the panel's own edges don't already mark a boundary between lines,
+    -- so the gaps are what has to carry the visual grouping. Without a
+    -- backdrop at all, or with a separate panel behind each line
+    -- ("individual" mode - each line already reads as its own boundary via
+    -- its own panel), every gap is just S(4), flat.
+    -- Three cases:
+    --  1) individual per-line backdrop panels, non-transparent (backdrop
+    --     active, NOT grouped): each line already has its own visible
+    --     panel, so a flat, slightly larger fixed gap (S(8)) is used
+    --     between every line, quote included.
+    --  2) grouped backdrop (one shared panel behind the whole block): the
+    --     panel's own edges don't mark a boundary between lines, so tiered
+    --     spacing (tight header lines, quote held further apart) carries
+    --     the visual grouping instead.
+    --  3) no backdrop at all / transparent: same tiered spacing as (2), so
+    --     a boxless/transparent card matches the grouped-backdrop card.
+    local individual_backdrop_showing = backdrop_active and not backdrop_grouped
+    local header_gap, text_block_gap
+    if individual_backdrop_showing then
+        header_gap = S(8)
+        text_block_gap = S(8)
+    else
+        local header_gap_base = math.floor(S(4) / 2)
+        -- Gap above the quote first (unchanged from before): 3 * header_gap_base,
+        -- or - with 3 * TEXT_BACKDROP_PAD_V eaten by the panel reaching toward
+        -- itself around the quote - whichever of the two is larger, so the
+        -- panel never overlaps itself.
+        text_block_gap = math.max(3 * header_gap_base, 3 * TEXT_BACKDROP_PAD_V + S(4))
+        -- Gap between title/author/series - set directly in (unscaled)
+        -- pixels here, rather than as a fraction of text_block_gap: that
+        -- value is only ~6-15px to begin with, so dividing it by anything
+        -- much above ~10 always floors to 0 - there's no finer step below
+        -- that, a screen can't draw half a pixel. Change GROUPED_HEADER_GAP
+        -- directly to whatever small value you want (0 = lines touch).
+        local GROUPED_HEADER_GAP = 1
+        header_gap = S(GROUPED_HEADER_GAP)
+    end
+    local function gapBefore(i)
+        if i <= 1 then return 0 end
+        return (quote_index and i == quote_index) and text_block_gap or header_gap
+    end
+
     local text_h = 0
     for i, block in ipairs(text_blocks) do
-        text_h = text_h + block:getSize().h + (i > 1 and S(3) or 0)
+        text_h = text_h + block:getSize().h + gapBefore(i)
     end
 
     -- The cover starts level with the first statistic (Progress), not with
@@ -597,15 +869,45 @@ function M.build(card, opts)
     -- Reserve space for the shadow offset so the cover doesn't overflow its column.
     local shadow_off = show_cover_shadow and S(4) or 0
     local cover_top = stats_top - (backdrop_active and TEXT_BACKDROP_PAD_V or 0)
-    local cover_max_h = math.max(S(80), content_bottom - cover_top - text_h - S(10) - shadow_off)
+    -- The reserved gap below the text stack is text_block_gap - the same
+    -- gap used above the quote - so the cover simply gets whatever's left
+    -- below the whole title/author/series/quote block. It shrinks on its
+    -- own by however much text_h grows, whether that's from the quote
+    -- being on or from a long-enough title/author wrapping onto extra
+    -- lines.
+    local cover_max_h = math.max(S(80), content_bottom - cover_top - text_h - text_block_gap - shadow_off)
     local cover_restore = wallpaper_bg and Wallpaper.restore or nil
     local cover, cover_w, cover_h = buildCover(card, left_w - shadow_off, cover_max_h, pal, shadow_off, cover_restore)
+
+    -- Now that the cover's real on-screen width is known, rebuild the
+    -- title/author/series/quote stack narrow enough that it never reaches
+    -- further right than the cover itself does - its drop shadow included,
+    -- when the shadow is shown, since that's how far right the cover
+    -- actually, visibly extends. (This doesn't change text_h/cover_max_h
+    -- above: see buildTextBlocks - block heights don't depend on width.)
+    --
+    -- With no backdrop panel behind the text (plain background, or a
+    -- transparent/"Off" wallpaper panel), the text itself IS the box, so it
+    -- can run all the way out to cover_reach_w. But when a backdrop panel
+    -- IS showing (individual per-line panels, or one shared "grouped"
+    -- panel), that panel adds TEXT_BACKDROP_PAD_H of its own padding on
+    -- both sides on top of the text - so if the text were allowed to reach
+    -- all the way to cover_reach_w, the PANEL's right edge would stick out
+    -- past the cover (+ shadow) by that padding. Shave that padding off the
+    -- available width here so the panel's edges - not just the bare text -
+    -- line up with where the cover visibly starts/ends.
+    local cover_reach_w = cover_w + (show_cover_shadow and shadow_off or 0)
+    local text_max_w = cover_reach_w - (backdrop_active and 2 * TEXT_BACKDROP_PAD_H or 0)
+    text_blocks, quote_index = buildTextBlocks(text_max_w)
 
     -- Now that the cover's real height is known, spread the statistics rows
     -- so the LAST one's bottom lines up with the bottom of the cover - or,
     -- with a backdrop panel showing, so the BOTTOM of that last row's panel
-    -- (TEXT_BACKDROP_PAD_V below its text) lines up with the cover's bottom.
-    local cover_bottom = cover_top + cover_h
+    -- (TEXT_BACKDROP_PAD_V below its text) lines up with the cover's
+    -- bottom. That bottom includes the drop shadow's own downward reach
+    -- (shadow_off further down than the cover art) whenever it's shown, so
+    -- the statistics line up with how far the cover visibly extends.
+    local cover_bottom = cover_top + cover_h + (show_cover_shadow and shadow_off or 0)
     local stats_bottom_target = cover_bottom - (backdrop_active and TEXT_BACKDROP_PAD_V or 0)
     local stats_h = math.max(0, stats_bottom_target - stats_top)
     local cells, cells_h = {}, 0
@@ -664,24 +966,15 @@ function M.build(card, opts)
 
     place(cover, cover_left, cover_top)
 
-    -- With a wallpaper backdrop behind each line, the plain S(3) line
-    -- spacing is smaller than the panels' own vertical padding, so they'd
-    -- butt right up against each other (or overlap) with no visible gap
-    -- between title/author/series. Widen the spacing in that case so a
-    -- small gap survives between the panels, not just between the lines.
-    local text_block_gap = S(3)
-    if wallpaper_bg and text_bg_opacity > 0 and not backdrop_grouped then
-        -- 2 * TEXT_BACKDROP_PAD_V of that is eaten by the panels reaching
-        -- toward each other; the rest (S(2)) is the gap that actually ends
-        -- up visible between them. Grouped mode has one panel behind the
-        -- whole block instead, so the plain S(3) spacing is fine there.
-        text_block_gap = 2 * TEXT_BACKDROP_PAD_V + S(2)
-    end
-
+    -- (text_block_gap/gapBefore are computed earlier, alongside the quote,
+    -- since the cover-sizing math above needs them too.) Title, author,
+    -- series and the quote (if any) are all placed here from the same
+    -- text_blocks list - one flowing block, sharing one backdrop panel in
+    -- "grouped" mode.
     local y = cover_top + cover_h + S(20)
     local title_group = backdrop_grouped and newGroup() or nil
     for i, block in ipairs(text_blocks) do
-        if i > 1 then y = y + text_block_gap end
+        if i > 1 then y = y + gapBefore(i) end
         if title_group then
             groupAdd(title_group, block, pad_x, y)
         else
@@ -802,6 +1095,58 @@ function M.buildMarginsMenu()
             end,
         },
     }
+end
+
+-- ---------------------------------------------------------------------------
+-- "Statistics" submenu (Card elements > Statistics): a "Reorder" entry,
+-- then one on/off toggle per row, listed in the reader's current order.
+-- ---------------------------------------------------------------------------
+local function openStatOrderWidget(touchmenu_instance)
+    local order = M.getStatOrder()
+    local item_table = {}
+    for i = 1, #order do
+        local def = STAT_DEFS_BY_ID[order[i]]
+        item_table[#item_table + 1] = { text = def.label(), id = def.id }
+    end
+    local sort_widget
+    sort_widget = SortWidget:new{
+        title = _("Reorder statistics"),
+        item_table = item_table,
+        callback = function()
+            local new_order = {}
+            for i = 1, #sort_widget.item_table do
+                new_order[#new_order + 1] = sort_widget.item_table[i].id
+            end
+            M.setStatOrder(new_order)
+            if touchmenu_instance then touchmenu_instance:updateItems() end
+        end,
+    }
+    UIManager:show(sort_widget)
+end
+
+--- Returns the sub_item_table for the "Statistics" menu entry: drag-to-sort
+--- for the row order, plus the existing per-row on/off toggles, now listed
+--- in that same order so the menu always matches what's drawn on the card.
+function M.buildStatisticsMenu()
+    local order = M.getStatOrder()
+    local items = {
+        {
+            text = _("Reorder"),
+            keep_menu_open = true,
+            callback = function(touchmenu_instance) openStatOrderWidget(touchmenu_instance) end,
+            separator = true,
+        },
+    }
+    for i = 1, #order do
+        local def = STAT_DEFS_BY_ID[order[i]]
+        items[#items + 1] = {
+            text = def.label(),
+            checked_func = function() return Prefs.readBool(def.setting, def.default) end,
+            callback = function() Prefs.save(def.setting, not Prefs.readBool(def.setting, def.default)) end,
+            keep_menu_open = true,
+        }
+    end
+    return items
 end
 
 return M
