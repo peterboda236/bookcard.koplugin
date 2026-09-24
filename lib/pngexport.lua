@@ -31,12 +31,16 @@ hatch, reusing the exact card layout from lib/screensaver.lua.
                                 refresh right after a book has been
                                 opened (default on, only matters while
                                 exporting is enabled)
+  PngExport.SETTING_POCKETBOOK "bookcard_image_export_pocketbook" - also
+                                write the card as PocketBook power-off /
+                                boot logo (default off, PocketBook only)
 
   PngExport.isEnabled()        current on/off state
   PngExport.outputDir()        folder the plain (always-on) copy lives in
   PngExport.outputFile()       full path to that copy
   PngExport.customFile()       full path to the extra copy, or nil
-  PngExport.write(ui)          render + write now -> true, or nil + message
+  PngExport.write(ui, set_startup_logo)
+                                render + write now -> true, or nil + message
   PngExport.buildPathChooser(on_done)
                                 a PathChooser widget for picking the extra
                                 folder; calls on_done(path) after a pick
@@ -61,6 +65,7 @@ M.SETTING_SAVE_PATH = "bookcard_image_export_path"
 M.SETTING_INTERVAL  = "bookcard_image_export_interval"
 M.SETTING_ON_OPEN   = "bookcard_image_export_on_open"
 M.SETTING_FORMAT    = "bookcard_image_export_format"
+M.SETTING_POCKETBOOK = "bookcard_image_export_pocketbook" -- default off
 
 M.DEFAULT_INTERVAL = 15 * 60 -- 15 minutes
 
@@ -361,10 +366,109 @@ local function removeOtherFormats(dir, keep_fmt)
     end
 end
 
--- write(ui) -> true, or nil + a human-readable message. Always writes the
+-- ---------------------------------------------------------------------------
+-- PocketBook: power-off / boot logo
+-- ---------------------------------------------------------------------------
+-- PocketBook's firmware (not KOReader) draws the picture shown when the
+-- device is switched off or booting, and it reads BMP files from these
+-- folders. Only used on PocketBook devices where the folder really exists;
+-- on Android / Kindle / Kobo / anything else this is skipped entirely.
+local PB_LOGO_ROOT = "/mnt/ext1/system/logo"
+local PB_LOGO_FILE = "bookcard.bmp"
+
+local function isPocketBook()
+    local ok, res = pcall(function()
+        return Device.isPocketBook ~= nil and Device:isPocketBook()
+    end)
+    return ok and res and lfs.attributes(PB_LOGO_ROOT, "mode") == "directory"
+end
+
+M.isPocketBook = isPocketBook
+
+-- True only on a PocketBook AND when the user switched the option on.
+function M.pocketBookEnabled()
+    return isPocketBook() and Prefs.readBool(M.SETTING_POCKETBOOK, false)
+end
+
+function M.setPocketBookEnabled(on)
+    Prefs.save(M.SETTING_POCKETBOOK, on and true or false)
+end
+
+-- Minimal 24-bit BMP writer (fallback when the blitbuffer cannot write BMP
+-- itself). BMP rows are stored bottom-up, in B,G,R order, padded to 4 bytes.
+local function writePocketBookBMPManually(bb, path)
+    local ffi = require("ffi")
+    local Blitbuffer = require("ffi/blitbuffer")
+    local w, h = bb:getWidth(), bb:getHeight()
+    local rgb = Blitbuffer.new(w, h, Blitbuffer.TYPE_BBRGB24)
+    rgb:blitFrom(bb, 0, 0, 0, 0, w, h)
+
+    local row_size = math.floor((w * 3 + 3) / 4) * 4
+    local img_size = row_size * h
+    local function le32(n) return string.char(n % 256, math.floor(n / 256) % 256,
+        math.floor(n / 65536) % 256, math.floor(n / 16777216) % 256) end
+    local function le16(n) return string.char(n % 256, math.floor(n / 256) % 256) end
+
+    local f = io.open(path, "wb")
+    if not f then rgb:free(); return false end
+    f:write("BM", le32(54 + img_size), le32(0), le32(54),
+        le32(40), le32(w), le32(h), le16(1), le16(24), le32(0), le32(img_size),
+        le32(2835), le32(2835), le32(0), le32(0))
+
+    local base = ffi.cast("uint8_t*", rgb.data)
+    local row = ffi.new("uint8_t[?]", row_size)
+    for y = h - 1, 0, -1 do
+        local src = base + y * rgb.stride
+        for x = 0, w - 1 do
+            row[x * 3]     = src[x * 3 + 2]
+            row[x * 3 + 1] = src[x * 3 + 1]
+            row[x * 3 + 2] = src[x * 3]
+        end
+        f:write(ffi.string(row, row_size))
+    end
+    f:close()
+    rgb:free()
+    return true
+end
+
+local function writePocketBookBMP(bb, path)
+    -- Newer builds may know "bmp" natively; otherwise write it ourselves.
+    if bb.writeToFile then
+        local ok, ret = pcall(bb.writeToFile, bb, path, "bmp", nil, true)
+        if ok and ret and lfs.attributes(path, "size") and lfs.attributes(path, "size") > 54 then
+            return true
+        end
+    end
+    local ok, ret = pcall(writePocketBookBMPManually, bb, path)
+    return ok and ret and true or false
+end
+
+-- Writes the card into PocketBook's offlogo/bootlogo folders. `set_startup_logo`
+-- additionally asks the firmware to adopt the boot logo (iv2sh); that call
+-- writes to flash, so it is only done on suspend / manual save, not on every
+-- timer refresh. Never raises, never affects the normal export result.
+local function exportPocketBook(bb, set_startup_logo)
+    if not M.pocketBookEnabled() then return end
+    for _i, sub in ipairs({ "offlogo", "bootlogo" }) do
+        local dir = PB_LOGO_ROOT .. "/" .. sub
+        if ensureDir(dir) then
+            if not writePocketBookBMP(bb, dir .. "/" .. PB_LOGO_FILE) then
+                logger.warn("BookCard: could not write PocketBook logo:", dir)
+            end
+        end
+    end
+    if set_startup_logo then
+        local bootlogo = PB_LOGO_ROOT .. "/bootlogo/" .. PB_LOGO_FILE
+        if lfs.attributes(bootlogo, "mode") == "file" then
+            pcall(os.execute, "iv2sh WriteStartupLogo '" .. bootlogo .. "' >/dev/null 2>&1")
+        end
+    end
+end
+
+-- write(ui, set_startup_logo) -> true, or nil + a human-readable message. Always writes the
 -- plain (always-on) copy first; the extra folder copy is best-effort and
 -- never turns a successful export into a failure.
-function M.write(ui)
+function M.write(ui, set_startup_logo)
     if not ensureDir(M.outputDir()) then
         return nil, _("Could not create the image export folder.")
     end
@@ -395,6 +499,8 @@ function M.write(ui)
             end
         end
     end
+
+    pcall(exportPocketBook, bb, set_startup_logo)
 
     pcall(function() bb:free() end)
     return true
