@@ -903,6 +903,17 @@ function M.build(card, opts)
 
         local cover_left_c = pad_x + math.floor((available_w - reach_w) / 2)
         local cover_top_c = stats_top
+        -- The text (and stat cells) sit inset from the cover's edge by
+        -- TEXT_BACKDROP_PAD_H - the same gap the side layout leaves between
+        -- the text and its panel's edge - while the panel itself lands
+        -- exactly on the cover's own edge, with no extra padding added on
+        -- top of that. So it's the content that shifts inward here, not
+        -- the panel that shifts outward (contrast the side layout below,
+        -- where cover_left is pulled outward instead; there the panel
+        -- already wraps the unmoved text with this same padding, so
+        -- shifting the cover out is what lines the two up).
+        local text_inset_c = backdrop_active and TEXT_BACKDROP_PAD_H or 0
+        local text_left_c = cover_left_c + text_inset_c
 
         if show_cover_shadow_c then
             local radius = Prefs.readBool(M.SETTING_ROUNDED, true) and S(4) or 0
@@ -933,7 +944,7 @@ function M.build(card, opts)
             local title_group_c = newGroup()
             for i, block in ipairs(text_blocks_c) do
                 if i > 1 then y = y + gapBeforeC(i, quote_index_c) end
-                groupAdd(title_group_c, block, cover_left_c, y)
+                groupAdd(title_group_c, block, text_left_c, y)
                 y = y + block:getSize().h
             end
             flushGroup(title_group_c, TEXT_BACKDROP_PAD_H, TEXT_BACKDROP_PAD_V, panel_left, panel_right)
@@ -941,7 +952,7 @@ function M.build(card, opts)
             for i, block in ipairs(text_blocks_c) do
                 if i > 1 then y = y + gapBeforeC(i, quote_index_c) end
                 local line_group = newGroup()
-                groupAdd(line_group, block, cover_left_c, y)
+                groupAdd(line_group, block, text_left_c, y)
                 flushGroup(line_group, TEXT_BACKDROP_PAD_H, TEXT_BACKDROP_PAD_V, panel_left, panel_right)
                 y = y + block:getSize().h
             end
@@ -950,7 +961,10 @@ function M.build(card, opts)
         if #rows > 0 then
             local grid_top = y + gap2
             local grid_col_gap = S(24)
-            local col_w = math.floor((reach_w - grid_col_gap) / 2)
+            -- Same inset width as the text above (text_max_w_c), so the
+            -- grid's two columns line up with the text's own left/right
+            -- edges instead of reaching all the way to the cover's edge.
+            local col_w = math.floor((text_max_w_c - grid_col_gap) / 2)
             local function statCellWidget(row)
                 return VerticalGroup:new{
                     align = "left",
@@ -964,7 +978,7 @@ function M.build(card, opts)
                 for idx, row in ipairs(rows) do
                     local r = math.floor((idx - 1) / 2)
                     local c = (idx - 1) % 2
-                    local cx = cover_left_c + c * (col_w + grid_col_gap)
+                    local cx = text_left_c + c * (col_w + grid_col_gap)
                     local cy = grid_top + r * (cell_h + grid_row_gap)
                     groupAdd(grid_group_c, statCellWidget(row), cx, cy)
                 end
@@ -979,7 +993,7 @@ function M.build(card, opts)
                     local row_group = newGroup()
                     for c = 0, 1 do
                         if idx > #rows then break end
-                        local cx = cover_left_c + c * (col_w + grid_col_gap)
+                        local cx = text_left_c + c * (col_w + grid_col_gap)
                         local cy = grid_top + r * (cell_h + grid_row_gap)
                         groupAdd(row_group, statCellWidget(rows[idx]), cx, cy)
                         idx = idx + 1
