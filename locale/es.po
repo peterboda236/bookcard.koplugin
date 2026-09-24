@@ -235,9 +235,6 @@ msgstr "Notificar al despertar si hay una actualización disponible"
 msgid "Update available"
 msgstr "Actualización disponible"
 
-msgid "Installed version"
-msgstr "Versión instalada"
-
 msgid "Developer updates"
 msgstr "Actualizaciones de desarrollo"
 
