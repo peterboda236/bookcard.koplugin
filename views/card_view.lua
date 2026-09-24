@@ -558,24 +558,18 @@ function M.build(card, opts)
 
     local function flushGroup(group, pad_h, pad_v, x_left, x_right)
         if #group.members == 0 then return end
-        -- With an explicit x_left/x_right (the centered layout's calls),
-        -- those ARE the panel's edges - no extra pad_h on top of them,
-        -- since the whole point there is lining up exactly with the
-        -- cover's own left/right edges, not the cover's edges plus a
-        -- further margin. Without an override (the side layout's calls),
-        -- pad_h is added around the members' own bounding box, same as
-        -- before.
-        local min_x, max_x, edge_pad_h
-        if x_left or x_right then
-            min_x, max_x, edge_pad_h = x_left or group.min_x, x_right or group.max_x, 0
-        else
-            min_x, max_x, edge_pad_h = group.min_x, group.max_x, pad_h
-        end
+        -- x_left/x_right (the centered layout's calls) override the panel's
+        -- min_x/max_x, but pad_h is still added around them same as always -
+        -- callers that want the finished panel to land on a specific outer
+        -- edge (e.g. the cover's own edge) pass that edge already shrunk
+        -- inward by pad_h, so this adds it back and lands exactly there.
+        local min_x = x_left or group.min_x
+        local max_x = x_right or group.max_x
         if wallpaper_bg and text_bg_opacity > 0 then
-            local panel = Wallpaper.panel(max_x - min_x + 2 * edge_pad_h,
+            local panel = Wallpaper.panel(max_x - min_x + 2 * pad_h,
                                            group.max_y - group.min_y + 2 * pad_v,
                                            pal.bg, text_bg_opacity, S(3))
-            if panel then place(panel, min_x - edge_pad_h, group.min_y - pad_v) end
+            if panel then place(panel, min_x - pad_h, group.min_y - pad_v) end
         end
         for _i, m in ipairs(group.members) do place(m.widget, m.x, m.y) end
     end
@@ -924,11 +918,17 @@ function M.build(card, opts)
         local y = cover_top_c + cover_h_c + (show_cover_shadow_c and shadow_off_c or 0) + gap1
         -- Backdrop panels in this layout always span the cover's own width
         -- (cover_left_c .. cover_left_c + reach_w), never just however wide
-        -- the text/cells happen to be - see flushGroup's x_left/x_right
-        -- above. That holds whether the reader has "grouped" backdrops on
-        -- (one panel for the whole title block, one for the whole grid) or
-        -- off (one panel per line / per stat row instead of per member).
-        local panel_left, panel_right = cover_left_c, cover_left_c + reach_w
+        -- the text/cells happen to be. flushGroup adds TEXT_BACKDROP_PAD_H
+        -- back around whatever min_x/max_x it's given (see flushGroup
+        -- above), so passing the cover's edges shrunk inward by that same
+        -- padding here means the finished, padded panel lands exactly on
+        -- the cover's real edges - not the cover's edges plus a further
+        -- margin, and not flush against the text either. That holds
+        -- whether the reader has "grouped" backdrops on (one panel for the
+        -- whole title block, one for the whole grid) or off (one panel per
+        -- line / per stat row instead of per member).
+        local panel_left = cover_left_c + TEXT_BACKDROP_PAD_H
+        local panel_right = cover_left_c + reach_w - TEXT_BACKDROP_PAD_H
         if backdrop_grouped then
             local title_group_c = newGroup()
             for i, block in ipairs(text_blocks_c) do
