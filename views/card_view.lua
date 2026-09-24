@@ -558,13 +558,24 @@ function M.build(card, opts)
 
     local function flushGroup(group, pad_h, pad_v, x_left, x_right)
         if #group.members == 0 then return end
-        local min_x = x_left or group.min_x
-        local max_x = x_right or group.max_x
+        -- With an explicit x_left/x_right (the centered layout's calls),
+        -- those ARE the panel's edges - no extra pad_h on top of them,
+        -- since the whole point there is lining up exactly with the
+        -- cover's own left/right edges, not the cover's edges plus a
+        -- further margin. Without an override (the side layout's calls),
+        -- pad_h is added around the members' own bounding box, same as
+        -- before.
+        local min_x, max_x, edge_pad_h
+        if x_left or x_right then
+            min_x, max_x, edge_pad_h = x_left or group.min_x, x_right or group.max_x, 0
+        else
+            min_x, max_x, edge_pad_h = group.min_x, group.max_x, pad_h
+        end
         if wallpaper_bg and text_bg_opacity > 0 then
-            local panel = Wallpaper.panel(max_x - min_x + 2 * pad_h,
+            local panel = Wallpaper.panel(max_x - min_x + 2 * edge_pad_h,
                                            group.max_y - group.min_y + 2 * pad_v,
                                            pal.bg, text_bg_opacity, S(3))
-            if panel then place(panel, min_x - pad_h, group.min_y - pad_v) end
+            if panel then place(panel, min_x - edge_pad_h, group.min_y - pad_v) end
         end
         for _i, m in ipairs(group.members) do place(m.widget, m.x, m.y) end
     end
