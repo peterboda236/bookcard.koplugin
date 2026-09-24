@@ -719,13 +719,17 @@ function M.build(card, opts)
     -- narrow enough that it never reaches further right than the cover
     -- does (see cover_reach_w below). The quote block uses quote_full_w
     -- (full margin-to-margin width) instead of max_w, unless a grouped
-    -- backdrop is showing, in which case it matches max_w like the rest.
+    -- backdrop is showing, or `clamp_quote` is passed true, in which case
+    -- it matches max_w like the rest - the centered layout below always
+    -- passes true, since there everything (cover, title, stats grid) shares
+    -- the same left/right edges, and the quote running out to the full
+    -- screen width would break that alignment.
     --
     -- Returns the block list and the index of the quote block within it
     -- (nil if there is no quote), so callers can single out the (larger)
     -- gap above the quote from the gaps between title/author/series.
-    local function buildTextBlocks(max_w)
-        local quote_max_w = grouped_backdrop_showing and max_w or quote_full_w
+    local function buildTextBlocks(max_w, clamp_quote)
+        local quote_max_w = (grouped_backdrop_showing or clamp_quote) and max_w or quote_full_w
         -- TextBoxWidget (needed here for wrapping across up to 2 lines,
         -- unlike the single-line TextWidget the rest of the card's text
         -- uses) always fills itself with bgcolor and blits the result as a
@@ -848,7 +852,7 @@ function M.build(card, opts)
         -- Text block height doesn't depend on width (see buildTextBlocks),
         -- so measure it once, at the full available width, before the
         -- cover's own final width is known.
-        local text_blocks_c, quote_index_c = buildTextBlocks(available_w)
+        local text_blocks_c, quote_index_c = buildTextBlocks(available_w, true)
         local text_h_c = 0
         for i, block in ipairs(text_blocks_c) do
             text_h_c = text_h_c + block:getSize().h + gapBeforeC(i, quote_index_c)
@@ -883,7 +887,7 @@ function M.build(card, opts)
         -- itself ends up narrower than the full available width.
         local reach_w = cover_w_c + (show_cover_shadow_c and shadow_off_c or 0)
         local text_max_w_c = reach_w - (backdrop_active and 2 * TEXT_BACKDROP_PAD_H or 0)
-        text_blocks_c, quote_index_c = buildTextBlocks(text_max_w_c)
+        text_blocks_c, quote_index_c = buildTextBlocks(text_max_w_c, true)
 
         local cover_left_c = pad_x + math.floor((available_w - reach_w) / 2)
         local cover_top_c = stats_top
@@ -900,16 +904,23 @@ function M.build(card, opts)
         place(cover_c, cover_left_c, cover_top_c)
 
         local y = cover_top_c + cover_h_c + (show_cover_shadow_c and shadow_off_c or 0) + gap1
+        local title_group_c = backdrop_grouped and newGroup() or nil
         for i, block in ipairs(text_blocks_c) do
             if i > 1 then y = y + gapBeforeC(i, quote_index_c) end
-            placeText(block, cover_left_c, y)
+            if title_group_c then
+                groupAdd(title_group_c, block, cover_left_c, y)
+            else
+                placeText(block, cover_left_c, y)
+            end
             y = y + block:getSize().h
         end
+        if title_group_c then flushGroup(title_group_c, TEXT_BACKDROP_PAD_H, TEXT_BACKDROP_PAD_V) end
 
         if #rows > 0 then
             local grid_top = y + gap2
             local grid_col_gap = S(24)
             local col_w = math.floor((reach_w - grid_col_gap) / 2)
+            local grid_group_c = backdrop_grouped and newGroup() or nil
             for idx, row in ipairs(rows) do
                 local r = math.floor((idx - 1) / 2)
                 local c = (idx - 1) % 2
@@ -920,8 +931,13 @@ function M.build(card, opts)
                     TextWidget:new{ text = row[1], face = value_face, fgcolor = stat_value_color, max_width = col_w },
                     TextWidget:new{ text = row[2], face = label_face, fgcolor = stat_label_color, max_width = col_w },
                 }
-                placeText(cell, cx, cy)
+                if grid_group_c then
+                    groupAdd(grid_group_c, cell, cx, cy)
+                else
+                    placeText(cell, cx, cy)
+                end
             end
+            if grid_group_c then flushGroup(grid_group_c, TEXT_BACKDROP_PAD_H, TEXT_BACKDROP_PAD_V) end
         end
     else
     -- First pass, at the full left-column width, just to measure the
