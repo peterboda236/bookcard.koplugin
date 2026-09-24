@@ -45,13 +45,17 @@ For Android, use **Tools > Book card > Advanced Settings > Image export
 - **Also save when opening a book** - on by default; also refreshes the
   image a few seconds after a book has been opened, not only on the timer
   (and when a book is closed or the device suspends).
+- **Image format** - PNG (default, lossless), JPG (smallest files) or BMP
+  (uncompressed, large). Switching format rewrites the picture right away and
+  removes the old-format file of the same name.
 - **Also copy to a shared folder…** - optionally also writes the same
   picture into a folder you pick (e.g. a shared `Pictures` folder), so it
   shows up in Android's own gallery/wallpaper picker, or so a
   wallpaper-changer app can watch that folder and keep applying the latest
   version automatically.
 - The always-on copy lives at
-  `koreader/screensaver/bookcard_png/bookcard_wallpaper.png` regardless of
+  `koreader/screensaver/bookcard_png/bookcard_wallpaper.png` (or `.jpg` / `.bmp`,
+  see **Image format**) regardless of
   whether an extra folder is set.
 
 This mirrors how the Ink Stain Wallpaper plugin handles the same

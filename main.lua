@@ -469,6 +469,17 @@ function BookCard:_imageExportSubItems()
         },
         {
             text_func = function()
+                return _("Image format") .. ": " .. PngExport.formatLabel()
+            end,
+            enabled_func = PngExport.isEnabled,
+            sub_item_table_func = function()
+                return PngExport.buildFormatMenu(function()
+                    outer:refreshExportedImage(true)
+                end)
+            end,
+        },
+        {
+            text_func = function()
                 return _("Refresh interval") .. ": " .. PngExport.intervalLabel()
             end,
             enabled_func = PngExport.isEnabled,

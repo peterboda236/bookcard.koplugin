@@ -597,3 +597,6 @@ msgstr "Color de la cita"
 
 msgid "Also save when opening a book"
 msgstr "Guardar también al abrir un libro"
+
+msgid "Image format"
+msgstr "Formato de imagen"
