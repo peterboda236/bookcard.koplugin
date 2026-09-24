@@ -12,8 +12,9 @@ Android system/lock-screen wallpaper by hand (or with a wallpaper-rotation
 app that watches a folder); this module gives Book card the same escape
 hatch, reusing the exact card layout from lib/screensaver.lua.
 
-  <KOReader data dir>/screensaver/bookcard_png/bookcard_wallpaper.png
+  <KOReader data dir>/screensaver/bookcard_png/bookcard_wallpaper.<ext>
                                 always written here when exporting is on
+                                (<ext> = png, jpg or bmp, see below)
 
   PngExport.SETTING_ENABLED    "bookcard_image_export_enabled" - default off
   PngExport.SETTING_SAVE_PATH  "bookcard_image_export_path" - an extra
@@ -24,6 +25,12 @@ hatch, reusing the exact card layout from lib/screensaver.lua.
                                 extra
   PngExport.SETTING_INTERVAL   "bookcard_image_export_interval" - seconds
                                 between automatic refreshes while enabled
+  PngExport.SETTING_FORMAT     "bookcard_image_export_format" - "png"
+                                (default), "jpg" or "bmp"
+  PngExport.SETTING_ON_OPEN    "bookcard_image_export_on_open" - also
+                                refresh right after a book has been
+                                opened (default on, only matters while
+                                exporting is enabled)
 
   PngExport.isEnabled()        current on/off state
   PngExport.outputDir()        folder the plain (always-on) copy lives in
@@ -52,10 +59,23 @@ local M = {}
 M.SETTING_ENABLED   = "bookcard_image_export_enabled"
 M.SETTING_SAVE_PATH = "bookcard_image_export_path"
 M.SETTING_INTERVAL  = "bookcard_image_export_interval"
+M.SETTING_ON_OPEN   = "bookcard_image_export_on_open"
+M.SETTING_FORMAT    = "bookcard_image_export_format"
 
 M.DEFAULT_INTERVAL = 15 * 60 -- 15 minutes
 
-M.FILENAME = "bookcard_wallpaper.png"
+M.BASENAME = "bookcard_wallpaper"
+
+M.JPG_QUALITY = 90
+
+-- Output formats offered in the menu. "png" is lossless and the default;
+-- "jpg" is much smaller; "bmp" is uncompressed (big files, but readable by
+-- practically anything).
+M.FORMATS = {
+    { value = "png", label = "PNG" },
+    { value = "jpg", label = "JPG" },
+    { value = "bmp", label = "BMP" },
+}
 
 -- Named refresh intervals for the menu, mirroring the shape of
 -- Wallpaper.LEVELS in lib/wallpaper.lua.
@@ -75,6 +95,52 @@ end
 
 function M.setEnabled(on)
     Prefs.save(M.SETTING_ENABLED, on and true or false)
+end
+
+function M.exportOnOpen()
+    return Prefs.readBool(M.SETTING_ON_OPEN, true)
+end
+
+function M.setExportOnOpen(on)
+    Prefs.save(M.SETTING_ON_OPEN, on and true or false)
+end
+
+function M.format()
+    local v = Prefs.read(M.SETTING_FORMAT, "png")
+    for _i, f in ipairs(M.FORMATS) do
+        if f.value == v then return v end
+    end
+    return "png"
+end
+
+function M.formatLabel()
+    local cur = M.format()
+    for _i, f in ipairs(M.FORMATS) do
+        if f.value == cur then return f.label end
+    end
+    return "PNG"
+end
+
+-- on_change() is called after a different format has been picked.
+function M.buildFormatMenu(on_change)
+    local items = {}
+    for _i, f in ipairs(M.FORMATS) do
+        local value = f.value
+        items[#items + 1] = {
+            text = f.label,
+            radio = true,
+            checked_func = function() return M.format() == value end,
+            keep_menu_open = true,
+            callback = function(touchmenu_instance)
+                if M.format() ~= value then
+                    Prefs.save(M.SETTING_FORMAT, value)
+                    if on_change then on_change() end
+                end
+                if touchmenu_instance then touchmenu_instance:updateItems() end
+            end,
+        }
+    end
+    return items
 end
 
 function M.interval()
@@ -116,8 +182,12 @@ function M.outputDir()
     return DataStorage:getDataDir() .. "/screensaver/bookcard_png"
 end
 
+function M.filename(fmt)
+    return M.BASENAME .. "." .. (fmt or M.format())
+end
+
 function M.outputFile()
-    return M.outputDir() .. "/" .. M.FILENAME
+    return M.outputDir() .. "/" .. M.filename()
 end
 
 -- customFile() -> the extra copy's full path, or nil if no extra folder is
@@ -127,7 +197,7 @@ end
 function M.customFile()
     local p = Prefs.read(M.SETTING_SAVE_PATH, "")
     if type(p) ~= "string" or p == "" then return nil end
-    return p:gsub("/$", "") .. "/" .. M.FILENAME
+    return p:gsub("/$", "") .. "/" .. M.filename()
 end
 
 local function ensureDir(dir)
@@ -192,7 +262,83 @@ local function renderToBlitbuffer(ui)
     return bb
 end
 
-local function writeBB(bb, path)
+-- Uncompressed 24-bit BMP, written by hand (KOReader's blitbuffer has no
+-- BMP encoder). Works on a copy converted to RGB32 so it does not matter
+-- what pixel format the screen uses (grayscale devices included).
+local function le16(n)
+    return string.char(n % 256, math.floor(n / 256) % 256)
+end
+
+local function le32(n)
+    return string.char(n % 256, math.floor(n / 256) % 256,
+        math.floor(n / 65536) % 256, math.floor(n / 16777216) % 256)
+end
+
+local function writeBMP(bb, path)
+    local ffi = require("ffi")
+    local Blitbuffer = require("ffi/blitbuffer")
+    local w, h = bb:getWidth(), bb:getHeight()
+
+    local src = Blitbuffer.new(w, h, Blitbuffer.TYPE_BBRGB32)
+    src:blitFrom(bb, 0, 0, 0, 0, w, h)
+
+    local data = ffi.cast("uint8_t*", src.data)
+    local src_stride = src.stride
+    local row_bytes = w * 3
+    local out_stride = row_bytes + (4 - row_bytes % 4) % 4
+    local img_size = out_stride * h
+    local header_size = 14 + 40
+
+    local f, open_err = io.open(path, "wb")
+    if not f then
+        pcall(function() src:free() end)
+        error(open_err or "cannot open file")
+    end
+
+    local ok, err = pcall(function()
+        -- BITMAPFILEHEADER + BITMAPINFOHEADER (bottom-up, 24 bpp, no compression)
+        f:write("BM", le32(header_size + img_size), le32(0), le32(header_size),
+            le32(40), le32(w), le32(h), le16(1), le16(24), le32(0), le32(img_size),
+            le32(2835), le32(2835), le32(0), le32(0))
+        local row = ffi.new("uint8_t[?]", out_stride) -- zero-filled, so the padding stays 0
+        for y = h - 1, 0, -1 do
+            local base = y * src_stride
+            local o = 0
+            for x = 0, w - 1 do
+                local i = base + x * 4
+                -- RGB32 in memory: r, g, b, alpha. BMP wants b, g, r.
+                row[o]     = data[i + 2]
+                row[o + 1] = data[i + 1]
+                row[o + 2] = data[i]
+                o = o + 3
+            end
+            f:write(ffi.string(row, out_stride))
+        end
+    end)
+    f:close()
+    pcall(function() src:free() end)
+    if not ok then error(err) end
+    return true
+end
+
+local function writeBB(bb, path, fmt)
+    if fmt == "bmp" then
+        local ok, err = pcall(writeBMP, bb, path)
+        if not ok then logger.warn("BookCard: BMP export failed:", err) end
+        return ok and true or false
+    elseif fmt == "jpg" then
+        if not bb.writeToFile then return false end
+        -- Remove the old file first so "file exists and is non-empty" below
+        -- really means this write worked.
+        os.remove(path)
+        local ok, ret = pcall(bb.writeToFile, bb, path, "jpg", M.JPG_QUALITY)
+        if not ok then
+            logger.warn("BookCard: JPG export failed:", ret)
+            return false
+        end
+        local size = lfs.attributes(path, "size")
+        return ret ~= false and size ~= nil and size > 0
+    end
     if bb.writeToFile then
         local ok, ret = pcall(bb.writeToFile, bb, path, "png", nil, true)
         return ok and ret and true or false
@@ -201,6 +347,18 @@ local function writeBB(bb, path)
         return ok and ret and true or false
     end
     return false
+end
+
+-- After a successful write, remove the same file name in the OTHER formats
+-- (bookcard_wallpaper.png/.jpg/.bmp - only this plugin's own names), so a
+-- wallpaper changer watching the folder never picks up an outdated picture
+-- after the format was switched.
+local function removeOtherFormats(dir, keep_fmt)
+    for _i, f in ipairs(M.FORMATS) do
+        if f.value ~= keep_fmt then
+            os.remove(dir .. "/" .. M.filename(f.value))
+        end
+    end
 end
 
 -- write(ui) -> true, or nil + a human-readable message. Always writes the
@@ -218,17 +376,21 @@ function M.write(ui)
         return nil, _("Could not draw the card as an image (see the log for details).")
     end
 
-    local ok = writeBB(bb, M.outputFile())
+    local fmt = M.format()
+    local ok = writeBB(bb, M.outputFile(), fmt)
     if not ok then
         pcall(function() bb:free() end)
         return nil, _("Could not write the image file.")
     end
+    removeOtherFormats(M.outputDir(), fmt)
 
     local custom = M.customFile()
     if custom then
         local cdir = custom:match("^(.+)/[^/]+$")
         if cdir and ensureDir(cdir) then
-            if not writeBB(bb, custom) then
+            if writeBB(bb, custom, fmt) then
+                removeOtherFormats(cdir, fmt)
+            else
                 logger.warn("BookCard: could not write the extra image export copy:", custom)
             end
         end

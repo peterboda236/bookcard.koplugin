@@ -593,3 +593,9 @@ msgstr "Highlighted quote"
 
 msgid "Quote color"
 msgstr "Quote color"
+
+msgid "Also save when opening a book"
+msgstr "Also save when opening a book"
+
+msgid "Image format"
+msgstr "Image format"
