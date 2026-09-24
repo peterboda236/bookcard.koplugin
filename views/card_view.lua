@@ -535,7 +535,12 @@ function M.build(card, opts)
     -- (same padding/opacity/radius as placeText()'s per-widget one) and
     -- only then places every member on top of it, in the order they were
     -- added. With no wallpaper, or opacity "Off", this is a no-op wrapper
-    -- around plain place() - same as placeText() in that case.
+    -- around plain place() - same as placeText() in that case. The panel's
+    -- left/right edges normally come from the members' own bounding box
+    -- (group.min_x/max_x); flushGroup's optional x_left/x_right let a
+    -- caller override just those two - used by the centered layout below
+    -- so every panel there (grouped OR one-per-row/line) always spans the
+    -- cover's own width, not just however wide the text happens to be.
     local function newGroup()
         return { members = {} }
     end
@@ -551,13 +556,15 @@ function M.build(card, opts)
         group.max_y = group.max_y and math.max(group.max_y, y2) or y2
     end
 
-    local function flushGroup(group, pad_h, pad_v)
+    local function flushGroup(group, pad_h, pad_v, x_left, x_right)
         if #group.members == 0 then return end
+        local min_x = x_left or group.min_x
+        local max_x = x_right or group.max_x
         if wallpaper_bg and text_bg_opacity > 0 then
-            local panel = Wallpaper.panel(group.max_x - group.min_x + 2 * pad_h,
+            local panel = Wallpaper.panel(max_x - min_x + 2 * pad_h,
                                            group.max_y - group.min_y + 2 * pad_v,
                                            pal.bg, text_bg_opacity, S(3))
-            if panel then place(panel, group.min_x - pad_h, group.min_y - pad_v) end
+            if panel then place(panel, min_x - pad_h, group.min_y - pad_v) end
         end
         for _i, m in ipairs(group.members) do place(m.widget, m.x, m.y) end
     end
@@ -904,40 +911,71 @@ function M.build(card, opts)
         place(cover_c, cover_left_c, cover_top_c)
 
         local y = cover_top_c + cover_h_c + (show_cover_shadow_c and shadow_off_c or 0) + gap1
-        local title_group_c = backdrop_grouped and newGroup() or nil
-        for i, block in ipairs(text_blocks_c) do
-            if i > 1 then y = y + gapBeforeC(i, quote_index_c) end
-            if title_group_c then
+        -- Backdrop panels in this layout always span the cover's own width
+        -- (cover_left_c .. cover_left_c + reach_w), never just however wide
+        -- the text/cells happen to be - see flushGroup's x_left/x_right
+        -- above. That holds whether the reader has "grouped" backdrops on
+        -- (one panel for the whole title block, one for the whole grid) or
+        -- off (one panel per line / per stat row instead of per member).
+        local panel_left, panel_right = cover_left_c, cover_left_c + reach_w
+        if backdrop_grouped then
+            local title_group_c = newGroup()
+            for i, block in ipairs(text_blocks_c) do
+                if i > 1 then y = y + gapBeforeC(i, quote_index_c) end
                 groupAdd(title_group_c, block, cover_left_c, y)
-            else
-                placeText(block, cover_left_c, y)
+                y = y + block:getSize().h
             end
-            y = y + block:getSize().h
+            flushGroup(title_group_c, TEXT_BACKDROP_PAD_H, TEXT_BACKDROP_PAD_V, panel_left, panel_right)
+        else
+            for i, block in ipairs(text_blocks_c) do
+                if i > 1 then y = y + gapBeforeC(i, quote_index_c) end
+                local line_group = newGroup()
+                groupAdd(line_group, block, cover_left_c, y)
+                flushGroup(line_group, TEXT_BACKDROP_PAD_H, TEXT_BACKDROP_PAD_V, panel_left, panel_right)
+                y = y + block:getSize().h
+            end
         end
-        if title_group_c then flushGroup(title_group_c, TEXT_BACKDROP_PAD_H, TEXT_BACKDROP_PAD_V) end
 
         if #rows > 0 then
             local grid_top = y + gap2
             local grid_col_gap = S(24)
             local col_w = math.floor((reach_w - grid_col_gap) / 2)
-            local grid_group_c = backdrop_grouped and newGroup() or nil
-            for idx, row in ipairs(rows) do
-                local r = math.floor((idx - 1) / 2)
-                local c = (idx - 1) % 2
-                local cx = cover_left_c + c * (col_w + grid_col_gap)
-                local cy = grid_top + r * (cell_h + grid_row_gap)
-                local cell = VerticalGroup:new{
+            local function statCellWidget(row)
+                return VerticalGroup:new{
                     align = "left",
                     TextWidget:new{ text = row[1], face = value_face, fgcolor = stat_value_color, max_width = col_w },
                     TextWidget:new{ text = row[2], face = label_face, fgcolor = stat_label_color, max_width = col_w },
                 }
-                if grid_group_c then
-                    groupAdd(grid_group_c, cell, cx, cy)
-                else
-                    placeText(cell, cx, cy)
+            end
+            if backdrop_grouped then
+                -- One panel behind the whole grid (all rows, both columns).
+                local grid_group_c = newGroup()
+                for idx, row in ipairs(rows) do
+                    local r = math.floor((idx - 1) / 2)
+                    local c = (idx - 1) % 2
+                    local cx = cover_left_c + c * (col_w + grid_col_gap)
+                    local cy = grid_top + r * (cell_h + grid_row_gap)
+                    groupAdd(grid_group_c, statCellWidget(row), cx, cy)
+                end
+                flushGroup(grid_group_c, TEXT_BACKDROP_PAD_H, TEXT_BACKDROP_PAD_V, panel_left, panel_right)
+            else
+                -- One panel per ROW (both columns together, cover-width
+                -- wide) - a per-CELL panel would only be half that width,
+                -- and two of them side by side would either overlap (if
+                -- stretched) or leave a gap in the middle (if not).
+                local idx = 1
+                for r = 0, grid_rows_n - 1 do
+                    local row_group = newGroup()
+                    for c = 0, 1 do
+                        if idx > #rows then break end
+                        local cx = cover_left_c + c * (col_w + grid_col_gap)
+                        local cy = grid_top + r * (cell_h + grid_row_gap)
+                        groupAdd(row_group, statCellWidget(rows[idx]), cx, cy)
+                        idx = idx + 1
+                    end
+                    flushGroup(row_group, TEXT_BACKDROP_PAD_H, TEXT_BACKDROP_PAD_V, panel_left, panel_right)
                 end
             end
-            if grid_group_c then flushGroup(grid_group_c, TEXT_BACKDROP_PAD_H, TEXT_BACKDROP_PAD_V) end
         end
     else
     -- First pass, at the full left-column width, just to measure the
