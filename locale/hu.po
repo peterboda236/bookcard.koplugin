@@ -78,11 +78,11 @@ msgstr "Statisztikák sorrendje"
 msgid "Text background grouping"
 msgstr "Szöveghátér csoportosítása"
 
-msgid "Individually (default)"
-msgstr "Egyenként (alapértelmezett)"
+msgid "Individually"
+msgstr "Egyenként"
 
-msgid "Grouped (battery / stats / title+author+series / streak / reader)"
-msgstr "Csoportosítva (akku / statisztikák / cím+szerző+sorozat / streak / olvasó típusa)"
+msgid "Grouped (default)"
+msgstr "Csoportosítva (alapértelmezett)"
 
 msgid "Clear cached data"
 msgstr "Gyorsítótár törlése"

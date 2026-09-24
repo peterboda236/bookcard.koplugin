@@ -89,7 +89,7 @@ M.SETTING_LAYOUT       = "bookcard_layout"               -- "side" (default: cov
                                                           -- centered on its own, title/author/series/
                                                           -- quote below it, statistics in a 2-column
                                                           -- grid underneath that)
-M.SETTING_BACKDROP_GROUPING = "bookcard_backdrop_grouping" -- "individual" (default) | "grouped" - only
+M.SETTING_BACKDROP_GROUPING = "bookcard_backdrop_grouping" -- "individual" | "grouped" (default) - only
                                                           -- matters with a wallpaper + text background
                                                           -- opacity > 0; see placeText()/flushGroup() below
 
@@ -461,15 +461,15 @@ function M.build(card, opts)
         and Wallpaper.bg(W, H, Screen.night_mode and true or false)
         or nil
     local text_bg_opacity = Wallpaper.opacity()
-    -- "individual" (default): every line/row gets its own backdrop panel,
-    -- exactly as before. "grouped": five logical groups - battery, the
+    -- "individual": every line/row gets its own backdrop panel, exactly as
+    -- before. "grouped" (default): five logical groups - battery, the
     -- statistics column, title+author+series, the streak, and the morning
     -- reader label - each get ONE panel sized to their own combined
     -- bounding box instead. Battery/streak/reader are already a single
     -- widget each, so this only actually changes the stats column and the
     -- title block (see the newGroup()/groupAdd()/flushGroup() helpers and
     -- their two call sites below).
-    local backdrop_grouped = Prefs.read(M.SETTING_BACKDROP_GROUPING, "individual") == "grouped"
+    local backdrop_grouped = Prefs.read(M.SETTING_BACKDROP_GROUPING, "grouped") == "grouped"
 
     -- User-configurable (see M.SETTING_MARGIN_TOP/BOTTOM/SIDE): raising any
     -- of these pulls the content in from that edge, e.g. to shift it toward

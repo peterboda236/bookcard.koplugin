@@ -529,7 +529,7 @@ local function backdropGroupingItem(label, value)
         text = label,
         radio = true,
         checked_func = function()
-            return Prefs.read(CardView.SETTING_BACKDROP_GROUPING, "individual") == value
+            return Prefs.read(CardView.SETTING_BACKDROP_GROUPING, "grouped") == value
         end,
         callback = function() Prefs.save(CardView.SETTING_BACKDROP_GROUPING, value) end,
         keep_menu_open = true,
@@ -613,8 +613,8 @@ function BookCard:addToMainMenu(menu_items)
                         {
                             text = _("Text background grouping"),
                             sub_item_table = {
-                                backdropGroupingItem(_("Individually (default)"), "individual"),
-                                backdropGroupingItem(_("Grouped (battery / stats / title+author+series / streak / reader)"), "grouped"),
+                                backdropGroupingItem(_("Individually"), "individual"),
+                                backdropGroupingItem(_("Grouped (default)"), "grouped"),
                             },
                         },
                     }

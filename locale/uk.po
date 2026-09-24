@@ -97,13 +97,11 @@ msgstr "Порядок статистики"
 msgid "Text background grouping"
 msgstr "Групування фону тексту"
 
-msgid "Individually (default)"
-msgstr "Окремо (за замовчуванням)"
+msgid "Individually"
+msgstr "Окремо"
 
-msgid "Grouped (battery / stats / title+author+series / streak / reader)"
-msgstr ""
-"Групами (батарея / статистика / назва+автор+серія / серія читання / тип "
-"читача)"
+msgid "Grouped (default)"
+msgstr "Групами (за замовчуванням)"
 
 msgid "Clear cached data"
 msgstr "Очистити кешовані дані"
