@@ -79,11 +79,11 @@ msgstr "Reordenar estadísticas"
 msgid "Text background grouping"
 msgstr "Agrupación del fondo de texto"
 
-msgid "Individually (default)"
-msgstr "Individualmente (predeterminado)"
+msgid "Individually"
+msgstr "Individualmente"
 
-msgid "Grouped (battery / stats / title+author+series / streak / reader)"
-msgstr "Agrupado (batería / estadísticas / título+autor+serie / racha / lector)"
+msgid "Grouped (default)"
+msgstr "Agrupado (predeterminado)"
 
 msgid "Clear cached data"
 msgstr "Borrar datos en caché"
@@ -495,6 +495,15 @@ msgstr "%d páginas"
 
 msgid "Advanced Settings"
 msgstr "Ajustes avanzados"
+
+msgid "Layout"
+msgstr "Disposición"
+
+msgid "Cover beside statistics (default)"
+msgstr "Portada junto a las estadísticas (predeterminado)"
+
+msgid "Cover centered, statistics grid below"
+msgstr "Portada centrada, cuadrícula de estadísticas debajo"
 
 msgid "Orientation"
 msgstr "Orientación"

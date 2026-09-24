@@ -84,7 +84,12 @@ M.SETTING_QUOTE        = "bookcard_show_quote"           -- default OFF - a
                                                           -- quote under
                                                           -- title/author/series
 M.SETTING_ORIENTATION  = "bookcard_orientation"          -- "default" (current behaviour) | "portrait" | "landscape"
-M.SETTING_BACKDROP_GROUPING = "bookcard_backdrop_grouping" -- "individual" (default) | "grouped" - only
+M.SETTING_LAYOUT       = "bookcard_layout"               -- "side" (default: cover beside the
+                                                          -- statistics column) | "centered" (cover
+                                                          -- centered on its own, title/author/series/
+                                                          -- quote below it, statistics in a 2-column
+                                                          -- grid underneath that)
+M.SETTING_BACKDROP_GROUPING = "bookcard_backdrop_grouping" -- "individual" | "grouped" (default) - only
                                                           -- matters with a wallpaper + text background
                                                           -- opacity > 0; see placeText()/flushGroup() below
 
@@ -456,15 +461,15 @@ function M.build(card, opts)
         and Wallpaper.bg(W, H, Screen.night_mode and true or false)
         or nil
     local text_bg_opacity = Wallpaper.opacity()
-    -- "individual" (default): every line/row gets its own backdrop panel,
-    -- exactly as before. "grouped": five logical groups - battery, the
+    -- "individual": every line/row gets its own backdrop panel, exactly as
+    -- before. "grouped" (default): five logical groups - battery, the
     -- statistics column, title+author+series, the streak, and the morning
     -- reader label - each get ONE panel sized to their own combined
     -- bounding box instead. Battery/streak/reader are already a single
     -- widget each, so this only actually changes the stats column and the
     -- title block (see the newGroup()/groupAdd()/flushGroup() helpers and
     -- their two call sites below).
-    local backdrop_grouped = Prefs.read(M.SETTING_BACKDROP_GROUPING, "individual") == "grouped"
+    local backdrop_grouped = Prefs.read(M.SETTING_BACKDROP_GROUPING, "grouped") == "grouped"
 
     -- User-configurable (see M.SETTING_MARGIN_TOP/BOTTOM/SIDE): raising any
     -- of these pulls the content in from that edge, e.g. to shift it toward
@@ -530,7 +535,12 @@ function M.build(card, opts)
     -- (same padding/opacity/radius as placeText()'s per-widget one) and
     -- only then places every member on top of it, in the order they were
     -- added. With no wallpaper, or opacity "Off", this is a no-op wrapper
-    -- around plain place() - same as placeText() in that case.
+    -- around plain place() - same as placeText() in that case. The panel's
+    -- left/right edges normally come from the members' own bounding box
+    -- (group.min_x/max_x); flushGroup's optional x_left/x_right let a
+    -- caller override just those two - used by the centered layout below
+    -- so every panel there (grouped OR one-per-row/line) always spans the
+    -- cover's own width, not just however wide the text happens to be.
     local function newGroup()
         return { members = {} }
     end
@@ -546,13 +556,20 @@ function M.build(card, opts)
         group.max_y = group.max_y and math.max(group.max_y, y2) or y2
     end
 
-    local function flushGroup(group, pad_h, pad_v)
+    local function flushGroup(group, pad_h, pad_v, x_left, x_right)
         if #group.members == 0 then return end
+        -- x_left/x_right (the centered layout's calls) override the panel's
+        -- min_x/max_x, but pad_h is still added around them same as always -
+        -- callers that want the finished panel to land on a specific outer
+        -- edge (e.g. the cover's own edge) pass that edge already shrunk
+        -- inward by pad_h, so this adds it back and lands exactly there.
+        local min_x = x_left or group.min_x
+        local max_x = x_right or group.max_x
         if wallpaper_bg and text_bg_opacity > 0 then
-            local panel = Wallpaper.panel(group.max_x - group.min_x + 2 * pad_h,
+            local panel = Wallpaper.panel(max_x - min_x + 2 * pad_h,
                                            group.max_y - group.min_y + 2 * pad_v,
                                            pal.bg, text_bg_opacity, S(3))
-            if panel then place(panel, group.min_x - pad_h, group.min_y - pad_v) end
+            if panel then place(panel, min_x - pad_h, group.min_y - pad_v) end
         end
         for _i, m in ipairs(group.members) do place(m.widget, m.x, m.y) end
     end
@@ -714,13 +731,17 @@ function M.build(card, opts)
     -- narrow enough that it never reaches further right than the cover
     -- does (see cover_reach_w below). The quote block uses quote_full_w
     -- (full margin-to-margin width) instead of max_w, unless a grouped
-    -- backdrop is showing, in which case it matches max_w like the rest.
+    -- backdrop is showing, or `clamp_quote` is passed true, in which case
+    -- it matches max_w like the rest - the centered layout below always
+    -- passes true, since there everything (cover, title, stats grid) shares
+    -- the same left/right edges, and the quote running out to the full
+    -- screen width would break that alignment.
     --
     -- Returns the block list and the index of the quote block within it
     -- (nil if there is no quote), so callers can single out the (larger)
     -- gap above the quote from the gaps between title/author/series.
-    local function buildTextBlocks(max_w)
-        local quote_max_w = grouped_backdrop_showing and max_w or quote_full_w
+    local function buildTextBlocks(max_w, clamp_quote)
+        local quote_max_w = (grouped_backdrop_showing or clamp_quote) and max_w or quote_full_w
         -- TextBoxWidget (needed here for wrapping across up to 2 lines,
         -- unlike the single-line TextWidget the rest of the card's text
         -- uses) always fills itself with bgcolor and blits the result as a
@@ -807,6 +828,181 @@ function M.build(card, opts)
         return blocks, quote_idx
     end
 
+    -- Which arrangement to draw: "side" (default, above) puts the cover
+    -- next to a single statistics column. "centered" puts the cover on its
+    -- own, centered, with title/author/series/quote directly below it and
+    -- the statistics spread beneath that in a 2-column grid instead - see
+    -- M.SETTING_LAYOUT ("Advanced Settings" > "Layout").
+    local layout_centered = Prefs.read(M.SETTING_LAYOUT, "side") == "centered"
+
+    if layout_centered then
+        -- -------------------------------------------------------------------
+        -- Centered layout
+        -- -------------------------------------------------------------------
+        local available_w = W - 2 * pad_x
+        local available_h = math.max(S(80), content_bottom - stats_top)
+
+        -- Same three-case gap logic as the side layout above, kept local to
+        -- this branch since it needs its own `individual_backdrop_showing`
+        -- (the name is scoped to this `if`, so it doesn't clash with the
+        -- side layout's copy in the `else` below).
+        local individual_backdrop_showing = backdrop_active and not backdrop_grouped
+        local header_gap_c, text_block_gap_c
+        if individual_backdrop_showing then
+            header_gap_c = S(8)
+            text_block_gap_c = S(8)
+        else
+            local header_gap_base = math.floor(S(4) / 2)
+            text_block_gap_c = math.max(3 * header_gap_base, 3 * TEXT_BACKDROP_PAD_V + S(4))
+            header_gap_c = S(1)
+        end
+        local function gapBeforeC(i, quote_idx)
+            if i <= 1 then return 0 end
+            return (quote_idx and i == quote_idx) and text_block_gap_c or header_gap_c
+        end
+
+        -- Text block height doesn't depend on width (see buildTextBlocks),
+        -- so measure it once, at the full available width, before the
+        -- cover's own final width is known.
+        local text_blocks_c, quote_index_c = buildTextBlocks(available_w, true)
+        local text_h_c = 0
+        for i, block in ipairs(text_blocks_c) do
+            text_h_c = text_h_c + block:getSize().h + gapBeforeC(i, quote_index_c)
+        end
+
+        -- Statistics grid: 2 columns, as many rows as needed. Each cell is
+        -- just "value line + label line" stacked, left-aligned - same
+        -- metrics as the single-column layout's rows, without StatCell's
+        -- right-alignment.
+        local cell_h = TextWidget:new{ text = "Ag", face = value_face }:getSize().h
+                     + TextWidget:new{ text = "Ag", face = label_face }:getSize().h
+        local grid_row_gap = math.max(S(8), math.floor(col_gap / 2))
+        local grid_rows_n = math.ceil(#rows / 2)
+        local grid_h = grid_rows_n > 0 and (grid_rows_n * cell_h + (grid_rows_n - 1) * grid_row_gap) or 0
+        local gap1 = col_gap                              -- cover -> text
+        local gap2 = grid_rows_n > 0 and col_gap or 0      -- text -> grid
+
+        -- The cover gets whatever height is left once the text and the
+        -- statistics grid have taken their share - same "leftover space"
+        -- philosophy as the side layout's cover_max_h above.
+        local show_cover_shadow_c = Prefs.readBool(M.SETTING_COVER_SHADOW, true)
+        local shadow_off_c = show_cover_shadow_c and S(4) or 0
+        local cover_max_h_c = math.max(S(120), available_h - text_h_c - grid_h - gap1 - gap2 - shadow_off_c)
+        local cover_restore_c = wallpaper_bg and Wallpaper.restore or nil
+        local cover_c, cover_w_c, cover_h_c = buildCover(
+            card, available_w - shadow_off_c, cover_max_h_c, pal, shadow_off_c, cover_restore_c)
+
+        -- Rebuild the text stack (and, further down, the grid) to the
+        -- cover's own real on-screen width - its drop shadow included, when
+        -- shown - so everything shares the same left/right edges and the
+        -- whole assembly reads as one centered block, even when the cover
+        -- itself ends up narrower than the full available width.
+        local reach_w = cover_w_c + (show_cover_shadow_c and shadow_off_c or 0)
+        local text_max_w_c = reach_w - (backdrop_active and 2 * TEXT_BACKDROP_PAD_H or 0)
+        text_blocks_c, quote_index_c = buildTextBlocks(text_max_w_c, true)
+
+        local cover_left_c = pad_x + math.floor((available_w - reach_w) / 2)
+        local cover_top_c = stats_top
+        -- The text (and stat cells) sit inset from the cover's edge by
+        -- TEXT_BACKDROP_PAD_H - the same gap the side layout leaves between
+        -- the text and its panel's edge - while the panel itself lands
+        -- exactly on the cover's own edge, with no extra padding added on
+        -- top of that. So it's the content that shifts inward here, not
+        -- the panel that shifts outward (contrast the side layout below,
+        -- where cover_left is pulled outward instead; there the panel
+        -- already wraps the unmoved text with this same padding, so
+        -- shifting the cover out is what lines the two up).
+        local text_inset_c = backdrop_active and TEXT_BACKDROP_PAD_H or 0
+        local text_left_c = cover_left_c + text_inset_c
+
+        if show_cover_shadow_c then
+            local radius = Prefs.readBool(M.SETTING_ROUNDED, true) and S(4) or 0
+            local shadow = CoverFrame.Shadow:new{
+                width = cover_w_c, height = cover_h_c,
+                offset = shadow_off_c, radius = radius,
+                bg = pal.bg, restore = cover_restore_c,
+            }
+            place(shadow, cover_left_c, cover_top_c)
+        end
+        place(cover_c, cover_left_c, cover_top_c)
+
+        local y = cover_top_c + cover_h_c + (show_cover_shadow_c and shadow_off_c or 0) + gap1
+        -- Backdrop panels in this layout always span the cover's own width
+        -- (cover_left_c .. cover_left_c + reach_w), never just however wide
+        -- the text/cells happen to be. flushGroup adds TEXT_BACKDROP_PAD_H
+        -- back around whatever min_x/max_x it's given (see flushGroup
+        -- above), so passing the cover's edges shrunk inward by that same
+        -- padding here means the finished, padded panel lands exactly on
+        -- the cover's real edges - not the cover's edges plus a further
+        -- margin, and not flush against the text either. That holds
+        -- whether the reader has "grouped" backdrops on (one panel for the
+        -- whole title block, one for the whole grid) or off (one panel per
+        -- line / per stat row instead of per member).
+        local panel_left = cover_left_c + TEXT_BACKDROP_PAD_H
+        local panel_right = cover_left_c + reach_w - TEXT_BACKDROP_PAD_H
+        if backdrop_grouped then
+            local title_group_c = newGroup()
+            for i, block in ipairs(text_blocks_c) do
+                if i > 1 then y = y + gapBeforeC(i, quote_index_c) end
+                groupAdd(title_group_c, block, text_left_c, y)
+                y = y + block:getSize().h
+            end
+            flushGroup(title_group_c, TEXT_BACKDROP_PAD_H, TEXT_BACKDROP_PAD_V, panel_left, panel_right)
+        else
+            for i, block in ipairs(text_blocks_c) do
+                if i > 1 then y = y + gapBeforeC(i, quote_index_c) end
+                local line_group = newGroup()
+                groupAdd(line_group, block, text_left_c, y)
+                flushGroup(line_group, TEXT_BACKDROP_PAD_H, TEXT_BACKDROP_PAD_V, panel_left, panel_right)
+                y = y + block:getSize().h
+            end
+        end
+
+        if #rows > 0 then
+            local grid_top = y + gap2
+            local grid_col_gap = S(24)
+            -- Same inset width as the text above (text_max_w_c), so the
+            -- grid's two columns line up with the text's own left/right
+            -- edges instead of reaching all the way to the cover's edge.
+            local col_w = math.floor((text_max_w_c - grid_col_gap) / 2)
+            local function statCellWidget(row)
+                return VerticalGroup:new{
+                    align = "left",
+                    TextWidget:new{ text = row[1], face = value_face, fgcolor = stat_value_color, max_width = col_w },
+                    TextWidget:new{ text = row[2], face = label_face, fgcolor = stat_label_color, max_width = col_w },
+                }
+            end
+            if backdrop_grouped then
+                -- One panel behind the whole grid (all rows, both columns).
+                local grid_group_c = newGroup()
+                for idx, row in ipairs(rows) do
+                    local r = math.floor((idx - 1) / 2)
+                    local c = (idx - 1) % 2
+                    local cx = text_left_c + c * (col_w + grid_col_gap)
+                    local cy = grid_top + r * (cell_h + grid_row_gap)
+                    groupAdd(grid_group_c, statCellWidget(row), cx, cy)
+                end
+                flushGroup(grid_group_c, TEXT_BACKDROP_PAD_H, TEXT_BACKDROP_PAD_V, panel_left, panel_right)
+            else
+                -- One panel per ROW (both columns together, cover-width
+                -- wide) - a per-CELL panel would only be half that width,
+                -- and two of them side by side would either overlap (if
+                -- stretched) or leave a gap in the middle (if not).
+                local idx = 1
+                for r = 0, grid_rows_n - 1 do
+                    local row_group = newGroup()
+                    for c = 0, 1 do
+                        if idx > #rows then break end
+                        local cx = text_left_c + c * (col_w + grid_col_gap)
+                        local cy = grid_top + r * (cell_h + grid_row_gap)
+                        groupAdd(row_group, statCellWidget(rows[idx]), cx, cy)
+                        idx = idx + 1
+                    end
+                    flushGroup(row_group, TEXT_BACKDROP_PAD_H, TEXT_BACKDROP_PAD_V, panel_left, panel_right)
+                end
+            end
+        end
+    else
     -- First pass, at the full left-column width, just to measure the
     -- stack's height for the cover-sizing math below.
     local text_blocks, quote_index = buildTextBlocks(left_w)
@@ -984,6 +1180,7 @@ function M.build(card, opts)
         y = y + block:getSize().h
     end
     if title_group then flushGroup(title_group, TEXT_BACKDROP_PAD_H, TEXT_BACKDROP_PAD_V) end
+    end
 
     local canvas = OverlapGroup:new{
         dimen = Geom:new{ w = W, h = H },

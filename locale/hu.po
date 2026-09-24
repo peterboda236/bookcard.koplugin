@@ -78,11 +78,11 @@ msgstr "Statisztikák sorrendje"
 msgid "Text background grouping"
 msgstr "Szöveghátér csoportosítása"
 
-msgid "Individually (default)"
-msgstr "Egyenként (alapértelmezett)"
+msgid "Individually"
+msgstr "Egyenként"
 
-msgid "Grouped (battery / stats / title+author+series / streak / reader)"
-msgstr "Csoportosítva (akku / statisztikák / cím+szerző+sorozat / streak / olvasó típusa)"
+msgid "Grouped (default)"
+msgstr "Csoportosítva (alapértelmezett)"
 
 msgid "Clear cached data"
 msgstr "Gyorsítótár törlése"
@@ -493,6 +493,15 @@ msgstr "%d oldal"
 
 msgid "Advanced Settings"
 msgstr "További beállítások"
+
+msgid "Layout"
+msgstr "Elrendezés"
+
+msgid "Cover beside statistics (default)"
+msgstr "Borító a statisztika mellett (alapértelmezett)"
+
+msgid "Cover centered, statistics grid below"
+msgstr "Borító középen, statisztika rács alatta"
 
 msgid "Orientation"
 msgstr "Tájolás"
