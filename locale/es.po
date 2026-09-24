@@ -526,8 +526,8 @@ msgstr "Margen superior"
 msgid "Bottom padding"
 msgstr "Margen inferior"
 
-msgid "Image export (for Android wallpaper)"
-msgstr "Exportación de imagen (para el fondo de Android)"
+msgid "Image export (Android wallpaper / PocketBook logo)"
+msgstr "Exportación de imagen (fondo de Android / logo de PocketBook)"
 
 msgid "Save as image, kept up to date"
 msgstr "Guardar como imagen y mantener actualizada"
@@ -567,6 +567,9 @@ msgstr "La imagen también se copiará en:\n{path}\n\nEn Android, dirige el sele
 
 msgid "Stop copying to that extra folder"
 msgstr "Dejar de copiar a esa carpeta adicional"
+
+msgid "Also save as PocketBook power-off / boot logo"
+msgstr "Guardar también como logo de apagado / arranque de PocketBook"
 
 msgid "Save image now"
 msgstr "Guardar imagen ahora"

@@ -38,7 +38,7 @@ hands control to Android's own lock screen instead, so the native Book
 Card sleep screen is never shown there.
 
 For Android, use **Tools > Book card > Advanced Settings > Image export
-(for Android wallpaper)** instead:
+(Android wallpaper / PocketBook logo)** instead:
 - **Save as image, kept up to date** - turns on a background PNG export of
   the card, refreshed automatically (Save image now / refresh interval,
   both in the same menu).
@@ -60,6 +60,13 @@ For Android, use **Tools > Book card > Advanced Settings > Image export
 
 This mirrors how the Ink Stain Wallpaper plugin handles the same
 Android limitation.
+
+## PocketBook
+On PocketBook devices, Advanced Settings > Image export (Android wallpaper / PocketBook logo) shows an extra option, **Also save as PocketBook power-off / boot logo** (off by default; the option is hidden on other devices). When it and image export are both on, the card is also written as
+`bookcard.bmp` into `/mnt/ext1/system/logo/offlogo/` and `/mnt/ext1/system/logo/bootlogo/`
+(pick it under the device's power-off logo setting). The boot logo is registered with
+`iv2sh WriteStartupLogo` only when the device goes to sleep or on "Save image now" (it
+writes to flash). On every other device this is skipped.
 
 ## Orientation
 Tools > Book card > Advanced Settings > Orientation:

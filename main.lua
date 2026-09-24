@@ -151,7 +151,7 @@ function BookCard:onSuspend()
     -- whatever ends up showing (KOReader's own sleep screen elsewhere, or
     -- just this file waiting to be picked up as an Android wallpaper).
     if not PngExport.isEnabled() then return end
-    local ok, err = PngExport.write(self.ui)
+    local ok, err = PngExport.write(self.ui, true)
     if not ok then logger.warn("BookCard: image export on suspend failed:", err) end
 end
 
@@ -161,7 +161,8 @@ end
 -- screen (chiefly: setting it as the Android system/lock-screen wallpaper).
 -- ---------------------------------------------------------------------------
 function BookCard:refreshExportedImage(quiet)
-    local ok, err = PngExport.write(self.ui)
+    -- `not quiet` = the user asked for it: also let PocketBook adopt the boot logo.
+    local ok, err = PngExport.write(self.ui, not quiet)
     if not quiet then
         if ok then
             UIManager:show(InfoMessage:new{ text = _("Image updated."), timeout = 2 })
@@ -433,7 +434,7 @@ end
 -- ---------------------------------------------------------------------------
 function BookCard:_imageExportSubItems()
     local outer = self
-    return {
+    local items = {
         {
             text = _("Save as image, kept up to date"),
             checked_func = PngExport.isEnabled,
@@ -529,6 +530,21 @@ function BookCard:_imageExportSubItems()
             enabled = false,
         },
     }
+
+    -- Only offered on PocketBook devices (elsewhere the option is hidden).
+    if PngExport.isPocketBook() then
+        table.insert(items, #items - 1, {
+            text = _("Also save as PocketBook power-off / boot logo"),
+            checked_func = PngExport.pocketBookEnabled,
+            enabled_func = PngExport.isEnabled,
+            keep_menu_open = true,
+            callback = function()
+                PngExport.setPocketBookEnabled(not PngExport.pocketBookEnabled())
+                if PngExport.pocketBookEnabled() then outer:refreshExportedImage(false) end
+            end,
+        })
+    end
+    return items
 end
 
 -- ---------------------------------------------------------------------------
@@ -740,7 +756,7 @@ function BookCard:addToMainMenu(menu_items)
                         sub_item_table_func = function() return CardView.buildMarginsMenu() end,
                     },
                     {
-                        text = _("Image export (for Android wallpaper)"),
+                        text = _("Image export (Android wallpaper / PocketBook logo)"),
                         sub_item_table_func = function() return self:_imageExportSubItems() end,
                     },
                     {
