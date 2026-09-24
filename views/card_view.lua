@@ -84,6 +84,11 @@ M.SETTING_QUOTE        = "bookcard_show_quote"           -- default OFF - a
                                                           -- quote under
                                                           -- title/author/series
 M.SETTING_ORIENTATION  = "bookcard_orientation"          -- "default" (current behaviour) | "portrait" | "landscape"
+M.SETTING_LAYOUT       = "bookcard_layout"               -- "side" (default: cover beside the
+                                                          -- statistics column) | "centered" (cover
+                                                          -- centered on its own, title/author/series/
+                                                          -- quote below it, statistics in a 2-column
+                                                          -- grid underneath that)
 M.SETTING_BACKDROP_GROUPING = "bookcard_backdrop_grouping" -- "individual" (default) | "grouped" - only
                                                           -- matters with a wallpaper + text background
                                                           -- opacity > 0; see placeText()/flushGroup() below
@@ -807,6 +812,118 @@ function M.build(card, opts)
         return blocks, quote_idx
     end
 
+    -- Which arrangement to draw: "side" (default, above) puts the cover
+    -- next to a single statistics column. "centered" puts the cover on its
+    -- own, centered, with title/author/series/quote directly below it and
+    -- the statistics spread beneath that in a 2-column grid instead - see
+    -- M.SETTING_LAYOUT ("Advanced Settings" > "Layout").
+    local layout_centered = Prefs.read(M.SETTING_LAYOUT, "side") == "centered"
+
+    if layout_centered then
+        -- -------------------------------------------------------------------
+        -- Centered layout
+        -- -------------------------------------------------------------------
+        local available_w = W - 2 * pad_x
+        local available_h = math.max(S(80), content_bottom - stats_top)
+
+        -- Same three-case gap logic as the side layout above, kept local to
+        -- this branch since it needs its own `individual_backdrop_showing`
+        -- (the name is scoped to this `if`, so it doesn't clash with the
+        -- side layout's copy in the `else` below).
+        local individual_backdrop_showing = backdrop_active and not backdrop_grouped
+        local header_gap_c, text_block_gap_c
+        if individual_backdrop_showing then
+            header_gap_c = S(8)
+            text_block_gap_c = S(8)
+        else
+            local header_gap_base = math.floor(S(4) / 2)
+            text_block_gap_c = math.max(3 * header_gap_base, 3 * TEXT_BACKDROP_PAD_V + S(4))
+            header_gap_c = S(1)
+        end
+        local function gapBeforeC(i, quote_idx)
+            if i <= 1 then return 0 end
+            return (quote_idx and i == quote_idx) and text_block_gap_c or header_gap_c
+        end
+
+        -- Text block height doesn't depend on width (see buildTextBlocks),
+        -- so measure it once, at the full available width, before the
+        -- cover's own final width is known.
+        local text_blocks_c, quote_index_c = buildTextBlocks(available_w)
+        local text_h_c = 0
+        for i, block in ipairs(text_blocks_c) do
+            text_h_c = text_h_c + block:getSize().h + gapBeforeC(i, quote_index_c)
+        end
+
+        -- Statistics grid: 2 columns, as many rows as needed. Each cell is
+        -- just "value line + label line" stacked, left-aligned - same
+        -- metrics as the single-column layout's rows, without StatCell's
+        -- right-alignment.
+        local cell_h = TextWidget:new{ text = "Ag", face = value_face }:getSize().h
+                     + TextWidget:new{ text = "Ag", face = label_face }:getSize().h
+        local grid_row_gap = math.max(S(8), math.floor(col_gap / 2))
+        local grid_rows_n = math.ceil(#rows / 2)
+        local grid_h = grid_rows_n > 0 and (grid_rows_n * cell_h + (grid_rows_n - 1) * grid_row_gap) or 0
+        local gap1 = col_gap                              -- cover -> text
+        local gap2 = grid_rows_n > 0 and col_gap or 0      -- text -> grid
+
+        -- The cover gets whatever height is left once the text and the
+        -- statistics grid have taken their share - same "leftover space"
+        -- philosophy as the side layout's cover_max_h above.
+        local show_cover_shadow_c = Prefs.readBool(M.SETTING_COVER_SHADOW, true)
+        local shadow_off_c = show_cover_shadow_c and S(4) or 0
+        local cover_max_h_c = math.max(S(120), available_h - text_h_c - grid_h - gap1 - gap2 - shadow_off_c)
+        local cover_restore_c = wallpaper_bg and Wallpaper.restore or nil
+        local cover_c, cover_w_c, cover_h_c = buildCover(
+            card, available_w - shadow_off_c, cover_max_h_c, pal, shadow_off_c, cover_restore_c)
+
+        -- Rebuild the text stack (and, further down, the grid) to the
+        -- cover's own real on-screen width - its drop shadow included, when
+        -- shown - so everything shares the same left/right edges and the
+        -- whole assembly reads as one centered block, even when the cover
+        -- itself ends up narrower than the full available width.
+        local reach_w = cover_w_c + (show_cover_shadow_c and shadow_off_c or 0)
+        local text_max_w_c = reach_w - (backdrop_active and 2 * TEXT_BACKDROP_PAD_H or 0)
+        text_blocks_c, quote_index_c = buildTextBlocks(text_max_w_c)
+
+        local cover_left_c = pad_x + math.floor((available_w - reach_w) / 2)
+        local cover_top_c = stats_top
+
+        if show_cover_shadow_c then
+            local radius = Prefs.readBool(M.SETTING_ROUNDED, true) and S(4) or 0
+            local shadow = CoverFrame.Shadow:new{
+                width = cover_w_c, height = cover_h_c,
+                offset = shadow_off_c, radius = radius,
+                bg = pal.bg, restore = cover_restore_c,
+            }
+            place(shadow, cover_left_c, cover_top_c)
+        end
+        place(cover_c, cover_left_c, cover_top_c)
+
+        local y = cover_top_c + cover_h_c + (show_cover_shadow_c and shadow_off_c or 0) + gap1
+        for i, block in ipairs(text_blocks_c) do
+            if i > 1 then y = y + gapBeforeC(i, quote_index_c) end
+            placeText(block, cover_left_c, y)
+            y = y + block:getSize().h
+        end
+
+        if #rows > 0 then
+            local grid_top = y + gap2
+            local grid_col_gap = S(24)
+            local col_w = math.floor((reach_w - grid_col_gap) / 2)
+            for idx, row in ipairs(rows) do
+                local r = math.floor((idx - 1) / 2)
+                local c = (idx - 1) % 2
+                local cx = cover_left_c + c * (col_w + grid_col_gap)
+                local cy = grid_top + r * (cell_h + grid_row_gap)
+                local cell = VerticalGroup:new{
+                    align = "left",
+                    TextWidget:new{ text = row[1], face = value_face, fgcolor = stat_value_color, max_width = col_w },
+                    TextWidget:new{ text = row[2], face = label_face, fgcolor = stat_label_color, max_width = col_w },
+                }
+                placeText(cell, cx, cy)
+            end
+        end
+    else
     -- First pass, at the full left-column width, just to measure the
     -- stack's height for the cover-sizing math below.
     local text_blocks, quote_index = buildTextBlocks(left_w)
@@ -984,6 +1101,7 @@ function M.build(card, opts)
         y = y + block:getSize().h
     end
     if title_group then flushGroup(title_group, TEXT_BACKDROP_PAD_H, TEXT_BACKDROP_PAD_V) end
+    end
 
     local canvas = OverlapGroup:new{
         dimen = Geom:new{ w = W, h = H },

@@ -514,6 +514,16 @@ local function orientationItem(label, value)
     }
 end
 
+local function layoutItem(label, value)
+    return {
+        text = label,
+        radio = true,
+        checked_func = function() return Prefs.read(CardView.SETTING_LAYOUT, "side") == value end,
+        callback = function() Prefs.save(CardView.SETTING_LAYOUT, value) end,
+        keep_menu_open = true,
+    }
+end
+
 local function backdropGroupingItem(label, value)
     return {
         text = label,
@@ -660,6 +670,13 @@ function BookCard:addToMainMenu(menu_items)
             {
                 text = _("Advanced Settings"),
                 sub_item_table = {
+                    {
+                        text = _("Layout"),
+                        sub_item_table = {
+                            layoutItem(_("Cover beside statistics (default)"), "side"),
+                            layoutItem(_("Cover centered, statistics grid below"), "centered"),
+                        },
+                    },
                     {
                         text = _("Orientation"),
                         sub_item_table = {

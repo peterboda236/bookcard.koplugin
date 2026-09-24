@@ -496,6 +496,15 @@ msgstr "%d páginas"
 msgid "Advanced Settings"
 msgstr "Ajustes avanzados"
 
+msgid "Layout"
+msgstr "Disposición"
+
+msgid "Cover beside statistics (default)"
+msgstr "Portada junto a las estadísticas (predeterminado)"
+
+msgid "Cover centered, statistics grid below"
+msgstr "Portada centrada, cuadrícula de estadísticas debajo"
+
 msgid "Orientation"
 msgstr "Orientación"
 
