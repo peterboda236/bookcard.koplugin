@@ -532,6 +532,15 @@ msgstr "%d сторінок"
 msgid "Advanced Settings"
 msgstr "Розширені налаштування"
 
+msgid "Layout"
+msgstr "Макет"
+
+msgid "Cover beside statistics (default)"
+msgstr "Обкладинка поруч зі статистикою (за замовчуванням)"
+
+msgid "Cover centered, statistics grid below"
+msgstr "Обкладинка по центру, сітка статистики знизу"
+
 msgid "Orientation"
 msgstr "Орієнтація"
 

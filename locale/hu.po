@@ -494,6 +494,15 @@ msgstr "%d oldal"
 msgid "Advanced Settings"
 msgstr "További beállítások"
 
+msgid "Layout"
+msgstr "Elrendezés"
+
+msgid "Cover beside statistics (default)"
+msgstr "Borító a statisztika mellett (alapértelmezett)"
+
+msgid "Cover centered, statistics grid below"
+msgstr "Borító középen, statisztika rács alatta"
+
 msgid "Orientation"
 msgstr "Tájolás"
 
