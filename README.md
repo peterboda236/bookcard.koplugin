@@ -42,6 +42,9 @@ For Android, use **Tools > Book card > Advanced Settings > Image export
 - **Save as image, kept up to date** - turns on a background PNG export of
   the card, refreshed automatically (Save image now / refresh interval,
   both in the same menu).
+- **Also save when opening a book** - on by default; also refreshes the
+  image a few seconds after a book has been opened, not only on the timer
+  (and when a book is closed or the device suspends).
 - **Also copy to a shared folder…** - optionally also writes the same
   picture into a folder you pick (e.g. a shared `Pictures` folder), so it
   shows up in Android's own gallery/wallpaper picker, or so a

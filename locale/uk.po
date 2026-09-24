@@ -647,3 +647,6 @@ msgstr "Виділена цитата"
 
 msgid "Quote color"
 msgstr "Колір цитати"
+
+msgid "Also save when opening a book"
+msgstr "Також зберігати під час відкриття книги"

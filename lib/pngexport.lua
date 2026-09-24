@@ -24,6 +24,10 @@ hatch, reusing the exact card layout from lib/screensaver.lua.
                                 extra
   PngExport.SETTING_INTERVAL   "bookcard_image_export_interval" - seconds
                                 between automatic refreshes while enabled
+  PngExport.SETTING_ON_OPEN    "bookcard_image_export_on_open" - also
+                                refresh right after a book has been
+                                opened (default on, only matters while
+                                exporting is enabled)
 
   PngExport.isEnabled()        current on/off state
   PngExport.outputDir()        folder the plain (always-on) copy lives in
@@ -52,6 +56,7 @@ local M = {}
 M.SETTING_ENABLED   = "bookcard_image_export_enabled"
 M.SETTING_SAVE_PATH = "bookcard_image_export_path"
 M.SETTING_INTERVAL  = "bookcard_image_export_interval"
+M.SETTING_ON_OPEN   = "bookcard_image_export_on_open"
 
 M.DEFAULT_INTERVAL = 15 * 60 -- 15 minutes
 
@@ -75,6 +80,14 @@ end
 
 function M.setEnabled(on)
     Prefs.save(M.SETTING_ENABLED, on and true or false)
+end
+
+function M.exportOnOpen()
+    return Prefs.readBool(M.SETTING_ON_OPEN, true)
+end
+
+function M.setExportOnOpen(on)
+    Prefs.save(M.SETTING_ON_OPEN, on and true or false)
 end
 
 function M.interval()

@@ -73,6 +73,10 @@ local _ = Locale._
 
 local PREV_TYPE_SETTING = "bookcard_previous_screensaver_type"
 
+-- Seconds to wait after a book has finished opening before exporting the
+-- card, so the Statistics plugin has loaded the book's data first.
+local OPEN_EXPORT_DELAY = 3
+
 -- Update settings (same keys layout as the Reading Insights updater).
 local DEV_BRANCH_SETTING          = "bookcard_dev_branch"
 local LAST_INSTALL_SOURCE_SETTING = "bookcard_last_install_source"
@@ -192,6 +196,31 @@ function BookCard:_scheduleImageExportTimer()
     end)
 end
 
+-- Export once right after a book has been opened (not only on the timer),
+-- so the picture shows the book you just started instead of the previous
+-- one until the next refresh. Delayed slightly so the Statistics plugin has
+-- finished loading this book's data, and cancelled if the book is closed
+-- again before it fires (onCloseDocument exports on its own).
+function BookCard:_cancelOpenExport()
+    if self._open_export_task then
+        UIManager:unschedule(self._open_export_task)
+        self._open_export_task = nil
+    end
+end
+
+function BookCard:onReaderReady()
+    self:_cancelOpenExport()
+    if not (PngExport.isEnabled() and PngExport.exportOnOpen()) then return end
+    local ui = self.ui
+    self._open_export_task = function()
+        self._open_export_task = nil
+        if not (PngExport.isEnabled() and PngExport.exportOnOpen()) then return end
+        if not (ui and ui.document) then return end
+        self:refreshExportedImage(true)
+    end
+    UIManager:scheduleIn(OPEN_EXPORT_DELAY, self._open_export_task)
+end
+
 function BookCard:_startImageExportTimer()
     if _G._bookcard_export_timer_active then return end
     if not PngExport.isEnabled() then return end
@@ -214,6 +243,7 @@ end
 -- independent, since image export is the one that matters on Android,
 -- where the native sleep screen never appears at all (see lib/pngexport.lua).
 function BookCard:onCloseDocument()
+    self:_cancelOpenExport()
     if not (Sleep.isSelected() or PngExport.isEnabled()) then return end
     local ok, err = pcall(function()
         local card = Data.collectLive(self.ui)
@@ -427,6 +457,15 @@ function BookCard:_imageExportSubItems()
                 .. "app, or a wallpaper-changer app pointed at the folder below)."),
             enabled = false,
             separator = true,
+        },
+        {
+            text = _("Also save when opening a book"),
+            checked_func = PngExport.exportOnOpen,
+            enabled_func = PngExport.isEnabled,
+            keep_menu_open = true,
+            callback = function()
+                PngExport.setExportOnOpen(not PngExport.exportOnOpen())
+            end,
         },
         {
             text_func = function()

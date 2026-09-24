@@ -593,3 +593,6 @@ msgstr "Kiemelt idézet"
 
 msgid "Quote color"
 msgstr "Idézet színe"
+
+msgid "Also save when opening a book"
+msgstr "Mentés könyv megnyitásakor is"
