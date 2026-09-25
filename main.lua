@@ -590,6 +590,16 @@ local function layoutItem(label, value)
     }
 end
 
+local function coverStyleItem(label, value)
+    return {
+        text = label,
+        radio = true,
+        checked_func = function() return Prefs.read(CardView.SETTING_COVER_STYLE, "cover") == value end,
+        callback = function() Prefs.save(CardView.SETTING_COVER_STYLE, value) end,
+        keep_menu_open = true,
+    }
+end
+
 local function backdropGroupingItem(label, value)
     return {
         text = label,
@@ -689,6 +699,13 @@ function BookCard:addToMainMenu(menu_items)
             {
                 text = _("Cover"),
                 sub_item_table = {
+                    {
+                        text = _("Cover style"),
+                        sub_item_table = {
+                            coverStyleItem(_("Cover image (default)"), "cover"),
+                            coverStyleItem(_("Book spine (Bookshelf style)"), "spine"),
+                        },
+                    },
                     rounded,
                     {
                         text = _("Cover shadow"),

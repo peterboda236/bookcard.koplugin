@@ -64,6 +64,7 @@ local Screen = Device.screen
 local StatCell      = deps.PluginUtil.load("widgets/statcell.lua")
 local CoverFrame    = deps.PluginUtil.load("widgets/coverframe.lua")
 local SvgIcon       = deps.PluginUtil.load("widgets/svgicon.lua")
+local SpineCover    = deps.PluginUtil.load("widgets/spinecover.lua", { Cache = Cache })
 
 local _  = Locale._
 local N_ = Locale.N_
@@ -75,6 +76,10 @@ M.SETTING_BATTERY     = "bookcard_show_battery"          -- default on
 M.SETTING_STREAK      = "bookcard_show_streak"           -- default on
 M.SETTING_READER_TYPE = "bookcard_show_reader_type"      -- default on
 M.SETTING_ROUNDED     = "bookcard_rounded_corners"       -- default on
+M.SETTING_COVER_STYLE = "bookcard_cover_style"           -- "cover" (default) | "spine" - a
+                                                          -- Bookshelf-style spine-out rendering
+                                                          -- (widgets/spinecover.lua) instead of
+                                                          -- the flat front cover
 M.SETTING_THEME       = "bookcard_theme"                 -- "auto" (default) | "light" | "dark"
 M.SETTING_GAP         = "bookcard_cover_stats_gap"       -- "small" (default) | "large"
 M.SETTING_COVER_SHADOW = "bookcard_cover_shadow"          -- default on
@@ -187,12 +192,27 @@ local function iconLabel(icon_name, txt, text_face, icon_size, pal, color)
     return group
 end
 
+-- Whether the reader picked the Bookshelf-style spine-out cover (see
+-- widgets/spinecover.lua) instead of the normal flat front cover.
+function M.isSpineStyle()
+    return Prefs.read(M.SETTING_COVER_STYLE, "cover") == "spine"
+end
+
 -- ---------------------------------------------------------------------------
--- Cover (framed, optionally rounded)
+-- Cover (framed, optionally rounded - or, in spine style, a drawn book
+-- spine; see widgets/spinecover.lua)
 -- ---------------------------------------------------------------------------
 -- `max_w` x `max_h` is the box for the OUTER size (frame included).
 -- Returns the widget and its outer width and height.
 local function buildCover(card, max_w, max_h, pal, shadow_offset, restore)
+    if M.isSpineStyle() then
+        -- The spine draws its own boards/border, so it isn't wrapped in
+        -- CoverFrame - it fills max_h (a book stands to the top of its
+        -- shelf slot) and is only as WIDE as its "thickness" calls for, so
+        -- the returned outer_w is very likely narrower than max_w.
+        return SpineCover.build(card, max_w, max_h)
+    end
+
     local border = math.max(2, S(1))
     local radius = Prefs.readBool(M.SETTING_ROUNDED, true) and S(4) or 0
     local box_w, box_h = max_w - 2 * border, max_h - 2 * border
@@ -916,7 +936,10 @@ function M.build(card, opts)
         local text_left_c = cover_left_c + text_inset_c
 
         if show_cover_shadow_c then
-            local radius = Prefs.readBool(M.SETTING_ROUNDED, true) and S(4) or 0
+            -- Square corners for the spine style - it draws square boards,
+            -- not a rounded card.
+            local radius = (not M.isSpineStyle())
+                and Prefs.readBool(M.SETTING_ROUNDED, true) and S(4) or 0
             local shadow = CoverFrame.Shadow:new{
                 width = cover_w_c, height = cover_h_c,
                 offset = shadow_off_c, radius = radius,
@@ -1149,7 +1172,10 @@ function M.build(card, opts)
 
     -- Cover drop shadow (painted first so the cover sits on top).
     if show_cover_shadow then
-        local radius = Prefs.readBool(M.SETTING_ROUNDED, true) and S(4) or 0
+        -- Square corners for the spine style - it draws square boards, not
+        -- a rounded card.
+        local radius = (not M.isSpineStyle())
+            and Prefs.readBool(M.SETTING_ROUNDED, true) and S(4) or 0
         local shadow = CoverFrame.Shadow:new{
             width  = cover_w,
             height = cover_h,
