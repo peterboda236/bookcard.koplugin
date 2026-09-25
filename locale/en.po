@@ -602,3 +602,12 @@ msgstr "Also save when opening a book"
 
 msgid "Image format"
 msgstr "Image format"
+
+msgid "Read Today"
+msgstr "Read Today"
+
+msgid "Read Today (This Book)"
+msgstr "Read Today (This Book)"
+
+msgid "Read Today (All Books)"
+msgstr "Read Today (All Books)"

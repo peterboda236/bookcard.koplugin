@@ -119,6 +119,8 @@ M.SETTING_STAT_DAILY_AVG_PAGES = "bookcard_stat_daily_avg_pages"  -- default OFF
 M.SETTING_STAT_PAGES_PER_MIN = "bookcard_stat_pages_per_min"
 M.SETTING_STAT_STARTED       = "bookcard_stat_started"
 M.SETTING_STAT_FINISH        = "bookcard_stat_finish"
+M.SETTING_STAT_TODAY_TIME    = "bookcard_stat_today_time"       -- default OFF
+M.SETTING_STAT_ALL_BOOKS_TIME = "bookcard_stat_all_books_time"  -- default OFF
 
 -- The reader's chosen order for the statistics rows above (a list of the
 -- `id`s used in STAT_DEFS below). Unset until the reader opens "Reorder"
@@ -375,6 +377,30 @@ local STAT_DEFS = {
         label = function() return _("Highlights") end,
         build = function(card, ctx)
             return { tostring(card.highlights_count or 0), _("Highlights") }
+        end,
+    },
+    {
+        -- Off by default: how much of THIS book was read today. The card
+        -- caption is just "Read Today" (see all_books_time below); the
+        -- longer "(This Book)" form is only used to tell the two rows
+        -- apart in the Statistics settings menu.
+        id = "today_time", setting = M.SETTING_STAT_TODAY_TIME, default = false,
+        menu_label = function() return _("Read Today (This Book)") end,
+        label = function() return _("Read Today") end,
+        build = function(card, ctx)
+            return { ctx.dur(card.today_time), _("Read Today") }
+        end,
+    },
+    {
+        -- Off by default: how much was read today across every book, not
+        -- just this one. Displayed on the card as "Read Today" too (see
+        -- today_time above); "(All Books)" only distinguishes it in the
+        -- Statistics settings menu.
+        id = "all_books_time", setting = M.SETTING_STAT_ALL_BOOKS_TIME, default = false,
+        menu_label = function() return _("Read Today (All Books)") end,
+        label = function() return _("Read Today") end,
+        build = function(card, ctx)
+            return { ctx.dur(card.all_books_time), _("Read Today") }
         end,
     },
 }
@@ -1304,7 +1330,8 @@ local function openStatOrderWidget(touchmenu_instance)
     local item_table = {}
     for i = 1, #order do
         local def = STAT_DEFS_BY_ID[order[i]]
-        item_table[#item_table + 1] = { text = def.label(), id = def.id }
+        local menu_text = def.menu_label and def.menu_label() or def.label()
+        item_table[#item_table + 1] = { text = menu_text, id = def.id }
     end
     local sort_widget
     sort_widget = SortWidget:new{
@@ -1338,7 +1365,7 @@ function M.buildStatisticsMenu()
     for i = 1, #order do
         local def = STAT_DEFS_BY_ID[order[i]]
         items[#items + 1] = {
-            text = def.label(),
+            text = def.menu_label and def.menu_label() or def.label(),
             checked_func = function() return Prefs.readBool(def.setting, def.default) end,
             callback = function() Prefs.save(def.setting, not Prefs.readBool(def.setting, def.default)) end,
             keep_menu_open = true,

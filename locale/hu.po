@@ -603,3 +603,12 @@ msgstr "Mentés könyv megnyitásakor is"
 
 msgid "Image format"
 msgstr "Képformátum"
+
+msgid "Read Today"
+msgstr "Ma olvasva"
+
+msgid "Read Today (This Book)"
+msgstr "Ma olvasva (ez a könyv)"
+
+msgid "Read Today (All Books)"
+msgstr "Ma olvasva (minden könyv)"

@@ -656,3 +656,12 @@ msgstr "Також зберігати під час відкриття книг�
 
 msgid "Image format"
 msgstr "Формат зображення"
+
+msgid "Read Today"
+msgstr "Прочитано сьогодні"
+
+msgid "Read Today (This Book)"
+msgstr "Прочитано сьогодні (ця книга)"
+
+msgid "Read Today (All Books)"
+msgstr "Прочитано сьогодні (усі книги)"

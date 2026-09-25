@@ -37,6 +37,8 @@ card fields:
   file, title, authors, series, series_index
   percent (0..100), current_page, total_pages, status ("complete" / ...), pages_left
   avg_time (secs/page), total_time (secs), days_read, pages_read
+  today_time (secs read TODAY, this book only, per-page capped like total_time)
+  all_books_time (secs read TODAY across EVERY book, same per-page cap)
   started_ts, last_read_ts, finished_date
   streak_days, streak_weeks, hour_bucket, book_id
   highlights_count
@@ -344,6 +346,19 @@ local function fillBookStats(conn, card, book_id)
 
     r = StatsDb.first(conn, string.format("SELECT pages FROM book WHERE id = %d", book_id), 1)
     if r and num(r[1]) and num(r[1]) > 0 then card.stats_pages = num(r[1]) end
+
+    -- Today only, this book: same per-page cap as the all-time total above,
+    -- just restricted to today's local date.
+    r = StatsDb.first(conn, string.format([[
+        SELECT sum(durations)
+        FROM (
+            SELECT min(sum(duration), %d) AS durations
+            FROM page_stat
+            WHERE id_book = %d
+              AND date(start_time, 'unixepoch', 'localtime') = date('now', 'localtime')
+            GROUP BY page
+        )]], maxSec(), book_id), 1)
+    if r then card.today_time = num(r[1]) end
 end
 
 -- ---- streaks (Reading Insights' Data.calculateStreaks) ---------------------
@@ -414,6 +429,18 @@ end
 -- Streaks span all books; the reader type (part of day) is scoped to this
 -- book alone (card.book_id), when known.
 function M.readGlobal(conn, card)
+    -- Today only, across every book (same per-page cap as a single book's
+    -- today_time, just not restricted to id_book).
+    local total_row = StatsDb.first(conn, string.format([[
+        SELECT sum(durations)
+        FROM (
+            SELECT min(sum(duration), %d) AS durations
+            FROM page_stat
+            WHERE date(start_time, 'unixepoch', 'localtime') = date('now', 'localtime')
+            GROUP BY id_book, page
+        )]], maxSec()), 1)
+    if total_row then card.all_books_time = num(total_row[1]) end
+
     local rows = StatsDb.all(conn,
         "SELECT DISTINCT date(start_time, 'unixepoch', 'localtime') AS d FROM page_stat_data ORDER BY d DESC", 1)
     local dates = {}

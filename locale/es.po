@@ -603,3 +603,12 @@ msgstr "Guardar también al abrir un libro"
 
 msgid "Image format"
 msgstr "Formato de imagen"
+
+msgid "Read Today"
+msgstr "Leído hoy"
+
+msgid "Read Today (This Book)"
+msgstr "Leído hoy (este libro)"
+
+msgid "Read Today (All Books)"
+msgstr "Leído hoy (todos los libros)"

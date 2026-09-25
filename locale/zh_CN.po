@@ -603,3 +603,12 @@ msgstr "打开图书时也保存"
 
 msgid "Image format"
 msgstr "图片格式"
+
+msgid "Read Today"
+msgstr "今日阅读"
+
+msgid "Read Today (This Book)"
+msgstr "今日阅读（本书）"
+
+msgid "Read Today (All Books)"
+msgstr "今日阅读（全部图书）"
