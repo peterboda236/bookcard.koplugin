@@ -151,6 +151,12 @@ msgstr "Temps de lecture"
 msgid "Time Left"
 msgstr "Temps restant"
 
+msgid "Ch. Pages Left"
+msgstr "Chap. pages rest."
+
+msgid "Ch. Time Left"
+msgstr "Chap. temps rest."
+
 msgid "Progress"
 msgstr "Progression"
 

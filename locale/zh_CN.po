@@ -151,6 +151,12 @@ msgstr "阅读时间"
 msgid "Time Left"
 msgstr "剩余时间"
 
+msgid "Ch. Pages Left"
+msgstr "章余页数"
+
+msgid "Ch. Time Left"
+msgstr "章余时间"
+
 msgid "Progress"
 msgstr "进度"
 

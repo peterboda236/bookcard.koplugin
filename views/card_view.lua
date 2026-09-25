@@ -121,6 +121,8 @@ M.SETTING_STAT_STARTED       = "bookcard_stat_started"
 M.SETTING_STAT_FINISH        = "bookcard_stat_finish"
 M.SETTING_STAT_TODAY_TIME    = "bookcard_stat_today_time"       -- default OFF
 M.SETTING_STAT_ALL_BOOKS_TIME = "bookcard_stat_all_books_time"  -- default OFF
+M.SETTING_STAT_CHAPTER_PAGES_LEFT = "bookcard_stat_chapter_pages_left"  -- default OFF
+M.SETTING_STAT_CHAPTER_TIME_LEFT  = "bookcard_stat_chapter_time_left"  -- default OFF
 
 -- The reader's chosen order for the statistics rows above (a list of the
 -- `id`s used in STAT_DEFS below). Unset until the reader opens "Reorder"
@@ -303,6 +305,30 @@ local STAT_DEFS = {
         label = function() return _("Time Left") end,
         build = function(card, ctx)
             return { card.finished and DASH or ctx.dur(card.time_left_secs), _("Time Left") }
+        end,
+    },
+    {
+        -- Off by default: pages left in the CURRENT chapter (not the whole
+        -- book - see "pages"/"time_left" above for that). Needs a live
+        -- document (ui.toc:getChapterPagesLeft) - see bookdata.lua's
+        -- collectLive; nil (shown as DASH) when the card was rebuilt from
+        -- the sidecar/statistics DB with no book open.
+        id = "chapter_pages_left", setting = M.SETTING_STAT_CHAPTER_PAGES_LEFT, default = false,
+        label = function() return _("Ch. Pages Left") end,
+        build = function(card, ctx)
+            local left = card.chapter_pages_left
+            local left_txt = left and tostring(math.floor(left + 0.5)) or DASH
+            return { left_txt, _("Ch. Pages Left") }
+        end,
+    },
+    {
+        -- Off by default: time left in the CURRENT chapter, same
+        -- pages-left * avg_time formula as the whole-book "time_left" row.
+        -- Same live-document caveat as chapter_pages_left above.
+        id = "chapter_time_left", setting = M.SETTING_STAT_CHAPTER_TIME_LEFT, default = false,
+        label = function() return _("Ch. Time Left") end,
+        build = function(card, ctx)
+            return { ctx.dur(card.chapter_time_left_secs), _("Ch. Time Left") }
         end,
     },
     {

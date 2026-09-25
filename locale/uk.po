@@ -171,6 +171,12 @@ msgstr "Час читання"
 msgid "Time Left"
 msgstr "Залишилось часу"
 
+msgid "Ch. Pages Left"
+msgstr "Розд. сторінок"
+
+msgid "Ch. Time Left"
+msgstr "Розд. часу"
+
 msgid "Progress"
 msgstr "Прогрес"
 

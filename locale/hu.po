@@ -150,6 +150,12 @@ msgstr "Olvasási idő"
 msgid "Time Left"
 msgstr "Hátralévő idő"
 
+msgid "Ch. Pages Left"
+msgstr "Fej. oldal hátra"
+
+msgid "Ch. Time Left"
+msgstr "Fej. idő hátra"
+
 msgid "Progress"
 msgstr "Haladás"
 

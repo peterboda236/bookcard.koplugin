@@ -36,6 +36,8 @@ sidecar, streaks, reader type) and finishes the derived numbers.
 card fields:
   file, title, authors, series, series_index
   percent (0..100), current_page, total_pages, status ("complete" / ...), pages_left
+  chapter_pages_left  pages left in the CURRENT chapter (live document only,
+                       via ui.toc:getChapterPagesLeft - nil otherwise)
   avg_time (secs/page), total_time (secs), days_read, pages_read
   today_time (secs read TODAY, this book only, per-page capped like total_time)
   all_books_time (secs read TODAY across EVERY book, same per-page cap)
@@ -48,7 +50,7 @@ card fields:
   cover_file / has_cover
  derived by finalize():
   finished, time_left_secs, daily_avg_secs, daily_avg_pages, pages_per_min,
-  est_finish_ts, finished_ts, span_days
+  est_finish_ts, finished_ts, span_days, chapter_time_left_secs
 ]]--
 
 local deps = ...
@@ -544,6 +546,14 @@ function M.finalize(card)
         end
     end
 
+    -- Time left in the current chapter: same pages-left * avg_time formula
+    -- as the whole-book figure above, just fed by chapter_pages_left
+    -- instead of pages_left (see collectLive).
+    card.chapter_time_left_secs = nil
+    if not card.finished and card.chapter_pages_left and card.avg_time then
+        card.chapter_time_left_secs = math.max(0, card.chapter_pages_left * card.avg_time)
+    end
+
     -- Day the book was finished: the "finished" date in the book's own
     -- status if it has one, otherwise the last day it was read.
     card.finished_ts = nil
@@ -606,6 +616,15 @@ function M.collectLive(ui)
     local ok_left, pages_left = pcall(doc.getTotalPagesLeft, doc, pageno)
     if ok_left then card.pages_left = num(pages_left) end
     if live_avg and live_avg > 0 then card.avg_time = live_avg end
+
+    -- Pages left in the CURRENT chapter: the same call the reader footer's
+    -- "chapter pages left" item uses. Only available with a live document
+    -- (ui.toc), so this - and the time it derives in finalize() - stays nil
+    -- for a card rebuilt from the sidecar/statistics DB with no book open.
+    if ui.toc and ui.toc.getChapterPagesLeft then
+        local ok_ch, chapter_left = pcall(ui.toc.getChapterPagesLeft, ui.toc, pageno)
+        if ok_ch then card.chapter_pages_left = num(chapter_left) end
+    end
 
     -- Highlight count + a random quote: from the live, in-memory settings
     -- (most current).
