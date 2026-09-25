@@ -703,7 +703,8 @@ function BookCard:addToMainMenu(menu_items)
                         text = _("Cover style"),
                         sub_item_table = {
                             coverStyleItem(_("Cover image (default)"), "cover"),
-                            coverStyleItem(_("Book spine (Bookshelf style)"), "spine"),
+                            coverStyleItem(_("Face-out (Bookshelf style)"), "faceout"),
+                            coverStyleItem(_("Spine, edge-on (Bookshelf style)"), "spine"),
                         },
                     },
                     rounded,

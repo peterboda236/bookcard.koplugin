@@ -1,45 +1,46 @@
 --[[
-Book card - a "book spine" cover style, echoing Bookshelf's spine-out shelf
-view (see that plugin's lib/bookshelf_spine_layout.lua and
-lib/bookshelf_spine_shelf.lua): instead of the flat front cover, draw the
-book edge-on - a coloured spine (width ~ page count: a thicker book gets a
-wider spine) with a lighter "page block" sliver above it (the pages you'd
-see looking down on a book standing on a real shelf), and boards a shade
-darker than the spine colour framing both.
+Book card - Bookshelf-echoing cover styles: "spine" (the book edge-on) and
+"faceout" (the book turned face-out, cover showing) - see that plugin's
+lib/bookshelf_spine_layout.lua and lib/bookshelf_spine_shelf.lua.
+
+  SpineCover.build(card, max_w, max_h)        -> widget, outer_w, outer_h  (edge-on)
+  SpineCover.buildFaceOut(card, max_w, max_h) -> widget, outer_w, outer_h  (face-out)
 
 This is a simplified, self-contained port for a SINGLE book (bookcard only
 ever shows one at a time - no shelf, no row to pack, no lift/tilt/selection
-animation, no wallpaper-aware corner cutting). The two things worth keeping
-faithful to Bookshelf are:
+animation, no wallpaper-aware corner cutting). Both styles share:
 
-  - the spine's colour: the AVERAGE colour sampled from the book's own
-    cover image (same idea Bookshelf's SpineShelf.bookLook uses), so it
-    still looks like *that* book and not a random swatch; a stable
-    hashed tone from the title when there's no cover to sample.
-  - the geometry: spine width from the page count (SpineLayout.spineWidthDp
-    there), spine height filling the box, and the page-block sliver's
-    height from the book's own cover aspect ratio
-    (SpineLayout.topEdgeHeight there) - so, per the aspect ratio question:
-    yes, a real cover's proportions (when known) size that sliver; an
-    unknown aspect falls back to a typical paperback's.
+  - a colour sampled from the book's own cover image for the boards/page
+    block (same idea as Bookshelf's SpineShelf.bookLook), a stable hashed
+    tone from the title when there's no cover to sample;
+  - a "page block" sliver, boards rising past it on both sides, standing
+    for the pages you'd see looking at a book on a real shelf - above the
+    spine in the edge-on style, above the cover in the face-out style;
+  - the page block's size follows the book's own numbers where we have
+    them: the edge-on spine's WIDTH from the page count (thicker book,
+    wider spine - SpineLayout.spineWidthDp) and its page-block HEIGHT from
+    the cover's own aspect ratio (SpineLayout.topEdgeHeight); the face-out
+    cover keeps its true aspect ratio and its page block's height instead
+    comes from that same page-count thickness, foreshortened
+    (SpineLayout.faceOutWidth / the depth maths in bookshelf_spine_shelf.lua).
 
-  SpineCover.build(card, max_w, max_h) -> widget, outer_w, outer_h
-
-`max_w` x `max_h` bounds the box the spine has to fit in (frame included,
-same convention as buildCover() in views/card_view.lua). The spine FILLS
-max_h (a book stands to the top of its shelf slot) and is only as WIDE as
-its "thickness" calls for - capped to max_w - so, unlike the normal cover,
-the returned outer_w is very likely narrower than max_w.
+`max_w` x `max_h` bounds the box each has to fit in (frame included, same
+convention as buildCover() in views/card_view.lua).
 ]]--
 
 local deps  = ...
 local Cache = deps and deps.Cache
 
-local Blitbuffer = require("ffi/blitbuffer")
-local Device      = require("device")
-local Geom        = require("ui/geometry")
-local Widget      = require("ui/widget/widget")
-local Screen      = Device.screen
+local Blitbuffer      = require("ffi/blitbuffer")
+local Device           = require("device")
+local Font             = require("ui/font")
+local Geom             = require("ui/geometry")
+local CenterContainer  = require("ui/widget/container/centercontainer")
+local FrameContainer   = require("ui/widget/container/framecontainer")
+local ImageWidget      = require("ui/widget/imagewidget")
+local TextBoxWidget    = require("ui/widget/textboxwidget")
+local Widget           = require("ui/widget/widget")
+local Screen           = Device.screen
 
 local function S(n)
     return Screen:scaleBySize(n)
@@ -100,6 +101,15 @@ local function topEdgeHeight(book_h, aspect, min_px)
     if edge > e_max then edge = e_max end
     if edge < 0 then edge = 0 end
     return edge
+end
+
+-- The cover width when a book faces outwards at a given displayed cover
+-- height, i.e. the cover kept aspect-true: SpineLayout.faceOutWidth.
+local function faceOutWidth(face_h, aspect)
+    if not aspect or aspect <= 0 then aspect = DEFAULT_ASPECT end
+    local w = math.floor(face_h / aspect + 0.5)
+    if w < 1 then w = 1 end
+    return w
 end
 
 -- ---------------------------------------------------------------------------
@@ -271,4 +281,162 @@ function SpineCover.build(card, max_w, max_h)
     return widget, spine_w, spine_h
 end
 
+-- ---------------------------------------------------------------------------
+-- Face-out: the book turned to show its cover, a page block (boards +
+-- pages, seen from above) sitting on top of it instead of a drop shadow -
+-- SpineShelf's FaceOutTopBlock, ported.
+-- ---------------------------------------------------------------------------
+local function paintFaceOutTopBlock(bb, x, y, w, h, r, g, b)
+    if w < 6 or h < 3 then return end
+    local board = math.max(2, math.min(S(3), math.floor(h * 0.3)))
+    local rb = math.max(1, math.floor(board / 2))
+    local sx0, sy0 = x + board, y + board
+    local sw, sh = w - board - rb, h - board
+    if sw > 2 and sh > 1 then
+        bb:paintRect(sx0, sy0, sw, sh, PAGE_TONE)
+        -- Page lines running the width of the block, like the edges of
+        -- stacked pages seen from above.
+        local step = math.max(2, math.floor(S(1.4)) + 1)
+        local cy = sy0 + 1
+        while cy < sy0 + sh do
+            bb:paintRect(sx0, cy, sw, 1, STRIPE_TONE)
+            cy = cy + step
+        end
+    end
+    local fill = tint(r, g, b, BOARD_SHADE)
+    local ch = math.max(2, S(1))
+    bb:paintRect(x, y + ch, board, h - ch, fill)           -- left board
+    bb:paintRect(x + ch, y, w - ch, board, fill)            -- top board
+    bb:paintRect(x + w - rb, y + board, rb, h - board, fill) -- right sliver
+end
+
+local SpineFaceOut = Widget:extend{
+    width = 0, height = 0,
+    depth = 0,      -- page-block height, px (0 = too small to show)
+    hairline = 1,
+    r = 0, g = 0, b = 0,
+    cover = nil,    -- the cover widget (real image, or the fallback plate)
+}
+
+function SpineFaceOut:getSize()
+    return Geom:new{ w = self.width, h = self.height }
+end
+
+function SpineFaceOut:paintTo(bb, x, y)
+    self.dimen = Geom:new{ x = x, y = y, w = self.width, h = self.height }
+    local w, depth, hl = self.width, self.depth, self.hairline
+    if depth > 0 then
+        paintFaceOutTopBlock(bb, x, y, w, depth, self.r, self.g, self.b)
+    end
+    if self.cover then
+        self.cover:paintTo(bb, x, y + depth)
+    end
+    -- A thin board-coloured frame around the cover, tying it visually to
+    -- the page block sitting on it.
+    local board = tint(self.r, self.g, self.b, BOARD_SHADE)
+    local cover_h = self.height - depth
+    bb:paintRect(x, y + depth, w, hl, board)
+    bb:paintRect(x, y + self.height - hl, w, hl, board)
+    bb:paintRect(x, y + depth, hl, cover_h, board)
+    bb:paintRect(x + w - hl, y + depth, hl, cover_h, board)
+end
+
+-- SpineCover.buildFaceOut(card, max_w, max_h) -> widget, outer_w, outer_h
+function SpineCover.buildFaceOut(card, max_w, max_h)
+    max_h = max_h or S(120)
+
+    -- The real cover, decoded once - sampled for the boards' colour AND
+    -- (further down) handed to the ImageWidget that paints it, so the
+    -- decode is never done twice.
+    local cover_bb, r, g, b, aspect
+    local has_cover = Cache and Cache.hasCover and Cache.hasCover()
+        and (not card or card.has_cover ~= false)
+    if has_cover then
+        local ok = pcall(function()
+            local RenderImage = require("ui/renderimage")
+            local bb = RenderImage:renderImageFile(Cache.coverPath(), false, nil, nil)
+            if not bb then return end
+            local iw, ih = bb:getWidth(), bb:getHeight()
+            if iw and ih and iw > 0 then aspect = ih / iw end
+            local sr, sg, sb = sampleAverage(bb)
+            if sr then r, g, b = contrastClamp(sr, sg, sb) end
+            cover_bb = bb
+        end)
+        if not ok then cover_bb = nil end
+    end
+    if not r then
+        r, g, b = fallbackLook(card and card.title)
+    end
+    aspect = aspect or DEFAULT_ASPECT
+
+    -- Depth: the page block above the cover, from this book's thickness -
+    -- the same page-count-to-width mapping the edge-on spine uses,
+    -- foreshortened by the same camera pitch (SpineLayout.faceOutWidth's
+    -- sibling maths in bookshelf_spine_shelf.lua).
+    local pages = card and (card.total_pages or card.stats_pages)
+    local depth_dp = spineWidthDp(pages) * autoThickness(max_h)
+    local depth = math.floor(S(depth_dp) * VIEW_SIN)
+    local d_max = math.floor(max_h * 0.15)
+    if depth > d_max then depth = d_max end
+    if depth < S(3) then depth = S(3) end
+
+    -- The cover's own displayed height, kept aspect-true - a real book's
+    -- front face, not squeezed to fit.
+    local face_h = max_h - depth
+    if face_h < S(24) then face_h = S(24) end
+    local w = faceOutWidth(face_h, aspect)
+    if max_w and w > max_w then
+        local scale = max_w / w
+        w = max_w
+        face_h = math.max(S(24), math.floor(face_h * scale))
+        depth = math.max(1, math.floor(depth * scale))
+    end
+
+    -- The cover itself: the real image, scaled to the box just computed -
+    -- or, with no cover to show, a flat plate in the sampled/fallback
+    -- colour carrying the title, so the face-out still reads as a book.
+    local cover_widget
+    if cover_bb then
+        local ok = pcall(function()
+            local img = ImageWidget:new{
+                image = cover_bb, image_disposable = true,
+                width = w, height = face_h, scale_factor = 0,
+            }
+            img:getSize()
+            cover_widget = img
+        end)
+        if not ok then cover_widget = nil end
+    end
+    if not cover_widget then
+        local luma = 0.299 * r + 0.587 * g + 0.114 * b
+        local fg = (luma < 140) and Blitbuffer.COLOR_WHITE or Blitbuffer.COLOR_BLACK
+        local plate_bg = tint(r, g, b, 1)
+        cover_widget = FrameContainer:new{
+            bordersize = 0, padding = 0, margin = 0,
+            background = plate_bg,
+            width = w, height = face_h,
+            CenterContainer:new{
+                dimen = Geom:new{ w = w, h = face_h },
+                TextBoxWidget:new{
+                    text = (card and card.title) or "",
+                    face = Font:getFace("NotoSans-Bold.ttf", 16),
+                    width = math.max(10, w - S(16)),
+                    alignment = "center",
+                    fgcolor = fg,
+                    bgcolor = plate_bg,
+                },
+            },
+        }
+    end
+
+    local widget = SpineFaceOut:new{
+        width = w, height = face_h + depth, depth = depth,
+        hairline = math.max(1, S(1)),
+        r = r, g = g, b = b,
+        cover = cover_widget,
+    }
+    return widget, w, face_h + depth
+end
+
 return SpineCover
+

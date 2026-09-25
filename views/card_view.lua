@@ -192,25 +192,38 @@ local function iconLabel(icon_name, txt, text_face, icon_size, pal, color)
     return group
 end
 
--- Whether the reader picked the Bookshelf-style spine-out cover (see
+-- Whether the reader picked a Bookshelf-echoing cover style (see
 -- widgets/spinecover.lua) instead of the normal flat front cover.
+function M.coverStyle()
+    return Prefs.read(M.SETTING_COVER_STYLE, "cover")
+end
 function M.isSpineStyle()
-    return Prefs.read(M.SETTING_COVER_STYLE, "cover") == "spine"
+    return M.coverStyle() == "spine"
+end
+function M.isFaceOutStyle()
+    return M.coverStyle() == "faceout"
 end
 
 -- ---------------------------------------------------------------------------
--- Cover (framed, optionally rounded - or, in spine style, a drawn book
--- spine; see widgets/spinecover.lua)
+-- Cover (framed, optionally rounded - or, in a Bookshelf-echoing style, a
+-- drawn book spine/face-out; see widgets/spinecover.lua)
 -- ---------------------------------------------------------------------------
 -- `max_w` x `max_h` is the box for the OUTER size (frame included).
 -- Returns the widget and its outer width and height.
 local function buildCover(card, max_w, max_h, pal, shadow_offset, restore)
-    if M.isSpineStyle() then
+    local style = M.coverStyle()
+    if style == "spine" then
         -- The spine draws its own boards/border, so it isn't wrapped in
         -- CoverFrame - it fills max_h (a book stands to the top of its
         -- shelf slot) and is only as WIDE as its "thickness" calls for, so
         -- the returned outer_w is very likely narrower than max_w.
         return SpineCover.build(card, max_w, max_h)
+    end
+    if style == "faceout" then
+        -- The face-out cover also draws its own frame/page-block, and
+        -- keeps the real cover's aspect ratio, so its returned outer size
+        -- is whatever that works out to (capped to the box).
+        return SpineCover.buildFaceOut(card, max_w, max_h)
     end
 
     local border = math.max(2, S(1))
@@ -936,9 +949,9 @@ function M.build(card, opts)
         local text_left_c = cover_left_c + text_inset_c
 
         if show_cover_shadow_c then
-            -- Square corners for the spine style - it draws square boards,
-            -- not a rounded card.
-            local radius = (not M.isSpineStyle())
+            -- Square corners for the spine/face-out styles - they draw
+            -- their own square boards, not a rounded card.
+            local radius = (M.coverStyle() == "cover")
                 and Prefs.readBool(M.SETTING_ROUNDED, true) and S(4) or 0
             local shadow = CoverFrame.Shadow:new{
                 width = cover_w_c, height = cover_h_c,
@@ -1172,9 +1185,9 @@ function M.build(card, opts)
 
     -- Cover drop shadow (painted first so the cover sits on top).
     if show_cover_shadow then
-        -- Square corners for the spine style - it draws square boards, not
-        -- a rounded card.
-        local radius = (not M.isSpineStyle())
+        -- Square corners for the spine/face-out styles - they draw their
+        -- own square boards, not a rounded card.
+        local radius = (M.coverStyle() == "cover")
             and Prefs.readBool(M.SETTING_ROUNDED, true) and S(4) or 0
         local shadow = CoverFrame.Shadow:new{
             width  = cover_w,
