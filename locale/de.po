@@ -1,0 +1,605 @@
+# Book card plugin translation (de)
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: de\n"
+
+msgid "Book card"
+msgstr "Book card"
+
+msgid "Book card: preview"
+msgstr "Book card: Vorschau"
+
+msgid "Book card is a new sleep screen for KOReader, heavily inspired by the idea and visual design of CrossPoint's sleep screen implementation."
+msgstr "Book card ist ein neuer Ruhebildschirm für KOReader, stark inspiriert von der Idee und dem visuellen Design der Ruhebildschirm-Implementierung von CrossPoint."
+
+msgid "About"
+msgstr "Über"
+
+msgid "A sleep screen with a reading summary card: cover, reading time, progress, pace and streak."
+msgstr "Ein Ruhebildschirm mit einer Lesezusammenfassungskarte: Cover, Lesezeit, Fortschritt, Tempo und Serie."
+
+msgid "Use as sleep screen"
+msgstr "Als Ruhebildschirm verwenden"
+
+msgid "Preview"
+msgstr "Vorschau"
+
+msgid "Background"
+msgstr "Hintergrund"
+
+msgid "Follow night mode"
+msgstr "Nachtmodus folgen"
+
+msgid "Always light"
+msgstr "Immer hell"
+
+msgid "Always dark"
+msgstr "Immer dunkel"
+
+msgid "Rounded cover corners"
+msgstr "Abgerundete Cover-Ecken"
+
+msgid "Cover"
+msgstr "Cover"
+
+msgid "Cover shadow"
+msgstr "Cover-Schatten"
+
+msgid "Cover / statistics spacing"
+msgstr "Abstand zwischen Cover und Statistik"
+
+msgid "Small (default)"
+msgstr "Klein (Standard)"
+
+msgid "Large"
+msgstr "Groß"
+
+msgid "Show battery"
+msgstr "Akku anzeigen"
+
+msgid "Show reading streak"
+msgstr "Lese-Serie anzeigen"
+
+msgid "Show reader type"
+msgstr "Lesertyp anzeigen"
+
+msgid "Card elements"
+msgstr "Kartenelemente"
+
+msgid "Statistics"
+msgstr "Statistik"
+
+msgid "Reorder"
+msgstr "Neu anordnen"
+
+msgid "Reorder statistics"
+msgstr "Statistik neu anordnen"
+
+msgid "Text background grouping"
+msgstr "Textgruppierung im Hintergrund"
+
+msgid "Individually"
+msgstr "Einzeln"
+
+msgid "Grouped (default)"
+msgstr "Gruppiert (Standard)"
+
+msgid "Clear cached data"
+msgstr "Zwischengespeicherte Daten löschen"
+
+msgid "Cached data cleared."
+msgstr "Zwischengespeicherte Daten gelöscht."
+
+msgid "No book data yet. Open a book and read a few pages first."
+msgstr "Noch keine Buchdaten. Öffne zuerst ein Buch und lies ein paar Seiten."
+
+msgid "<1 min"
+msgstr "<1 Min."
+
+msgid "%d min"
+msgstr "%d Min."
+
+msgid "%dh %d min"
+msgstr "%dh %d Min."
+
+msgid "Jan"
+msgstr "Jan"
+
+msgid "Feb"
+msgstr "Feb"
+
+msgid "Mar"
+msgstr "Mär"
+
+msgid "Apr"
+msgstr "Apr"
+
+msgid "May"
+msgstr "Mai"
+
+msgid "Jun"
+msgstr "Jun"
+
+msgid "Jul"
+msgstr "Jul"
+
+msgid "Aug"
+msgstr "Aug"
+
+msgid "Sep"
+msgstr "Sep"
+
+msgid "Oct"
+msgstr "Okt"
+
+msgid "Nov"
+msgstr "Nov"
+
+msgid "Dec"
+msgstr "Dez"
+
+msgid "{month} {day}"
+msgstr "{month} {day}"
+
+msgid "{month} {day}, {year}"
+msgstr "{day}. {month} {year}"
+
+msgid "Reading Time"
+msgstr "Lesezeit"
+
+msgid "Time Left"
+msgstr "Verbleibende Zeit"
+
+msgid "Progress"
+msgstr "Fortschritt"
+
+msgid "Pages"
+msgstr "Seiten"
+
+msgid "Daily Avg"
+msgstr "Tagesdurchschnitt"
+
+msgid "Pages/Min"
+msgstr "Seiten/Min."
+
+msgid "Started {date}"
+msgstr "Begonnen am {date}"
+
+msgid "Started"
+msgstr "Begonnen"
+
+msgid "Finished Date"
+msgstr "Beendet am"
+
+msgid "Est. Finish"
+msgstr "Voraussichtl. Ende"
+
+msgid "Highlights"
+msgstr "Hervorhebungen"
+
+msgid "%d day"
+msgstr "%d Tag"
+
+msgid "%d days"
+msgstr "%d Tage"
+
+msgid "%d day streak"
+msgstr "%d Tag in Folge"
+
+msgid "%d days streak"
+msgstr "%d Tage in Folge"
+
+msgid "%d week streak"
+msgstr "%d Woche in Folge"
+
+msgid "%d weeks streak"
+msgstr "%d Wochen in Folge"
+
+msgid "Today"
+msgstr "Heute"
+
+msgid "Yesterday"
+msgstr "Gestern"
+
+msgid "%d day ago"
+msgstr "vor %d Tag"
+
+msgid "%d days ago"
+msgstr "vor %d Tagen"
+
+msgid "and"
+msgstr "und"
+
+msgid "{series} / #{index}"
+msgstr "{series} / #{index}"
+
+msgid "Night Reader"
+msgstr "Nachtleser"
+
+msgid "Morning Reader"
+msgstr "Morgenleser"
+
+msgid "Afternoon Reader"
+msgstr "Nachmittagsleser"
+
+msgid "Evening Reader"
+msgstr "Abendleser"
+
+msgid "Updates"
+msgstr "Updates"
+
+msgid "Notify on wake when update available"
+msgstr "Beim Aufwachen über verfügbare Updates benachrichtigen"
+
+msgid "Update available"
+msgstr "Update verfügbar"
+
+msgid "Developer updates"
+msgstr "Entwickler-Updates"
+
+msgid "Development branch"
+msgstr "Entwicklungszweig"
+
+msgid "Branch name (leave empty for stable)"
+msgstr "Branch-Name (leer lassen für Stable)"
+
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgid "Save"
+msgstr "Speichern"
+
+msgid "Check for updates"
+msgstr "Nach Updates suchen"
+
+msgid "Install branch"
+msgstr "Branch installieren"
+
+msgid "Reset to latest stable release"
+msgstr "Auf die neueste stabile Version zurücksetzen"
+
+msgid "Installed: v"
+msgstr "Installiert: v"
+
+msgid "Reset"
+msgstr "Zurücksetzen"
+
+msgid "This will clear the development branch setting and install the latest stable release of Book card, then restart KOReader. Continue?"
+msgstr "Dadurch wird die Einstellung für den Entwicklungszweig gelöscht und die neueste stabile Version von Book card installiert, danach wird KOReader neu gestartet. Fortfahren?"
+
+msgid "Book card update available: v"
+msgstr "Book card-Update verfügbar: v"
+
+msgid "No update source is configured yet."
+msgstr "Es ist noch keine Update-Quelle konfiguriert."
+
+msgid "Open the releases page in a browser?"
+msgstr "Die Releases-Seite im Browser öffnen?"
+
+msgid "Open"
+msgstr "Öffnen"
+
+msgid "Checking for updates..."
+msgstr "Suche nach Updates..."
+
+msgid "Could not check for updates."
+msgstr "Updates konnten nicht überprüft werden."
+
+msgid "Book card is up to date."
+msgstr "Book card ist auf dem neuesten Stand."
+
+msgid "Version: "
+msgstr "Version: "
+
+msgid "Close"
+msgstr "Schließen"
+
+msgid "Update and restart"
+msgstr "Aktualisieren und neu starten"
+
+msgid "No download available for this release."
+msgstr "Für diese Version ist kein Download verfügbar."
+
+msgid "Update available!"
+msgstr "Update verfügbar!"
+
+msgid "Installed: "
+msgstr "Installiert: "
+
+msgid "Latest: "
+msgstr "Neueste: "
+
+msgid "Downloading update..."
+msgstr "Update wird heruntergeladen..."
+
+msgid "Download failed."
+msgstr "Download fehlgeschlagen."
+
+msgid "Installation failed: "
+msgstr "Installation fehlgeschlagen: "
+
+msgid "Book card updated to v"
+msgstr "Book card aktualisiert auf v"
+
+msgid "Restart KOReader now?"
+msgstr "KOReader jetzt neu starten?"
+
+msgid "Restart"
+msgstr "Neu starten"
+
+msgid "Could not install branch:"
+msgstr "Branch konnte nicht installiert werden:"
+
+msgid "Downloading latest release..."
+msgstr "Neueste Version wird heruntergeladen..."
+
+msgid "Could not fetch latest release."
+msgstr "Neueste Version konnte nicht abgerufen werden."
+
+msgid "Latest release has no downloadable zip."
+msgstr "Die neueste Version enthält keine herunterladbare ZIP-Datei."
+
+msgid "Fonts"
+msgstr "Schriftarten"
+
+msgid "Colors"
+msgstr "Farben"
+
+msgid "Title"
+msgstr "Titel"
+
+msgid "Author"
+msgstr "Autor"
+
+msgid "Series"
+msgstr "Reihe"
+
+msgid "Statistics values"
+msgstr "Statistikwerte"
+
+msgid "Statistics labels"
+msgstr "Statistikbeschriftungen"
+
+msgid "Streak / reader type"
+msgstr "Serie / Lesertyp"
+
+msgid "Battery percentage"
+msgstr "Akkuprozentsatz"
+
+msgid "Title color"
+msgstr "Titelfarbe"
+
+msgid "Author color"
+msgstr "Autorenfarbe"
+
+msgid "Series color"
+msgstr "Reihenfarbe"
+
+msgid "Statistics value color"
+msgstr "Farbe der Statistikwerte"
+
+msgid "Statistics label color"
+msgstr "Farbe der Statistikbeschriftungen"
+
+msgid "Streak / reader type color"
+msgstr "Farbe von Serie / Lesertyp"
+
+msgid "Battery color"
+msgstr "Akkufarbe"
+
+msgid "Font"
+msgstr "Schriftart"
+
+msgid "Custom font name (type manually)"
+msgstr "Eigener Schriftname (manuell eingeben)"
+
+msgid "Font size"
+msgstr "Schriftgröße"
+
+msgid "Reset to default"
+msgstr "Auf Standard zurücksetzen"
+
+msgid "Choose a font"
+msgstr "Schriftart auswählen"
+
+msgid "Font name"
+msgstr "Schriftname"
+
+msgid "Enter a bundled font file name (e.g. NotoSans-Bold.ttf) or a KOReader font alias (e.g. tfont, cfont). If it can't be found, this role falls back to its default font."
+msgstr "Gib den Namen einer mitgelieferten Schriftdatei ein (z. B. NotoSans-Bold.ttf) oder einen KOReader-Schrift-Alias (z. B. tfont, cfont). Wird sie nicht gefunden, greift diese Rolle auf ihre Standardschrift zurück."
+
+msgid "Please enter a non-empty font name."
+msgstr "Bitte gib einen nicht leeren Schriftnamen ein."
+
+msgid "Set"
+msgstr "Übernehmen"
+
+msgid "Auto"
+msgstr "Automatisch"
+
+msgid "Reset all fonts to default"
+msgstr "Alle Schriftarten auf Standard zurücksetzen"
+
+msgid "Reset all fonts to their default values?"
+msgstr "Alle Schriftarten auf ihre Standardwerte zurücksetzen?"
+
+msgid "Default"
+msgstr "Standard"
+
+msgid "Default (follows theme)"
+msgstr "Standard (folgt dem Theme)"
+
+msgid "Apply"
+msgstr "Anwenden"
+
+msgid "Brightness: %d%%"
+msgstr "Helligkeit: %d%%"
+
+msgid "Pick with color wheel"
+msgstr "Mit Farbrad auswählen"
+
+msgid "Enter a hex color code (e.g. #1E90FF), the way KOReader expects it. Leave empty to follow the card's usual background/theme color."
+msgstr "Gib einen Hex-Farbcode ein (z. B. #1E90FF), so wie KOReader ihn erwartet. Leer lassen, um der üblichen Hintergrund-/Theme-Farbe der Karte zu folgen."
+
+msgid "Not a valid hex color code, e.g. #1E90FF."
+msgstr "Kein gültiger Hex-Farbcode, z. B. #1E90FF."
+
+msgid "Reset all colors to default"
+msgstr "Alle Farben auf Standard zurücksetzen"
+
+msgid "Reset all colors to follow the theme again?"
+msgstr "Sollen alle Farben wieder dem Theme folgen?"
+
+msgid "Wallpaper"
+msgstr "Hintergrundbild"
+
+msgid "None"
+msgstr "Keine"
+
+msgid "Random"
+msgstr "Zufällig"
+
+msgid "No images in {dir}"
+msgstr "Keine Bilder in {dir}"
+
+msgid "Images are loaded from {dir}"
+msgstr "Bilder werden aus {dir} geladen"
+
+msgid "Text background opacity"
+msgstr "Deckkraft des Texthintergrunds"
+
+msgid "Off"
+msgstr "Aus"
+
+msgid "Low"
+msgstr "Niedrig"
+
+msgid "Moderate"
+msgstr "Mittel"
+
+msgid "High"
+msgstr "Hoch"
+
+msgid "Solid"
+msgstr "Deckend"
+
+msgid "Daily Avg (pages)"
+msgstr "Tagesdurchschnitt (Seiten)"
+
+msgid "%d page"
+msgstr "%d Seite"
+
+msgid "%d pages"
+msgstr "%d Seiten"
+
+msgid "Advanced Settings"
+msgstr "Erweiterte Einstellungen"
+
+msgid "Layout"
+msgstr "Layout"
+
+msgid "Cover beside statistics (default)"
+msgstr "Cover neben Statistik (Standard)"
+
+msgid "Cover centered, statistics grid below"
+msgstr "Cover zentriert, Statistikraster darunter"
+
+msgid "Orientation"
+msgstr "Ausrichtung"
+
+msgid "Force portrait"
+msgstr "Hochformat erzwingen"
+
+msgid "Force landscape"
+msgstr "Querformat erzwingen"
+
+msgid "Margins"
+msgstr "Ränder"
+
+msgid "Side padding"
+msgstr "Seitenabstand"
+
+msgid "Top padding"
+msgstr "Abstand oben"
+
+msgid "Bottom padding"
+msgstr "Abstand unten"
+
+msgid "Image export (Android wallpaper / PocketBook logo)"
+msgstr "Bildexport (Android-Hintergrundbild / PocketBook-Logo)"
+
+msgid "Save as image, kept up to date"
+msgstr "Als Bild speichern, stets aktuell"
+
+msgid "On Android, KOReader's own sleep screen (above) never shows, because locking the screen hands over to Android's own lock screen instead. Turn this on and Book card keeps a picture of the card on disk, refreshed automatically; set that picture as your Android wallpaper the normal way (from the Photos/Gallery app, or a wallpaper-changer app pointed at the folder below)."
+msgstr "Auf Android wird KOReaders eigener Ruhebildschirm (oben) nie angezeigt, weil das Sperren des Bildschirms stattdessen an den eigenen Sperrbildschirm von Android übergeben wird. Aktiviere dies, und Book card speichert automatisch ein aktualisiertes Bild der Karte auf dem Gerät; lege dieses Bild ganz normal als Android-Hintergrundbild fest (aus der Fotos-/Galerie-App oder einer Wallpaper-Wechsler-App, die auf den unten angegebenen Ordner zeigt)."
+
+msgid "Refresh interval"
+msgstr "Aktualisierungsintervall"
+
+msgid "Every 5 minutes"
+msgstr "Alle 5 Minuten"
+
+msgid "Every 15 minutes"
+msgstr "Alle 15 Minuten"
+
+msgid "Every 30 minutes"
+msgstr "Alle 30 Minuten"
+
+msgid "Every hour"
+msgstr "Jede Stunde"
+
+msgid "min"
+msgstr "Min."
+
+msgid "Also copy to folder"
+msgstr "Auch in Ordner kopieren"
+
+msgid "Also copy to a shared folder…"
+msgstr "Auch in einen freigegebenen Ordner kopieren…"
+
+msgid "Choose a folder to also save the image to"
+msgstr "Wähle einen Ordner, in dem das Bild ebenfalls gespeichert werden soll"
+
+msgid "Image will also be copied to:\n{path}\n\nOn Android, point your system wallpaper picker (or a wallpaper-changer app) at this folder."
+msgstr "Das Bild wird außerdem kopiert nach:\n{path}\n\nUnter Android richte die System-Hintergrundbildauswahl (oder eine Wallpaper-Wechsler-App) auf diesen Ordner."
+
+msgid "Stop copying to that extra folder"
+msgstr "Kopieren in diesen zusätzlichen Ordner beenden"
+
+msgid "Also save as PocketBook power-off / boot logo"
+msgstr "Auch als PocketBook-Ausschalt-/Boot-Logo speichern"
+
+msgid "Save image now"
+msgstr "Bild jetzt speichern"
+
+msgid "Image saved to: {path}"
+msgstr "Bild gespeichert unter: {path}"
+
+msgid "Image updated."
+msgstr "Bild aktualisiert."
+
+msgid "Could not update the image."
+msgstr "Bild konnte nicht aktualisiert werden."
+
+msgid "Could not create the image export folder."
+msgstr "Der Bildexportordner konnte nicht erstellt werden."
+
+msgid "Could not write the image file."
+msgstr "Die Bilddatei konnte nicht geschrieben werden."
+
+msgid "Could not draw the card as an image (see the log for details)."
+msgstr "Die Karte konnte nicht als Bild gezeichnet werden (Details im Protokoll)."
+
+msgid "Highlighted quote"
+msgstr "Hervorgehobenes Zitat"
+
+msgid "Quote color"
+msgstr "Zitatfarbe"
+
+msgid "Also save when opening a book"
+msgstr "Auch beim Öffnen eines Buchs speichern"
+
+msgid "Image format"
+msgstr "Bildformat"

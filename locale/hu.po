@@ -482,6 +482,7 @@ msgstr "Magas"
 
 msgid "Solid"
 msgstr "Teljes"
+
 msgid "Daily Avg (pages)"
 msgstr "Napi átlag (oldal)"
 
@@ -567,7 +568,7 @@ msgid "Stop copying to that extra folder"
 msgstr "Extra mappába másolás leállítása"
 
 msgid "Also save as PocketBook power-off / boot logo"
-msgstr "Mentés PocketBook kikapcsolási / indítási logóként is"
+msgstr "Mentés PocketBook kikapcsolási / boot logóként is"
 
 msgid "Save image now"
 msgstr "Kép mentése most"

@@ -1,0 +1,605 @@
+# Book card plugin translation (zh_CN)
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: zh_CN\n"
+
+msgid "Book card"
+msgstr "Book card"
+
+msgid "Book card: preview"
+msgstr "Book card：预览"
+
+msgid "Book card is a new sleep screen for KOReader, heavily inspired by the idea and visual design of CrossPoint's sleep screen implementation."
+msgstr "Book card 是 KOReader 的全新休眠屏幕，其创意和视觉设计在很大程度上受到 CrossPoint 休眠屏幕实现的启发。"
+
+msgid "About"
+msgstr "关于"
+
+msgid "A sleep screen with a reading summary card: cover, reading time, progress, pace and streak."
+msgstr "一个带有阅读摘要卡片的休眠屏幕：封面、阅读时间、进度、速度和连续阅读天数。"
+
+msgid "Use as sleep screen"
+msgstr "用作休眠屏幕"
+
+msgid "Preview"
+msgstr "预览"
+
+msgid "Background"
+msgstr "背景"
+
+msgid "Follow night mode"
+msgstr "跟随夜间模式"
+
+msgid "Always light"
+msgstr "始终浅色"
+
+msgid "Always dark"
+msgstr "始终深色"
+
+msgid "Rounded cover corners"
+msgstr "圆角封面"
+
+msgid "Cover"
+msgstr "封面"
+
+msgid "Cover shadow"
+msgstr "封面阴影"
+
+msgid "Cover / statistics spacing"
+msgstr "封面与统计信息间距"
+
+msgid "Small (default)"
+msgstr "小（默认）"
+
+msgid "Large"
+msgstr "大"
+
+msgid "Show battery"
+msgstr "显示电池"
+
+msgid "Show reading streak"
+msgstr "显示连续阅读天数"
+
+msgid "Show reader type"
+msgstr "显示读者类型"
+
+msgid "Card elements"
+msgstr "卡片元素"
+
+msgid "Statistics"
+msgstr "统计信息"
+
+msgid "Reorder"
+msgstr "重新排序"
+
+msgid "Reorder statistics"
+msgstr "重新排序统计信息"
+
+msgid "Text background grouping"
+msgstr "文字背景分组"
+
+msgid "Individually"
+msgstr "单独"
+
+msgid "Grouped (default)"
+msgstr "分组（默认）"
+
+msgid "Clear cached data"
+msgstr "清除缓存数据"
+
+msgid "Cached data cleared."
+msgstr "缓存数据已清除。"
+
+msgid "No book data yet. Open a book and read a few pages first."
+msgstr "尚无图书数据。请先打开一本书并阅读几页。"
+
+msgid "<1 min"
+msgstr "<1 分钟"
+
+msgid "%d min"
+msgstr "%d 分钟"
+
+msgid "%dh %d min"
+msgstr "%d小时%d分钟"
+
+msgid "Jan"
+msgstr "1月"
+
+msgid "Feb"
+msgstr "2月"
+
+msgid "Mar"
+msgstr "3月"
+
+msgid "Apr"
+msgstr "4月"
+
+msgid "May"
+msgstr "5月"
+
+msgid "Jun"
+msgstr "6月"
+
+msgid "Jul"
+msgstr "7月"
+
+msgid "Aug"
+msgstr "8月"
+
+msgid "Sep"
+msgstr "9月"
+
+msgid "Oct"
+msgstr "10月"
+
+msgid "Nov"
+msgstr "11月"
+
+msgid "Dec"
+msgstr "12月"
+
+msgid "{month} {day}"
+msgstr "{month}{day}日"
+
+msgid "{month} {day}, {year}"
+msgstr "{year}年{month}{day}日"
+
+msgid "Reading Time"
+msgstr "阅读时间"
+
+msgid "Time Left"
+msgstr "剩余时间"
+
+msgid "Progress"
+msgstr "进度"
+
+msgid "Pages"
+msgstr "页数"
+
+msgid "Daily Avg"
+msgstr "日均"
+
+msgid "Pages/Min"
+msgstr "页/分钟"
+
+msgid "Started {date}"
+msgstr "开始于{date}"
+
+msgid "Started"
+msgstr "开始日期"
+
+msgid "Finished Date"
+msgstr "完成日期"
+
+msgid "Est. Finish"
+msgstr "预计完成"
+
+msgid "Highlights"
+msgstr "高亮"
+
+msgid "%d day"
+msgstr "%d 天"
+
+msgid "%d days"
+msgstr "%d 天"
+
+msgid "%d day streak"
+msgstr "连续 %d 天"
+
+msgid "%d days streak"
+msgstr "连续 %d 天"
+
+msgid "%d week streak"
+msgstr "连续 %d 周"
+
+msgid "%d weeks streak"
+msgstr "连续 %d 周"
+
+msgid "Today"
+msgstr "今天"
+
+msgid "Yesterday"
+msgstr "昨天"
+
+msgid "%d day ago"
+msgstr "%d 天前"
+
+msgid "%d days ago"
+msgstr "%d 天前"
+
+msgid "and"
+msgstr "和"
+
+msgid "{series} / #{index}"
+msgstr "{series} / 第{index}本"
+
+msgid "Night Reader"
+msgstr "夜间读者"
+
+msgid "Morning Reader"
+msgstr "早晨读者"
+
+msgid "Afternoon Reader"
+msgstr "下午读者"
+
+msgid "Evening Reader"
+msgstr "晚间读者"
+
+msgid "Updates"
+msgstr "更新"
+
+msgid "Notify on wake when update available"
+msgstr "唤醒时如有更新可用则通知"
+
+msgid "Update available"
+msgstr "有可用更新"
+
+msgid "Developer updates"
+msgstr "开发者更新"
+
+msgid "Development branch"
+msgstr "开发分支"
+
+msgid "Branch name (leave empty for stable)"
+msgstr "分支名称（留空以使用稳定版）"
+
+msgid "Cancel"
+msgstr "取消"
+
+msgid "Save"
+msgstr "保存"
+
+msgid "Check for updates"
+msgstr "检查更新"
+
+msgid "Install branch"
+msgstr "安装分支"
+
+msgid "Reset to latest stable release"
+msgstr "重置为最新稳定版本"
+
+msgid "Installed: v"
+msgstr "已安装：v"
+
+msgid "Reset"
+msgstr "重置"
+
+msgid "This will clear the development branch setting and install the latest stable release of Book card, then restart KOReader. Continue?"
+msgstr "这将清除开发分支设置并安装 Book card 的最新稳定版本，然后重启 KOReader。是否继续？"
+
+msgid "Book card update available: v"
+msgstr "Book card 更新可用：v"
+
+msgid "No update source is configured yet."
+msgstr "尚未配置更新源。"
+
+msgid "Open the releases page in a browser?"
+msgstr "是否在浏览器中打开发布页面？"
+
+msgid "Open"
+msgstr "打开"
+
+msgid "Checking for updates..."
+msgstr "正在检查更新…"
+
+msgid "Could not check for updates."
+msgstr "无法检查更新。"
+
+msgid "Book card is up to date."
+msgstr "Book card 已是最新版本。"
+
+msgid "Version: "
+msgstr "版本："
+
+msgid "Close"
+msgstr "关闭"
+
+msgid "Update and restart"
+msgstr "更新并重启"
+
+msgid "No download available for this release."
+msgstr "此版本没有可用的下载。"
+
+msgid "Update available!"
+msgstr "有可用更新！"
+
+msgid "Installed: "
+msgstr "已安装："
+
+msgid "Latest: "
+msgstr "最新："
+
+msgid "Downloading update..."
+msgstr "正在下载更新…"
+
+msgid "Download failed."
+msgstr "下载失败。"
+
+msgid "Installation failed: "
+msgstr "安装失败："
+
+msgid "Book card updated to v"
+msgstr "Book card 已更新至 v"
+
+msgid "Restart KOReader now?"
+msgstr "是否立即重启 KOReader？"
+
+msgid "Restart"
+msgstr "重启"
+
+msgid "Could not install branch:"
+msgstr "无法安装分支："
+
+msgid "Downloading latest release..."
+msgstr "正在下载最新版本…"
+
+msgid "Could not fetch latest release."
+msgstr "无法获取最新版本。"
+
+msgid "Latest release has no downloadable zip."
+msgstr "最新版本没有可下载的压缩包。"
+
+msgid "Fonts"
+msgstr "字体"
+
+msgid "Colors"
+msgstr "颜色"
+
+msgid "Title"
+msgstr "标题"
+
+msgid "Author"
+msgstr "作者"
+
+msgid "Series"
+msgstr "系列"
+
+msgid "Statistics values"
+msgstr "统计数值"
+
+msgid "Statistics labels"
+msgstr "统计标签"
+
+msgid "Streak / reader type"
+msgstr "连续天数 / 读者类型"
+
+msgid "Battery percentage"
+msgstr "电池百分比"
+
+msgid "Title color"
+msgstr "标题颜色"
+
+msgid "Author color"
+msgstr "作者颜色"
+
+msgid "Series color"
+msgstr "系列颜色"
+
+msgid "Statistics value color"
+msgstr "统计数值颜色"
+
+msgid "Statistics label color"
+msgstr "统计标签颜色"
+
+msgid "Streak / reader type color"
+msgstr "连续天数 / 读者类型颜色"
+
+msgid "Battery color"
+msgstr "电池颜色"
+
+msgid "Font"
+msgstr "字体"
+
+msgid "Custom font name (type manually)"
+msgstr "自定义字体名称（手动输入）"
+
+msgid "Font size"
+msgstr "字体大小"
+
+msgid "Reset to default"
+msgstr "重置为默认"
+
+msgid "Choose a font"
+msgstr "选择字体"
+
+msgid "Font name"
+msgstr "字体名称"
+
+msgid "Enter a bundled font file name (e.g. NotoSans-Bold.ttf) or a KOReader font alias (e.g. tfont, cfont). If it can't be found, this role falls back to its default font."
+msgstr "输入内置字体文件名（例如 NotoSans-Bold.ttf）或 KOReader 字体别名（例如 tfont、cfont）。如果找不到，该角色将回退到其默认字体。"
+
+msgid "Please enter a non-empty font name."
+msgstr "请输入非空的字体名称。"
+
+msgid "Set"
+msgstr "设置"
+
+msgid "Auto"
+msgstr "自动"
+
+msgid "Reset all fonts to default"
+msgstr "将所有字体重置为默认"
+
+msgid "Reset all fonts to their default values?"
+msgstr "是否将所有字体重置为默认值？"
+
+msgid "Default"
+msgstr "默认"
+
+msgid "Default (follows theme)"
+msgstr "默认（跟随主题）"
+
+msgid "Apply"
+msgstr "应用"
+
+msgid "Brightness: %d%%"
+msgstr "亮度：%d%%"
+
+msgid "Pick with color wheel"
+msgstr "使用色轮选择"
+
+msgid "Enter a hex color code (e.g. #1E90FF), the way KOReader expects it. Leave empty to follow the card's usual background/theme color."
+msgstr "输入十六进制颜色代码（例如 #1E90FF），按 KOReader 所要求的格式。留空则跟随卡片通常的背景/主题颜色。"
+
+msgid "Not a valid hex color code, e.g. #1E90FF."
+msgstr "不是有效的十六进制颜色代码，例如 #1E90FF。"
+
+msgid "Reset all colors to default"
+msgstr "将所有颜色重置为默认"
+
+msgid "Reset all colors to follow the theme again?"
+msgstr "是否将所有颜色重置为再次跟随主题？"
+
+msgid "Wallpaper"
+msgstr "壁纸"
+
+msgid "None"
+msgstr "无"
+
+msgid "Random"
+msgstr "随机"
+
+msgid "No images in {dir}"
+msgstr "{dir} 中没有图片"
+
+msgid "Images are loaded from {dir}"
+msgstr "图片从 {dir} 加载"
+
+msgid "Text background opacity"
+msgstr "文字背景不透明度"
+
+msgid "Off"
+msgstr "关闭"
+
+msgid "Low"
+msgstr "低"
+
+msgid "Moderate"
+msgstr "中等"
+
+msgid "High"
+msgstr "高"
+
+msgid "Solid"
+msgstr "不透明"
+
+msgid "Daily Avg (pages)"
+msgstr "日均（页数）"
+
+msgid "%d page"
+msgstr "%d 页"
+
+msgid "%d pages"
+msgstr "%d 页"
+
+msgid "Advanced Settings"
+msgstr "高级设置"
+
+msgid "Layout"
+msgstr "布局"
+
+msgid "Cover beside statistics (default)"
+msgstr "封面在统计信息旁（默认）"
+
+msgid "Cover centered, statistics grid below"
+msgstr "封面居中，统计信息网格在下方"
+
+msgid "Orientation"
+msgstr "方向"
+
+msgid "Force portrait"
+msgstr "强制竖屏"
+
+msgid "Force landscape"
+msgstr "强制横屏"
+
+msgid "Margins"
+msgstr "边距"
+
+msgid "Side padding"
+msgstr "侧边距"
+
+msgid "Top padding"
+msgstr "上边距"
+
+msgid "Bottom padding"
+msgstr "下边距"
+
+msgid "Image export (Android wallpaper / PocketBook logo)"
+msgstr "图片导出（Android 壁纸 / PocketBook 标志）"
+
+msgid "Save as image, kept up to date"
+msgstr "保存为图片，并保持更新"
+
+msgid "On Android, KOReader's own sleep screen (above) never shows, because locking the screen hands over to Android's own lock screen instead. Turn this on and Book card keeps a picture of the card on disk, refreshed automatically; set that picture as your Android wallpaper the normal way (from the Photos/Gallery app, or a wallpaper-changer app pointed at the folder below)."
+msgstr "在 Android 上，KOReader 自身的休眠屏幕（如上）永远不会显示，因为锁屏操作会转而交由 Android 自身的锁屏界面处理。开启此选项后，Book card 会在磁盘上保留一张卡片图片并自动刷新；然后按常规方式将该图片设为 Android 壁纸（通过照片/图库应用，或指向下方文件夹的换壁纸应用）。"
+
+msgid "Refresh interval"
+msgstr "刷新间隔"
+
+msgid "Every 5 minutes"
+msgstr "每 5 分钟"
+
+msgid "Every 15 minutes"
+msgstr "每 15 分钟"
+
+msgid "Every 30 minutes"
+msgstr "每 30 分钟"
+
+msgid "Every hour"
+msgstr "每小时"
+
+msgid "min"
+msgstr "分钟"
+
+msgid "Also copy to folder"
+msgstr "同时复制到文件夹"
+
+msgid "Also copy to a shared folder…"
+msgstr "同时复制到共享文件夹…"
+
+msgid "Choose a folder to also save the image to"
+msgstr "选择一个也用于保存图片的文件夹"
+
+msgid "Image will also be copied to:\n{path}\n\nOn Android, point your system wallpaper picker (or a wallpaper-changer app) at this folder."
+msgstr "图片也会被复制到：\n{path}\n\n在 Android 上，请将系统壁纸选择器（或换壁纸应用）指向此文件夹。"
+
+msgid "Stop copying to that extra folder"
+msgstr "停止复制到该附加文件夹"
+
+msgid "Also save as PocketBook power-off / boot logo"
+msgstr "同时保存为 PocketBook 关机 / 开机 Logo"
+
+msgid "Save image now"
+msgstr "立即保存图片"
+
+msgid "Image saved to: {path}"
+msgstr "图片已保存到：{path}"
+
+msgid "Image updated."
+msgstr "图片已更新。"
+
+msgid "Could not update the image."
+msgstr "无法更新图片。"
+
+msgid "Could not create the image export folder."
+msgstr "无法创建图片导出文件夹。"
+
+msgid "Could not write the image file."
+msgstr "无法写入图片文件。"
+
+msgid "Could not draw the card as an image (see the log for details)."
+msgstr "无法将卡片绘制为图片（详情请查看日志）。"
+
+msgid "Highlighted quote"
+msgstr "高亮引文"
+
+msgid "Quote color"
+msgstr "引文颜色"
+
+msgid "Also save when opening a book"
+msgstr "打开图书时也保存"
+
+msgid "Image format"
+msgstr "图片格式"
