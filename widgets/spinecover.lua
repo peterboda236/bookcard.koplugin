@@ -51,9 +51,9 @@ end
 -- ---------------------------------------------------------------------------
 local DEFAULT_PAGES = 300  -- assumed when the page count is unknown
 local MIN_PAGES      = 60   -- everything thinner renders at MIN_W_DP
-local MAX_PAGES      = 1200 -- everything thicker renders at MAX_W_DP
-local MIN_W_DP       = 14
-local MAX_W_DP       = 52
+local MAX_PAGES      = 1600 -- everything thicker renders at MAX_W_DP
+local MIN_W_DP       = 32
+local MAX_W_DP       = 96
 
 local DEFAULT_ASPECT = 1.5  -- assumed when the cover's own aspect is unknown
 
