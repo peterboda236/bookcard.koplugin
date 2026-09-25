@@ -37,7 +37,9 @@ card fields:
   file, title, authors, series, series_index
   percent (0..100), current_page, total_pages, status ("complete" / ...), pages_left
   chapter_pages_left  pages left in the CURRENT chapter (live document only,
-                       via ui.toc:getChapterPagesLeft - nil otherwise)
+                       via ui.toc:getChapterPagesLeft, falling back to the
+                       whole book's pages left when there's no usable
+                       chapter TOC data - nil otherwise)
   avg_time (secs/page), total_time (secs), days_read, pages_read
   today_time (secs read TODAY, this book only, per-page capped like total_time)
   all_books_time (secs read TODAY across EVERY book, same per-page cap)
@@ -617,13 +619,21 @@ function M.collectLive(ui)
     if ok_left then card.pages_left = num(pages_left) end
     if live_avg and live_avg > 0 then card.avg_time = live_avg end
 
-    -- Pages left in the CURRENT chapter: the same call the reader footer's
-    -- "chapter pages left" item uses. Only available with a live document
-    -- (ui.toc), so this - and the time it derives in finalize() - stays nil
-    -- for a card rebuilt from the sidecar/statistics DB with no book open.
+    -- Pages left in the CURRENT chapter: the same call (with the same
+    -- second argument) and fallback Reading Insights' ChapterInfo.
+    -- getChapterPagesLeft uses - falls back to the whole book's pages
+    -- left when the TOC has no usable chapter data. Only available with
+    -- a live document (ui.toc/ui.document), so this - and the time it
+    -- derives in finalize() - stays nil for a card rebuilt from the
+    -- sidecar/statistics DB with no book open.
     if ui.toc and ui.toc.getChapterPagesLeft then
-        local ok_ch, chapter_left = pcall(ui.toc.getChapterPagesLeft, ui.toc, pageno)
-        if ok_ch then card.chapter_pages_left = num(chapter_left) end
+        local ok_ch, chapter_left = pcall(ui.toc.getChapterPagesLeft, ui.toc, pageno, true)
+        if ok_ch and chapter_left ~= nil then
+            card.chapter_pages_left = num(chapter_left)
+        elseif ui.document then
+            local ok_doc, doc_left = pcall(ui.document.getTotalPagesLeft, ui.document, pageno)
+            if ok_doc then card.chapter_pages_left = num(doc_left) end
+        end
     end
 
     -- Highlight count + a random quote: from the live, in-memory settings
