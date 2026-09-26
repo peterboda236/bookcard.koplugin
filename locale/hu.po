@@ -471,6 +471,9 @@ msgstr "Nincs kép a következő mappában: {dir}"
 msgid "Images are loaded from {dir}"
 msgstr "A képek innen töltődnek be: {dir}"
 
+msgid "Invert wallpaper in night mode"
+msgstr "Háttérkép invertálása éjszakai módban"
+
 msgid "Text background opacity"
 msgstr "Szöveg mögötti háttér átlátszósága"
 

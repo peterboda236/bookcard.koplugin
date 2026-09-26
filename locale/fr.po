@@ -472,6 +472,9 @@ msgstr "Aucune image dans {dir}"
 msgid "Images are loaded from {dir}"
 msgstr "Les images sont chargées depuis {dir}"
 
+msgid "Invert wallpaper in night mode"
+msgstr "Inverser le fond d'écran en mode nuit"
+
 msgid "Text background opacity"
 msgstr "Opacité de l'arrière-plan du texte"
 

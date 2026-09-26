@@ -670,6 +670,7 @@ function BookCard:addToMainMenu(menu_items)
                             end,
                             sub_item_table_func = function() return Wallpaper.buildPickerMenu() end,
                         },
+                        Wallpaper.invertNightItem(),
                         {
                             text_func = function()
                                 return _("Text background opacity") .. ": " .. Wallpaper.opacityLabel()

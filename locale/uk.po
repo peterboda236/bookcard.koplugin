@@ -506,6 +506,9 @@ msgstr "Немає зображень у {dir}"
 msgid "Images are loaded from {dir}"
 msgstr "Зображення завантажуються з {dir}"
 
+msgid "Invert wallpaper in night mode"
+msgstr "Інвертувати шпалери у нічному режимі"
+
 msgid "Text background opacity"
 msgstr "Непрозорість фону тексту"
 

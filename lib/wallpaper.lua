@@ -14,6 +14,16 @@ each piece of text, instead of a whole scrim/panel system.
                                 which keeps the plain background exactly as
                                 before this feature existed)
   Wallpaper.OPACITY_SETTING    "bookcard_text_bg_opacity" - 0..1
+  Wallpaper.INVERT_NIGHT_SETTING
+                                "bookcard_wallpaper_invert_night" - bool,
+                                default false. Normally the picture is
+                                pre-inverted in night mode so it keeps
+                                looking like itself once KOReader's own
+                                night-mode invert is applied on top (see
+                                bg() below). Turning this on skips that
+                                compensation, so the picture ends up
+                                genuinely inverted (a photo negative) in
+                                night mode instead.
 
   Wallpaper.isActive()         true if a wallpaper is set and its file exists
   Wallpaper.opacity()          current text-backdrop opacity, 0..1
@@ -48,6 +58,7 @@ local M = {}
 
 M.SETTING         = "bookcard_wallpaper"
 M.OPACITY_SETTING = "bookcard_text_bg_opacity"
+M.INVERT_NIGHT_SETTING = "bookcard_wallpaper_invert_night"
 M.SUBDIR          = "bookcard/wallpapers"
 M.DEFAULT_OPACITY = 0.6
 M.RANDOM          = "*random*"   -- stored in SETTING when "Random" is chosen
@@ -186,6 +197,13 @@ function M.opacityLabel()
     return tostring(math.floor(cur * 100 + 0.5)) .. "%"
 end
 
+-- invertInNight() -> true if the wallpaper should be shown genuinely
+-- inverted (a photo negative) in night mode, instead of the default
+-- compensated behaviour that keeps it looking like itself.
+function M.invertInNight()
+    return Prefs.readBool(M.INVERT_NIGHT_SETTING, false)
+end
+
 -- ---------------------------------------------------------------------------
 -- The decoded picture (one cached entry - a full screen bitmap is a few MB;
 -- see Bookshelf's own wallpaper module for why holding more is not worth it)
@@ -229,14 +247,18 @@ end
 -- bg(w, h, night) -> a paintable w x h widget for the current wallpaper, or
 -- nil. `night` must be Screen.night_mode: KOReader inverts the whole panel
 -- at refresh when it is on, so a picture that should look like itself has to
--- be painted pre-inverted, exactly like the cover.
+-- be painted pre-inverted, exactly like the cover - UNLESS the reader has
+-- turned on "Invert wallpaper in night mode" (invertInNight()), in which
+-- case that compensation is skipped on purpose, so the picture comes out
+-- genuinely inverted once KOReader's own night-mode invert lands on top.
 function M.bg(w, h, night)
     local name = M.activeName()
     if not name or not w or not h or w <= 0 or h <= 0 then return nil end
     local path = M.pathFor(name)
     if not path then return nil end
 
-    local key = path .. "|" .. w .. "x" .. h .. (night and "|n" or "")
+    local compensate = night and not M.invertInNight()
+    local key = path .. "|" .. w .. "x" .. h .. (night and (compensate and "|n" or "|ni") or "")
     if M._bg and M._bg_key == key then return M._bg end
     M.free()
 
@@ -248,7 +270,7 @@ function M.bg(w, h, night)
         logger.info("[bookcard] wallpaper could not be decoded:", path)
         return nil
     end
-    if night and bb.invertRect then
+    if compensate and bb.invertRect then
         pcall(function() bb:invertRect(0, 0, bb:getWidth(), bb:getHeight()) end)
     end
     local widget = Background:new{ bb = bb, w = w, h = h }
@@ -533,6 +555,20 @@ function M.buildPickerMenu()
         enabled = false,
     }
     return items
+end
+
+-- invertNightItem() -> a single menu item (a checkbox, not a submenu) for
+-- "Invert wallpaper in night mode".
+function M.invertNightItem()
+    return {
+        text = _("Invert wallpaper in night mode"),
+        checked_func = function() return M.invertInNight() end,
+        keep_menu_open = true,
+        callback = function()
+            Prefs.save(M.INVERT_NIGHT_SETTING, not M.invertInNight())
+            M.free()
+        end,
+    }
 end
 
 -- buildOpacityMenu() -> sub_item_table for "Text background opacity": the

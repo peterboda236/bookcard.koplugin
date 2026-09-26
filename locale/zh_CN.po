@@ -472,6 +472,9 @@ msgstr "{dir} 中没有图片"
 msgid "Images are loaded from {dir}"
 msgstr "图片从 {dir} 加载"
 
+msgid "Invert wallpaper in night mode"
+msgstr "夜间模式下反转壁纸"
+
 msgid "Text background opacity"
 msgstr "文字背景不透明度"
 
