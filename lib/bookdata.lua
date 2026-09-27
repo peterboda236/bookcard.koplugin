@@ -351,17 +351,17 @@ local function fillBookStats(conn, card, book_id)
     r = StatsDb.first(conn, string.format("SELECT pages FROM book WHERE id = %d", book_id), 1)
     if r and num(r[1]) and num(r[1]) > 0 then card.stats_pages = num(r[1]) end
 
-    -- Today only, this book: same per-page cap as the all-time total above,
-    -- just restricted to today's local date.
+    -- Today only, this book: raw sum, no per-page cap - matches Reading
+    -- Insights' BookStatsData.getBookAndTodayStats today_time exactly.
     r = StatsDb.first(conn, string.format([[
         SELECT sum(durations)
         FROM (
-            SELECT min(sum(duration), %d) AS durations
+            SELECT sum(duration) AS durations
             FROM page_stat
             WHERE id_book = %d
               AND date(start_time, 'unixepoch', 'localtime') = date('now', 'localtime')
             GROUP BY page
-        )]], maxSec(), book_id), 1)
+        )]], book_id), 1)
     if r then card.today_time = num(r[1]) end
 end
 
@@ -433,16 +433,16 @@ end
 -- Streaks span all books; the reader type (part of day) is scoped to this
 -- book alone (card.book_id), when known.
 function M.readGlobal(conn, card)
-    -- Today only, across every book (same per-page cap as a single book's
-    -- today_time, just not restricted to id_book).
+    -- Today only, across every book: raw sum, no per-page cap - kept
+    -- consistent with the per-book today_time change above.
     local total_row = StatsDb.first(conn, string.format([[
         SELECT sum(durations)
         FROM (
-            SELECT min(sum(duration), %d) AS durations
+            SELECT sum(duration) AS durations
             FROM page_stat
             WHERE date(start_time, 'unixepoch', 'localtime') = date('now', 'localtime')
             GROUP BY id_book, page
-        )]], maxSec()), 1)
+        )]]), 1)
     if total_row then card.all_books_time = num(total_row[1]) end
 
     local rows = StatsDb.all(conn,
