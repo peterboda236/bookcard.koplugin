@@ -621,3 +621,9 @@ msgstr "Ma olvasva (ez a könyv)"
 
 msgid "Read Today (All Books)"
 msgstr "Ma olvasva (minden könyv)"
+
+msgid "Show quote"
+msgstr "Idézet megjelenítése"
+
+msgid "Maximum lines"
+msgstr "Maximum sorok száma"

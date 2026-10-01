@@ -621,3 +621,9 @@ msgstr "今日阅读（本书）"
 
 msgid "Read Today (All Books)"
 msgstr "今日阅读（全部图书）"
+
+msgid "Show quote"
+msgstr "显示引文"
+
+msgid "Maximum lines"
+msgstr "最大行数"

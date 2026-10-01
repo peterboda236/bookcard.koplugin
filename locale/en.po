@@ -620,3 +620,9 @@ msgstr "Read Today (This Book)"
 
 msgid "Read Today (All Books)"
 msgstr "Read Today (All Books)"
+
+msgid "Show quote"
+msgstr "Show quote"
+
+msgid "Maximum lines"
+msgstr "Maximum lines"

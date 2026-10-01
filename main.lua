@@ -611,8 +611,30 @@ function BookCard:addToMainMenu(menu_items)
     rtype.text = _("Show reader type")
     local rounded = toggleSetting(CardView.SETTING_ROUNDED, true)
     rounded.text = _("Rounded cover corners")
-    local quote = toggleSetting(CardView.SETTING_QUOTE, false)
-    quote.text = _("Highlighted quote")
+    local quote_toggle = toggleSetting(CardView.SETTING_QUOTE, false)
+    quote_toggle.text = _("Show quote")
+    local quote_lines = {
+        text_func = function()
+            return _("Maximum lines") .. ": " .. CardView.getQuoteMaxLines()
+        end,
+        enabled_func = function() return Prefs.readBool(CardView.SETTING_QUOTE, false) end,
+        sub_item_table = {},
+    }
+    for _i, n in ipairs(CardView.QUOTE_LINES_OPTIONS) do
+        local label = tostring(n)
+        if n == CardView.QUOTE_LINES_DEFAULT then label = label .. " (" .. _("Default") .. ")" end
+        quote_lines.sub_item_table[#quote_lines.sub_item_table + 1] = {
+            text = label,
+            radio = true,
+            checked_func = function() return CardView.getQuoteMaxLines() == n end,
+            callback = function() Prefs.save(CardView.SETTING_QUOTE_LINES, n) end,
+            keep_menu_open = true,
+        }
+    end
+    local quote = {
+        text = _("Highlighted quote"),
+        sub_item_table = { quote_toggle, quote_lines },
+    }
 
     -- Statistics-column rows: toggles and their draw order both now live in
     -- CardView (see M.buildStatisticsMenu / M.getStatOrder there), so the

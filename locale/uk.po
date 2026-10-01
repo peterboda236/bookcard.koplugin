@@ -674,3 +674,9 @@ msgstr "Прочитано сьогодні (ця книга)"
 
 msgid "Read Today (All Books)"
 msgstr "Прочитано сьогодні (усі книги)"
+
+msgid "Show quote"
+msgstr "Показувати цитату"
+
+msgid "Maximum lines"
+msgstr "Максимум рядків"

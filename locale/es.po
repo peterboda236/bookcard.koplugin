@@ -621,3 +621,9 @@ msgstr "Leído hoy (este libro)"
 
 msgid "Read Today (All Books)"
 msgstr "Leído hoy (todos los libros)"
+
+msgid "Show quote"
+msgstr "Mostrar cita"
+
+msgid "Maximum lines"
+msgstr "Máximo de líneas"

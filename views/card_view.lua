@@ -83,6 +83,20 @@ M.SETTING_QUOTE        = "bookcard_show_quote"           -- default OFF - a
                                                           -- random highlighted
                                                           -- quote under
                                                           -- title/author/series
+M.SETTING_QUOTE_LINES  = "bookcard_quote_max_lines"      -- 1..5, default 2 - maximum
+                                                          -- number of lines the quote
+                                                          -- may take (it only uses as
+                                                          -- many as the text needs)
+M.QUOTE_LINES_DEFAULT  = 2
+M.QUOTE_LINES_OPTIONS  = { 1, 2, 3, 4, 5 }
+
+function M.getQuoteMaxLines()
+    local n = tonumber(Prefs.read(M.SETTING_QUOTE_LINES, M.QUOTE_LINES_DEFAULT))
+    n = n and math.floor(n) or M.QUOTE_LINES_DEFAULT
+    if n < 1 or n > 5 then n = M.QUOTE_LINES_DEFAULT end
+    return n
+end
+
 M.SETTING_ORIENTATION  = "bookcard_orientation"          -- "default" (current behaviour) | "portrait" | "landscape"
 M.SETTING_LAYOUT       = "bookcard_layout"               -- "side" (default: cover beside the
                                                           -- statistics column) | "centered" (cover
@@ -849,7 +863,7 @@ function M.build(card, opts)
                     text = "\u{201C}" .. quote_clean .. "\u{201D}",
                     face = quote_face,
                     width = quote_max_w - quote_bar_w - quote_gap_w,
-                    height = 2 * quote_line_h,
+                    height = M.getQuoteMaxLines() * quote_line_h,
                     height_adjust = true,
                     height_overflow_show_ellipsis = true,
                     alignment = "left",
