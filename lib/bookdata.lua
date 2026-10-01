@@ -66,6 +66,10 @@ local M = {}
 
 local DAY = 86400
 
+-- G_reader_settings key holding the quote text most recently drawn on a
+-- card (written by views/card_view.lua).
+M.LAST_QUOTE_KEY = "bookcard_last_quote"
+
 -- Seeded once (module-level, guarded by a global flag so re-loading the
 -- module - e.g. across KOReader instantiations - doesn't reseed) so
 -- M.finalize's/pickRandomQuote's math.random() doesn't always return the
@@ -226,7 +230,20 @@ end
 local function pickRandomQuote(ds)
     local ok, texts = pcall(collectHighlightTexts, ds)
     if not ok or #texts == 0 then return nil end
-    return texts[math.random(#texts)]
+    -- Never pick the quote that was shown last time (when there is any
+    -- other choice): with only 2 highlights a plain random pick repeats
+    -- the same one half of the time, which feels broken.
+    local last = G_reader_settings and G_reader_settings.readSetting
+        and G_reader_settings:readSetting(M.LAST_QUOTE_KEY)
+    local pool = texts
+    if #texts > 1 and type(last) == "string" then
+        pool = {}
+        for _, t in ipairs(texts) do
+            if t ~= last then pool[#pool + 1] = t end
+        end
+        if #pool == 0 then pool = texts end
+    end
+    return pool[math.random(#pool)]
 end
 
 -- The statistics plugin's per-page cap (settings > statistics > max_sec).

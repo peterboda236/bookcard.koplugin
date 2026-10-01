@@ -858,6 +858,7 @@ function M.build(card, opts)
                 local quote_line_h = math.floor((1 + 0.3) * quote_face.size + 0.5)
                 local quote_bar_w = S(2)
                 local quote_gap_w = S(6)
+                Prefs.save("bookcard_last_quote", quote_text)
                 local quote_clean = stripOuterQuotes(quote_text:gsub("%s+", " "))
                 local quote_widget = TextBoxWidget:new{
                     text = "\u{201C}" .. quote_clean .. "\u{201D}",
