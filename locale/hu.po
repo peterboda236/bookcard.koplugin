@@ -16,7 +16,7 @@ msgid "About"
 msgstr "Névjegy"
 
 msgid "A sleep screen with a reading summary card: cover, reading time, progress, pace and streak."
-msgstr "Egy alvóképernyő olvasási összefoglaló kártyával: borító, olvasási idő, haladás, tempó és sorozat."
+msgstr "Egy alvóképernyő olvasási összefoglaló kártyával: borító, olvasási idő, haladás, tempó és széria."
 
 msgid "Use as sleep screen"
 msgstr "Használat zárolt képernyőként"
@@ -58,7 +58,7 @@ msgid "Show battery"
 msgstr "Akkumulátor megjelenítése"
 
 msgid "Show reading streak"
-msgstr "Olvasási sorozat megjelenítése"
+msgstr "Olvasási széria megjelenítése"
 
 msgid "Show reader type"
 msgstr "Olvasótípus megjelenítése"
@@ -190,16 +190,16 @@ msgid "%d days"
 msgstr "%d nap"
 
 msgid "%d day streak"
-msgstr "%d napos sorozat"
+msgstr "%d napos széria"
 
 msgid "%d days streak"
-msgstr "%d napos sorozat"
+msgstr "%d napos széria"
 
 msgid "%d week streak"
-msgstr "%d hetes sorozat"
+msgstr "%d hetes széria"
 
 msgid "%d weeks streak"
-msgstr "%d hetes sorozat"
+msgstr "%d hetes széria"
 
 msgid "Today"
 msgstr "Ma"
@@ -367,7 +367,7 @@ msgid "Statistics labels"
 msgstr "Statisztika címkék"
 
 msgid "Streak / reader type"
-msgstr "Sorozat / olvasótípus"
+msgstr "Széria / olvasótípus"
 
 msgid "Battery percentage"
 msgstr "Akkumulátor százalék"
@@ -388,7 +388,7 @@ msgid "Statistics label color"
 msgstr "Statisztika címke színe"
 
 msgid "Streak / reader type color"
-msgstr "Sorozat / olvasótípus színe"
+msgstr "Széria / olvasótípus színe"
 
 msgid "Battery color"
 msgstr "Akkumulátor színe"
