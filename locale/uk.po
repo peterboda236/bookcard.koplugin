@@ -680,3 +680,6 @@ msgstr "Показувати цитату"
 
 msgid "Maximum lines"
 msgstr "Максимум рядків"
+
+msgid "Stats per row (centered cover only)"
+msgstr "Статистик/рядок (лише центр.)"

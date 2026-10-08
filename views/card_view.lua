@@ -97,6 +97,19 @@ function M.getQuoteMaxLines()
     return n
 end
 
+M.SETTING_GRID_COLUMNS = "bookcard_grid_columns"         -- 1..5, default 2 - how many statistics sit
+                                                          -- side by side in the "centered" (vertical)
+                                                          -- layout's grid
+M.GRID_COLUMNS_DEFAULT = 2
+M.GRID_COLUMNS_OPTIONS = { 1, 2, 3, 4, 5 }
+
+function M.getGridColumns()
+    local n = tonumber(Prefs.read(M.SETTING_GRID_COLUMNS, M.GRID_COLUMNS_DEFAULT))
+    n = n and math.floor(n) or M.GRID_COLUMNS_DEFAULT
+    if n < 1 or n > 5 then n = M.GRID_COLUMNS_DEFAULT end
+    return n
+end
+
 M.SETTING_ORIENTATION  = "bookcard_orientation"          -- "default" (current behaviour) | "portrait" | "landscape"
 M.SETTING_LAYOUT       = "bookcard_layout"               -- "side" (default: cover beside the
                                                           -- statistics column) | "centered" (cover
@@ -937,14 +950,15 @@ function M.build(card, opts)
             text_h_c = text_h_c + block:getSize().h + gapBeforeC(i, quote_index_c)
         end
 
-        -- Statistics grid: 2 columns, as many rows as needed. Each cell is
+        -- Statistics grid: N columns (setting, 1..5), as many rows as needed. Each cell is
         -- just "value line + label line" stacked, left-aligned - same
         -- metrics as the single-column layout's rows, without StatCell's
         -- right-alignment.
         local cell_h = TextWidget:new{ text = "Ag", face = value_face }:getSize().h
                      + TextWidget:new{ text = "Ag", face = label_face }:getSize().h
         local grid_row_gap = math.max(S(8), math.floor(col_gap / 2))
-        local grid_rows_n = math.ceil(#rows / 2)
+        local grid_cols = math.min(M.getGridColumns(), math.max(#rows, 1))
+        local grid_rows_n = math.ceil(#rows / grid_cols)
         local grid_h = grid_rows_n > 0 and (grid_rows_n * cell_h + (grid_rows_n - 1) * grid_row_gap) or 0
         local gap1 = col_gap                              -- cover -> text
         local gap2 = grid_rows_n > 0 and col_gap or 0      -- text -> grid
@@ -1027,11 +1041,11 @@ function M.build(card, opts)
 
         if #rows > 0 then
             local grid_top = y + gap2
-            local grid_col_gap = S(24)
+            local grid_col_gap = grid_cols >= 4 and S(12) or S(24)
             -- Same inset width as the text above (text_max_w_c), so the
-            -- grid's two columns line up with the text's own left/right
+            -- grid's columns line up with the text's own left/right
             -- edges instead of reaching all the way to the cover's edge.
-            local col_w = math.floor((text_max_w_c - grid_col_gap) / 2)
+            local col_w = math.floor((text_max_w_c - (grid_cols - 1) * grid_col_gap) / grid_cols)
             local function statCellWidget(row)
                 return VerticalGroup:new{
                     align = "left",
@@ -1040,25 +1054,25 @@ function M.build(card, opts)
                 }
             end
             if backdrop_grouped then
-                -- One panel behind the whole grid (all rows, both columns).
+                -- One panel behind the whole grid (all rows, all columns).
                 local grid_group_c = newGroup()
                 for idx, row in ipairs(rows) do
-                    local r = math.floor((idx - 1) / 2)
-                    local c = (idx - 1) % 2
+                    local r = math.floor((idx - 1) / grid_cols)
+                    local c = (idx - 1) % grid_cols
                     local cx = text_left_c + c * (col_w + grid_col_gap)
                     local cy = grid_top + r * (cell_h + grid_row_gap)
                     groupAdd(grid_group_c, statCellWidget(row), cx, cy)
                 end
                 flushGroup(grid_group_c, TEXT_BACKDROP_PAD_H, TEXT_BACKDROP_PAD_V, panel_left, panel_right)
             else
-                -- One panel per ROW (both columns together, cover-width
+                -- One panel per ROW (all columns together, cover-width
                 -- wide) - a per-CELL panel would only be half that width,
                 -- and two of them side by side would either overlap (if
                 -- stretched) or leave a gap in the middle (if not).
                 local idx = 1
                 for r = 0, grid_rows_n - 1 do
                     local row_group = newGroup()
-                    for c = 0, 1 do
+                    for c = 0, grid_cols - 1 do
                         if idx > #rows then break end
                         local cx = text_left_c + c * (col_w + grid_col_gap)
                         local cy = grid_top + r * (cell_h + grid_row_gap)

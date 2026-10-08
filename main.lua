@@ -590,6 +590,30 @@ local function layoutItem(label, value)
     }
 end
 
+-- "Statistics per row" for the centered (vertical) layout's grid.
+local function gridColumnsMenu()
+    local menu = {
+        text_func = function()
+            return _("Stats per row (centered cover only)") .. ": " .. CardView.getGridColumns()
+        end,
+        -- Only the centered layout has a grid; grey the item out otherwise.
+        enabled_func = function() return Prefs.read(CardView.SETTING_LAYOUT, "side") == "centered" end,
+        sub_item_table = {},
+    }
+    for _i, n in ipairs(CardView.GRID_COLUMNS_OPTIONS) do
+        local label = tostring(n)
+        if n == CardView.GRID_COLUMNS_DEFAULT then label = label .. " (" .. _("Default") .. ")" end
+        menu.sub_item_table[#menu.sub_item_table + 1] = {
+            text = label,
+            radio = true,
+            checked_func = function() return CardView.getGridColumns() == n end,
+            callback = function() Prefs.save(CardView.SETTING_GRID_COLUMNS, n) end,
+            keep_menu_open = true,
+        }
+    end
+    return menu
+end
+
 local function backdropGroupingItem(label, value)
     return {
         text = label,
@@ -764,6 +788,7 @@ function BookCard:addToMainMenu(menu_items)
                         sub_item_table = {
                             layoutItem(_("Cover beside statistics (default)"), "side"),
                             layoutItem(_("Cover centered, statistics grid below"), "centered"),
+                            gridColumnsMenu(),
                         },
                     },
                     {

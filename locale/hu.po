@@ -627,3 +627,6 @@ msgstr "Idézet megjelenítése"
 
 msgid "Maximum lines"
 msgstr "Maximum sorok száma"
+
+msgid "Stats per row (centered cover only)"
+msgstr "Statisztika soronként (csak borító középen)"

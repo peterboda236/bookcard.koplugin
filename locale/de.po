@@ -627,3 +627,6 @@ msgstr "Zitat anzeigen"
 
 msgid "Maximum lines"
 msgstr "Maximale Zeilenzahl"
+
+msgid "Stats per row (centered cover only)"
+msgstr "Stats pro Zeile (nur zentriert)"

@@ -627,3 +627,6 @@ msgstr "显示引文"
 
 msgid "Maximum lines"
 msgstr "最大行数"
+
+msgid "Stats per row (centered cover only)"
+msgstr "每行统计项（仅居中布局）"
