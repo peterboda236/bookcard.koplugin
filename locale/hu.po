@@ -599,7 +599,7 @@ msgid "Could not draw the card as an image (see the log for details)."
 msgstr "Nem sikerült a kártyát képként megrajzolni (a részletekért lásd a naplót)."
 
 msgid "Highlighted quote"
-msgstr "Idézetek"
+msgstr "Kiemelt idézet"
 
 msgid "Quote color"
 msgstr "Idézet színe"
