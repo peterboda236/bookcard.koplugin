@@ -69,11 +69,8 @@ msgstr "Kártyaelemek"
 msgid "Statistics"
 msgstr "Statisztikák"
 
-msgid "Reorder"
-msgstr "Sorrend módosítása"
-
-msgid "Reorder statistics"
-msgstr "Statisztikák sorrendje"
+msgid "Configure statistics items"
+msgstr "Statisztikai elemek konfigurálása"
 
 msgid "Text background grouping"
 msgstr "Szöveghátér csoportosítása"
@@ -630,3 +627,45 @@ msgstr "Maximum sorok száma"
 
 msgid "Stats per row (centered cover only)"
 msgstr "Statisztika soronként (csak borító középen)"
+
+msgid "Pages Read Today"
+msgstr "Ma olvasott oldalak"
+
+msgid "Pages Read Today (This Book)"
+msgstr "Ma olvasott oldalak (ez a könyv)"
+
+msgid "Pages Read Today (All Books)"
+msgstr "Ma olvasott oldalak (minden könyv)"
+
+msgid "Daily Goal"
+msgstr "Napi cél"
+
+msgid "Weekly Goal"
+msgstr "Heti cél"
+
+msgid "Set daily goal"
+msgstr "Napi cél beállítása"
+
+msgid "Set weekly goal"
+msgstr "Heti cél beállítása"
+
+msgid "Hours"
+msgstr "Óra"
+
+msgid "Minutes"
+msgstr "Perc"
+
+msgid "Default: {value}"
+msgstr "Alapértelmezett: {value}"
+
+msgid "%dh"
+msgstr "%d ó"
+
+msgid "Separator line color"
+msgstr "Elválasztó vonal színe"
+
+msgid "Enter a hex color code (e.g. #1E90FF), the way KOReader expects it. \"Default\" restores {hex}."
+msgstr "Adj meg egy hexadecimális színkódot (pl. #1E90FF), ahogy a KOReader várja. Az „Alapértelmezett” visszaállítja ezt: {hex}."
+
+msgid "Reading goal settings"
+msgstr "Olvasási cél beállítás"

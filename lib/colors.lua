@@ -17,6 +17,10 @@ theme color as a fallback for that reason.
   stat_label  the small labels under each statistic
   bottom      the streak text and the reader-type text (bottom row)
   battery     the battery glyph + percentage
+  separator   the thin line that can be put below a statistics row (long
+              press a row in Card elements > Statistics > Reorder). Unlike
+              the roles above it has a fixed default (#888888) instead of
+              following the theme
 
 Colors are stored as "#RRGGBB" hex strings in G_reader_settings, same as
 KOReader itself (see Blitbuffer.colorFromString) - any hex code the user can
@@ -29,7 +33,7 @@ Exposes:
                             for `key` if set, otherwise `fallback` (typically
                             pal.fg from card_view's current theme)
   getHex(key)               current custom "#RRGGBB" value, or nil if the
-                             role is still following the theme
+                             role is still following the theme / its default
   setHex(key, hex)          validate + persist; returns true/false
   resetToDefault(key)       go back to following the theme
   isDefault(key)            true if the role is still following the theme
@@ -57,6 +61,12 @@ local ColorWheelWidget = PluginUtil.load("widgets/colorwheelwidget.lua")
 -- (lib/fonts.lua) role for role.
 local KEY_ORDER = {
     "title", "author", "series", "quote", "stat_value", "stat_label", "bottom", "battery",
+    "separator",
+}
+
+-- Roles that have a fixed default color instead of following the theme.
+local DEFAULT_HEX = {
+    separator = "#888888",
 }
 
 local SETTINGS_PREFIX = "bookcard_color_"
@@ -129,7 +139,7 @@ end
 -- `fallback` is a ready Blitbuffer color (card_view.lua's pal.fg), used
 -- as-is whenever `key` hasn't been customized.
 function M.getColor(key, fallback)
-    local hex = readHex(key)
+    local hex = readHex(key) or DEFAULT_HEX[key]
     if not hex then return fallback end
     local cached = _color_cache[key]
     if cached and cached.hex == hex then
@@ -165,6 +175,7 @@ local function labelFor(key)
         stat_label = _("Statistics label color"),
         bottom     = _("Streak / reader type color"),
         battery    = _("Battery color"),
+        separator  = _("Separator line color"),
     }
     return labels[key] or key
 end
@@ -174,7 +185,7 @@ end
 -- straight away (same as "Save" in the hex input dialog) and refreshes the
 -- menu/open popups the same way.
 local function showColorWheel(key, touchmenu_instance, on_change)
-    local h, s, v = hexToHsv(M.getHex(key))
+    local h, s, v = hexToHsv(M.getHex(key) or DEFAULT_HEX[key])
     UIManager:show(ColorWheelWidget:new{
         title_text = labelFor(key),
         hue        = h,
@@ -195,9 +206,12 @@ local function showHexInputDialog(key, touchmenu_instance, on_change)
     local dialog
     dialog = InputDialog:new{
         title   = labelFor(key),
-        input   = M.getHex(key) or "",
+        input   = M.getHex(key) or DEFAULT_HEX[key] or "",
         input_hint = "#RRGGBB",
-        description = _("Enter a hex color code (e.g. #1E90FF), the way KOReader expects it. Leave empty to follow the card's usual background/theme color."),
+        description = DEFAULT_HEX[key]
+            and Locale.tpl(_("Enter a hex color code (e.g. #1E90FF), the way KOReader expects it. \"Default\" restores {hex}."),
+                           { hex = DEFAULT_HEX[key] })
+            or _("Enter a hex color code (e.g. #1E90FF), the way KOReader expects it. Leave empty to follow the card's usual background/theme color."),
         buttons = {
             {
                 {
@@ -251,7 +265,11 @@ end
 local function colorItem(key, on_change)
     return {
         text_func = function()
-            return labelFor(key) .. ": " .. (M.getHex(key) or _("Default (follows theme)"))
+            local value = M.getHex(key)
+            if not value and DEFAULT_HEX[key] then
+                value = DEFAULT_HEX[key] .. " (" .. _("Default") .. ")"
+            end
+            return labelFor(key) .. ": " .. (value or _("Default (follows theme)"))
         end,
         keep_menu_open = true,
         callback = function(touchmenu_instance)

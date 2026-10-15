@@ -43,6 +43,12 @@ card fields:
   avg_time (secs/page), total_time (secs), days_read, pages_read
   today_time (secs read TODAY, this book only, per-page capped like total_time)
   all_books_time (secs read TODAY across EVERY book, same per-page cap)
+  pages_today    (distinct pages read TODAY, this book only - Reading Insights'
+                  per-day page count)
+  all_books_pages (distinct pages read TODAY across EVERY book)
+  week_time      (secs read THIS CALENDAR WEEK across EVERY book; the week
+                  starts on the day Reading Insights' week-start setting says
+                  - it feeds the weekly goal)
   started_ts, last_read_ts, finished_date
   streak_days, streak_weeks, hour_bucket, book_id
   highlights_count
@@ -380,6 +386,19 @@ local function fillBookStats(conn, card, book_id)
             GROUP BY page
         )]], book_id), 1)
     if r then card.today_time = num(r[1]) end
+
+    -- Pages read today in this book: one per distinct page (the same
+    -- "page per day" counting Reading Insights uses for its daily pages).
+    r = StatsDb.first(conn, string.format([[
+        SELECT count(*)
+        FROM (
+            SELECT page
+            FROM page_stat
+            WHERE id_book = %d
+              AND date(start_time, 'unixepoch', 'localtime') = date('now', 'localtime')
+            GROUP BY page
+        )]], book_id), 1)
+    if r then card.pages_today = num(r[1]) end
 end
 
 -- ---- streaks (Reading Insights' Data.calculateStreaks) ---------------------
@@ -462,6 +481,17 @@ function M.readGlobal(conn, card)
         )]]), 1)
     if total_row then card.all_books_time = num(total_row[1]) end
 
+    -- Pages read today across every book (distinct book + page pairs).
+    local pages_row = StatsDb.first(conn, string.format([[
+        SELECT count(*)
+        FROM (
+            SELECT id_book, page
+            FROM page_stat
+            WHERE date(start_time, 'unixepoch', 'localtime') = date('now', 'localtime')
+            GROUP BY id_book, page
+        )]]), 1)
+    if pages_row then card.all_books_pages = num(pages_row[1]) end
+
     local rows = StatsDb.all(conn,
         "SELECT DISTINCT date(start_time, 'unixepoch', 'localtime') AS d FROM page_stat_data ORDER BY d DESC", 1)
     local dates = {}
@@ -479,6 +509,20 @@ function M.readGlobal(conn, card)
     local weeks = {}
     for _, row in ipairs(wrows) do weeks[#weeks + 1] = row[1] end
     local this_week = weekStartDate(today_str, week_start)
+
+    -- Time read this calendar week, all books (weekly goal). Same grouping
+    -- as Reading Insights' per-day totals: one sum per book + page + day.
+    if this_week then
+        local week_row = StatsDb.first(conn, string.format([[
+            SELECT sum(durations)
+            FROM (
+                SELECT sum(duration) AS durations
+                FROM page_stat
+                WHERE date(start_time, 'unixepoch', 'localtime') >= '%s'
+                GROUP BY id_book, page, date(start_time, 'unixepoch', 'localtime')
+            )]], esc(this_week)), 1)
+        if week_row then card.week_time = num(week_row[1]) end
+    end
     local last_week = weekStartDate(os.date("%Y-%m-%d", os.time() - 7 * DAY), week_start)
     card.streak_weeks = computeCurrentStreak(weeks, isConsecutiveWeek, function(first)
         return first == this_week or first == last_week

@@ -88,11 +88,8 @@ msgstr "Елементи картки"
 msgid "Statistics"
 msgstr "Статистика"
 
-msgid "Reorder"
-msgstr "Змінити порядок"
-
-msgid "Reorder statistics"
-msgstr "Порядок статистики"
+msgid "Configure statistics items"
+msgstr "Налаштувати елементи статистики"
 
 msgid "Text background grouping"
 msgstr "Групування фону тексту"
@@ -683,3 +680,45 @@ msgstr "Максимум рядків"
 
 msgid "Stats per row (centered cover only)"
 msgstr "Статистик/рядок (лише центр.)"
+
+msgid "Pages Read Today"
+msgstr "Сторінок прочитано сьогодні"
+
+msgid "Pages Read Today (This Book)"
+msgstr "Сторінок прочитано сьогодні (ця книга)"
+
+msgid "Pages Read Today (All Books)"
+msgstr "Сторінок прочитано сьогодні (усі книги)"
+
+msgid "Daily Goal"
+msgstr "Денна мета"
+
+msgid "Weekly Goal"
+msgstr "Тижнева мета"
+
+msgid "Set daily goal"
+msgstr "Встановити денну мету"
+
+msgid "Set weekly goal"
+msgstr "Встановити тижневу мету"
+
+msgid "Hours"
+msgstr "Години"
+
+msgid "Minutes"
+msgstr "Хвилини"
+
+msgid "Default: {value}"
+msgstr "За замовчуванням: {value}"
+
+msgid "%dh"
+msgstr "%dг"
+
+msgid "Separator line color"
+msgstr "Колір лінії-роздільника"
+
+msgid "Enter a hex color code (e.g. #1E90FF), the way KOReader expects it. \"Default\" restores {hex}."
+msgstr "Введіть шістнадцятковий код кольору (напр. #1E90FF), як очікує KOReader. «За замовчуванням» відновлює {hex}."
+
+msgid "Reading goal settings"
+msgstr "Налаштування цілі читання"

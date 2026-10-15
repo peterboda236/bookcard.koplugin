@@ -70,11 +70,8 @@ msgstr "卡片元素"
 msgid "Statistics"
 msgstr "统计信息"
 
-msgid "Reorder"
-msgstr "重新排序"
-
-msgid "Reorder statistics"
-msgstr "重新排序统计信息"
+msgid "Configure statistics items"
+msgstr "配置统计项目"
 
 msgid "Text background grouping"
 msgstr "文字背景分组"
@@ -630,3 +627,45 @@ msgstr "最大行数"
 
 msgid "Stats per row (centered cover only)"
 msgstr "每行统计项（仅居中布局）"
+
+msgid "Pages Read Today"
+msgstr "今日阅读页数"
+
+msgid "Pages Read Today (This Book)"
+msgstr "今日阅读页数（本书）"
+
+msgid "Pages Read Today (All Books)"
+msgstr "今日阅读页数（所有书籍）"
+
+msgid "Daily Goal"
+msgstr "每日目标"
+
+msgid "Weekly Goal"
+msgstr "每周目标"
+
+msgid "Set daily goal"
+msgstr "设置每日目标"
+
+msgid "Set weekly goal"
+msgstr "设置每周目标"
+
+msgid "Hours"
+msgstr "小时"
+
+msgid "Minutes"
+msgstr "分钟"
+
+msgid "Default: {value}"
+msgstr "默认：{value}"
+
+msgid "%dh"
+msgstr "%d小时"
+
+msgid "Separator line color"
+msgstr "分隔线颜色"
+
+msgid "Enter a hex color code (e.g. #1E90FF), the way KOReader expects it. \"Default\" restores {hex}."
+msgstr "输入十六进制颜色代码（例如 #1E90FF），格式与 KOReader 要求一致。点击“默认”可恢复为 {hex}。"
+
+msgid "Reading goal settings"
+msgstr "阅读目标设置"

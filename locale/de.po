@@ -70,11 +70,8 @@ msgstr "Kartenelemente"
 msgid "Statistics"
 msgstr "Statistik"
 
-msgid "Reorder"
-msgstr "Neu anordnen"
-
-msgid "Reorder statistics"
-msgstr "Statistik neu anordnen"
+msgid "Configure statistics items"
+msgstr "Statistikelemente konfigurieren"
 
 msgid "Text background grouping"
 msgstr "Textgruppierung im Hintergrund"
@@ -630,3 +627,45 @@ msgstr "Maximale Zeilenzahl"
 
 msgid "Stats per row (centered cover only)"
 msgstr "Stats pro Zeile (nur zentriert)"
+
+msgid "Pages Read Today"
+msgstr "Heute gelesene Seiten"
+
+msgid "Pages Read Today (This Book)"
+msgstr "Heute gelesene Seiten (dieses Buch)"
+
+msgid "Pages Read Today (All Books)"
+msgstr "Heute gelesene Seiten (alle Bücher)"
+
+msgid "Daily Goal"
+msgstr "Tagesziel"
+
+msgid "Weekly Goal"
+msgstr "Wochenziel"
+
+msgid "Set daily goal"
+msgstr "Tagesziel festlegen"
+
+msgid "Set weekly goal"
+msgstr "Wochenziel festlegen"
+
+msgid "Hours"
+msgstr "Stunden"
+
+msgid "Minutes"
+msgstr "Minuten"
+
+msgid "Default: {value}"
+msgstr "Standard: {value}"
+
+msgid "%dh"
+msgstr "%dh"
+
+msgid "Separator line color"
+msgstr "Farbe der Trennlinie"
+
+msgid "Enter a hex color code (e.g. #1E90FF), the way KOReader expects it. \"Default\" restores {hex}."
+msgstr "Gib einen Hex-Farbcode ein (z. B. #1E90FF), so wie KOReader ihn erwartet. „Standard“ stellt {hex} wieder her."
+
+msgid "Reading goal settings"
+msgstr "Leseziel-Einstellungen"

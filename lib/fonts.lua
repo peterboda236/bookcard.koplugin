@@ -77,7 +77,7 @@ local KEY_ORDER = {
 -- instead of KOReader's generic "tfont"/"cfont" aliases.
 local DEFAULT_NAME = {
     title      = "NotoSans-Bold.ttf",
-    author     = "NotoSans-Italic.ttf",
+    author     = "NotoSans-Regular.ttf",
     series     = "NotoSans-Bold.ttf",
     quote      = "NotoSans-Italic.ttf",
     stat_value = "NotoSans-Bold.ttf",

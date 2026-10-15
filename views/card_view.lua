@@ -48,11 +48,13 @@ local FrameContainer = require("ui/widget/container/framecontainer")
 local CenterContainer = require("ui/widget/container/centercontainer")
 local HorizontalGroup = require("ui/widget/horizontalgroup")
 local HorizontalSpan = require("ui/widget/horizontalspan")
+local DoubleSpinWidget = require("ui/widget/doublespinwidget")
 local ImageWidget = require("ui/widget/imagewidget")
 local InputContainer = require("ui/widget/container/inputcontainer")
 local LineWidget = require("ui/widget/linewidget")
 local OverlapGroup = require("ui/widget/overlapgroup")
 local SortWidget = require("ui/widget/sortwidget")
+local Size = require("ui/size")
 local SpinWidget = require("ui/widget/spinwidget")
 local TextBoxWidget = require("ui/widget/textboxwidget")
 local TextWidget = require("ui/widget/textwidget")
@@ -150,6 +152,40 @@ M.SETTING_STAT_TODAY_TIME    = "bookcard_stat_today_time"       -- default OFF
 M.SETTING_STAT_ALL_BOOKS_TIME = "bookcard_stat_all_books_time"  -- default OFF
 M.SETTING_STAT_CHAPTER_PAGES_LEFT = "bookcard_stat_chapter_pages_left"  -- default OFF
 M.SETTING_STAT_CHAPTER_TIME_LEFT  = "bookcard_stat_chapter_time_left"  -- default OFF
+
+M.SETTING_STAT_PAGES_TODAY     = "bookcard_stat_pages_today"      -- default OFF
+M.SETTING_STAT_ALL_BOOKS_PAGES = "bookcard_stat_all_books_pages"  -- default OFF
+M.SETTING_STAT_DAILY_GOAL      = "bookcard_stat_daily_goal"       -- default OFF
+M.SETTING_STAT_WEEKLY_GOAL     = "bookcard_stat_weekly_goal"      -- default OFF
+
+-- Daily / weekly reading-time goals, in minutes. These are deliberately the
+-- very same G_reader_settings keys (and defaults) Reading Insights uses, so
+-- changing a goal in either plugin changes it in both. When Reading
+-- Insights isn't installed nothing is missing: the key is simply created
+-- the first time a goal is set here (until then the default applies).
+M.SETTING_DAILY_GOAL_MIN  = "reading_insights_daily_goal_min"
+M.SETTING_WEEKLY_GOAL_MIN = "reading_insights_weekly_goal_min"
+M.DEFAULT_DAILY_GOAL_MIN  = 30
+M.DEFAULT_WEEKLY_GOAL_MIN = 300
+
+local function readGoalMinutes(key, default)
+    local v = tonumber(Prefs.read(key, default))
+    if not v or v < 1 then return default end
+    return math.floor(v)
+end
+
+function M.getDailyGoalMinutes()
+    return readGoalMinutes(M.SETTING_DAILY_GOAL_MIN, M.DEFAULT_DAILY_GOAL_MIN)
+end
+
+function M.getWeeklyGoalMinutes()
+    return readGoalMinutes(M.SETTING_WEEKLY_GOAL_MIN, M.DEFAULT_WEEKLY_GOAL_MIN)
+end
+
+-- Statistics rows that carry a thin separator line below them: a table
+-- { [row id] = true }, set by long-pressing a row in the "Reorder" list.
+-- The line's color is Colors role "separator" (default #888888).
+M.SETTING_STAT_SEPARATORS = "bookcard_stat_separators"
 
 -- The reader's chosen order for the statistics rows above (a list of the
 -- `id`s used in STAT_DEFS below). Unset until the reader opens "Reorder"
@@ -456,6 +492,52 @@ local STAT_DEFS = {
             return { ctx.dur(card.all_books_time), _("Read Today") }
         end,
     },
+    {
+        -- Off by default: pages read today in THIS book (distinct pages).
+        -- Same caption trick as the two "Read Today" rows above.
+        id = "pages_today", setting = M.SETTING_STAT_PAGES_TODAY, default = false,
+        menu_label = function() return _("Pages Read Today (This Book)") end,
+        label = function() return _("Pages Read Today") end,
+        build = function(card, ctx)
+            local n = card.pages_today
+            local txt = DASH
+            if n then txt = string.format(N_("%d page", "%d pages", n), n) end
+            return { txt, _("Pages Read Today") }
+        end,
+    },
+    {
+        -- Off by default: pages read today across every book.
+        id = "all_books_pages", setting = M.SETTING_STAT_ALL_BOOKS_PAGES, default = false,
+        menu_label = function() return _("Pages Read Today (All Books)") end,
+        label = function() return _("Pages Read Today") end,
+        build = function(card, ctx)
+            local n = card.all_books_pages
+            local txt = DASH
+            if n then txt = string.format(N_("%d page", "%d pages", n), n) end
+            return { txt, _("Pages Read Today") }
+        end,
+    },
+    {
+        -- Off by default: time read today (all books) against the daily
+        -- goal, e.g. "12 min / 30 min", with a check mark once it is met.
+        -- The goal itself is set in Card elements > Statistics (shared with
+        -- Reading Insights, see M.SETTING_DAILY_GOAL_MIN).
+        id = "daily_goal", setting = M.SETTING_STAT_DAILY_GOAL, default = false,
+        label = function() return _("Daily Goal") end,
+        build = function(card, ctx)
+            return { ctx.goal(card.all_books_time, M.getDailyGoalMinutes()), _("Daily Goal") }
+        end,
+    },
+    {
+        -- Off by default: time read this calendar week (all books) against
+        -- the weekly goal. The week starts on Reading Insights' week-start
+        -- day (Monday unless it is set to Sunday there).
+        id = "weekly_goal", setting = M.SETTING_STAT_WEEKLY_GOAL, default = false,
+        label = function() return _("Weekly Goal") end,
+        build = function(card, ctx)
+            return { ctx.goal(card.week_time, M.getWeeklyGoalMinutes()), _("Weekly Goal") }
+        end,
+    },
 }
 
 local STAT_DEFS_BY_ID, DEFAULT_STAT_ORDER = {}, {}
@@ -505,18 +587,64 @@ function M.setStatOrder(order)
     Prefs.save(M.SETTING_STAT_ORDER, clean)
 end
 
+--- Which statistics rows have a separator line below them: a set
+--- { [id] = true }. Unknown ids / non-true values in the stored table are
+--- ignored.
+function M.getSeparators()
+    local saved = Prefs.read(M.SETTING_STAT_SEPARATORS, nil)
+    local set = {}
+    if type(saved) == "table" then
+        for id, on in pairs(saved) do
+            if STAT_DEFS_BY_ID[id] and on == true then set[id] = true end
+        end
+    end
+    return set
+end
+
+function M.hasSeparator(id)
+    return M.getSeparators()[id] == true
+end
+
+function M.setSeparator(id, on)
+    local set = M.getSeparators()
+    set[id] = on and true or nil
+    Prefs.save(M.SETTING_STAT_SEPARATORS, set)
+end
+
+-- Compact "12 min", "5h", "1h 30 min" (reuses the card's own duration
+-- strings, but drops the "0 min" in "5h 0 min").
+local function compactDuration(secs)
+    local total_min = math.floor((tonumber(secs) or 0) / 60 + 0.5)
+    local h, m = math.floor(total_min / 60), total_min % 60
+    if h == 0 then return string.format(_("%d min"), m) end
+    if m == 0 then return string.format(_("%dh"), h) end
+    return string.format(_("%dh %d min"), h, m)
+end
+
 local function statRows(card)
     local ctx = {
         percent = card.percent,
         dur = function(secs) return Locale.formatDuration(secs) or DASH end,
+        -- "<done> / <goal>" (+ a check mark once the goal is reached).
+        goal = function(done_secs, goal_min)
+            local done = tonumber(done_secs) or 0
+            local goal = goal_min * 60
+            local txt = compactDuration(done) .. " / " .. compactDuration(goal)
+            if done >= goal then txt = txt .. " \u{2713}" end
+            return txt
+        end,
     }
     local rows = {}
     local order = M.getStatOrder()
+    local separators = M.getSeparators()
     for i = 1, #order do
         local def = STAT_DEFS_BY_ID[order[i]]
         if Prefs.readBool(def.setting, def.default) then
             local row = def.build(card, ctx)
-            if row then rows[#rows + 1] = row end
+            if row then
+                row.sep = separators[def.id] == true
+                rows[#rows + 1] = row
+            end
         end
     end
     return rows
@@ -576,6 +704,21 @@ function M.build(card, opts)
 
     -- The picture, if any, goes in first so it sits behind everything else.
     if wallpaper_bg then place(wallpaper_bg, 0, 0) end
+
+    -- Thin separator lines under statistics rows (long press in the
+    -- "Reorder" list). Collected while the rows are laid out and placed
+    -- afterwards (placeSeparators), so a backdrop panel can't end up on top
+    -- of them. Each entry: { x =, y = (line centre), w = }.
+    local sep_color = Colors.getColor("separator", Blitbuffer.COLOR_DARK_GRAY)
+    local sep_thickness = math.max(1, S(1))
+    local function placeSeparators(lines)
+        for _i, l in ipairs(lines) do
+            place(LineWidget:new{
+                background = sep_color,
+                dimen = Geom:new{ w = l.w, h = sep_thickness },
+            }, l.x, l.y - math.floor(sep_thickness / 2))
+        end
+    end
 
     -- placeText(widget, x, y): like place(), but first drops a translucent
     -- panel (pal.bg tinted at text_bg_opacity) just behind the widget, sized
@@ -746,7 +889,7 @@ function M.build(card, opts)
     local left_w = W - 2 * pad_x - right_w - col_gap
 
     -- Title: bold, same size as the big stat values (e.g. the reading time).
-    -- Author: regular weight, italic, same size as the stat labels (e.g.
+    -- Author: regular weight (not italic by default), same size as the stat labels (e.g.
     -- "Reading Time"). Series: same size as the stat labels, but bold.
     local title_face = Fonts.getFace("title", value_size)
     local author_face = Fonts.getFace("author", label_size)
@@ -1082,6 +1225,23 @@ function M.build(card, opts)
                     flushGroup(row_group, TEXT_BACKDROP_PAD_H, TEXT_BACKDROP_PAD_V, panel_left, panel_right)
                 end
             end
+
+            -- Separator below a cell: under that cell only (one column
+            -- wide), centred in the gap before the next grid row; none
+            -- for cells in the last grid row.
+            local grid_sep_lines = {}
+            for idx, row in ipairs(rows) do
+                local r = math.floor((idx - 1) / grid_cols)
+                local c = (idx - 1) % grid_cols
+                if row.sep and r < grid_rows_n - 1 then
+                    grid_sep_lines[#grid_sep_lines + 1] = {
+                        x = text_left_c + c * (col_w + grid_col_gap),
+                        y = grid_top + r * (cell_h + grid_row_gap) + cell_h + math.floor(grid_row_gap / 2),
+                        w = col_w,
+                    }
+                end
+            end
+            placeSeparators(grid_sep_lines)
         end
     else
     -- First pass, at the full left-column width, just to measure the
@@ -1212,6 +1372,7 @@ function M.build(card, opts)
     -- wallpaper backdrop panel can sit behind each row individually instead
     -- of one solid strip behind the whole column.
     local stats_group = backdrop_grouped and newGroup() or nil
+    local side_sep_lines = {}
     for i, cell in ipairs(cells) do
         if i > 1 then stat_y = stat_y + gap end
         if stats_group then
@@ -1220,8 +1381,18 @@ function M.build(card, opts)
             placeText(cell, W - pad_x - right_w, stat_y)
         end
         stat_y = stat_y + cell:getSize().h
+        -- Separator below this row: centred in the gap to the next one
+        -- (nothing to separate from after the last row).
+        if rows[i] and rows[i].sep and i < #cells then
+            side_sep_lines[#side_sep_lines + 1] = {
+                x = W - pad_x - right_w,
+                y = stat_y + math.floor(gap / 2),
+                w = right_w,
+            }
+        end
     end
     if stats_group then flushGroup(stats_group, TEXT_BACKDROP_PAD_H, TEXT_BACKDROP_PAD_V) end
+    placeSeparators(side_sep_lines)
 
     -- Cover's left edge: level with pad_x normally, or with the title
     -- block's backdrop panel (which sticks out TEXT_BACKDROP_PAD_H further
@@ -1380,17 +1551,54 @@ end
 -- "Statistics" submenu (Card elements > Statistics): a "Reorder" entry,
 -- then one on/off toggle per row, listed in the reader's current order.
 -- ---------------------------------------------------------------------------
+-- The Reorder list: KOReader's SortWidget, plus a full-width line along the
+-- bottom edge of every row that has a separator (item.separator), drawn in
+-- the separator color - a preview of what ends up on the card.
+local StatSortWidget = SortWidget:extend{}
+
+function StatSortWidget:_populateItems()
+    SortWidget._populateItems(self)
+    local color = Colors.getColor("separator", Blitbuffer.COLOR_DARK_GRAY)
+    local thickness = math.max(1, Size.line.medium)
+    for _i, row in ipairs(self.main_content) do
+        if row.item and row.item.separator then
+            local paint = row.paintTo
+            row.paintTo = function(widget, bb, x, y)
+                paint(widget, bb, x, y)
+                bb:paintRect(x, y + widget.dimen.h - thickness, widget.dimen.w, thickness, color)
+            end
+        end
+    end
+end
+
 local function openStatOrderWidget(touchmenu_instance)
     local order = M.getStatOrder()
     local item_table = {}
     for i = 1, #order do
         local def = STAT_DEFS_BY_ID[order[i]]
-        local menu_text = def.menu_label and def.menu_label() or def.label()
-        item_table[#item_table + 1] = { text = menu_text, id = def.id }
+        item_table[#item_table + 1] = {
+            text = def.menu_label and def.menu_label() or def.label(),
+            id = def.id,
+            separator = M.hasSeparator(def.id),
+            -- Checkbox on the left (SortWidget: tapping the checkmark calls
+            -- item:callback()) = the same on/off toggle as in the menu.
+            checked_func = function() return Prefs.readBool(def.setting, def.default) end,
+            callback = function()
+                Prefs.save(def.setting, not Prefs.readBool(def.setting, def.default))
+            end,
+            -- Long press adds / removes the separator line below this row.
+            -- SortWidget calls this as item:hold_callback(refresh).
+            hold_callback = function(item, refresh)
+                local on = not M.hasSeparator(def.id)
+                M.setSeparator(def.id, on)
+                item.separator = on
+                if refresh then refresh() end
+            end,
+        }
     end
     local sort_widget
-    sort_widget = SortWidget:new{
-        title = _("Reorder statistics"),
+    sort_widget = StatSortWidget:new{
+        title = _("Configure statistics items"),
         item_table = item_table,
         callback = function()
             local new_order = {}
@@ -1404,28 +1612,78 @@ local function openStatOrderWidget(touchmenu_instance)
     UIManager:show(sort_widget)
 end
 
+-- Hours/minutes spinner for a goal (stored as total minutes, in the key
+-- shared with Reading Insights - see M.SETTING_DAILY_GOAL_MIN).
+local function goalSpinner(setting, current, default, max_hours, title_text, touchmenu_instance)
+    UIManager:show(DoubleSpinWidget:new{
+        title_text      = title_text,
+        left_text       = _("Hours"),
+        left_value      = math.floor(current / 60),
+        left_min        = 0,
+        left_max        = max_hours,
+        left_step       = 1,
+        left_hold_step  = 5,
+        right_text      = _("Minutes"),
+        right_value     = current % 60,
+        right_min       = 0,
+        right_max       = 59,
+        right_step      = 1,
+        right_hold_step = 5,
+        default_values  = true,
+        left_default    = math.floor(default / 60),
+        right_default   = default % 60,
+        default_text    = Locale.tpl(_("Default: {value}"), { value = compactDuration(default * 60) }),
+        ok_always_enabled = true,
+        callback = function(hours, minutes)
+            local total = (tonumber(hours) or 0) * 60 + (tonumber(minutes) or 0)
+            if total < 1 then total = 1 end
+            Prefs.save(setting, total)
+            if touchmenu_instance then touchmenu_instance:updateItems() end
+        end,
+    })
+end
+
 --- Returns the sub_item_table for the "Statistics" menu entry: drag-to-sort
 --- for the row order, plus the existing per-row on/off toggles, now listed
 --- in that same order so the menu always matches what's drawn on the card.
 function M.buildStatisticsMenu()
-    local order = M.getStatOrder()
     local items = {
         {
-            text = _("Reorder"),
+            text = _("Configure statistics items"),
             keep_menu_open = true,
             callback = function(touchmenu_instance) openStatOrderWidget(touchmenu_instance) end,
             separator = true,
         },
     }
-    for i = 1, #order do
-        local def = STAT_DEFS_BY_ID[order[i]]
-        items[#items + 1] = {
-            text = def.menu_label and def.menu_label() or def.label(),
-            checked_func = function() return Prefs.readBool(def.setting, def.default) end,
-            callback = function() Prefs.save(def.setting, not Prefs.readBool(def.setting, def.default)) end,
-            keep_menu_open = true,
-        }
-    end
+    -- Goal values (shared with Reading Insights), grouped in their own
+    -- sub-menu at the very end of the Statistics menu.
+    items[#items + 1] = {
+        text = _("Reading goal settings"),
+        sub_item_table_func = function()
+            return {
+                {
+                    text_func = function()
+                        return _("Set daily goal") .. ": " .. compactDuration(M.getDailyGoalMinutes() * 60)
+                    end,
+                    keep_menu_open = true,
+                    callback = function(touchmenu_instance)
+                        goalSpinner(M.SETTING_DAILY_GOAL_MIN, M.getDailyGoalMinutes(), M.DEFAULT_DAILY_GOAL_MIN,
+                            23, _("Daily Goal"), touchmenu_instance)
+                    end,
+                },
+                {
+                    text_func = function()
+                        return _("Set weekly goal") .. ": " .. compactDuration(M.getWeeklyGoalMinutes() * 60)
+                    end,
+                    keep_menu_open = true,
+                    callback = function(touchmenu_instance)
+                        goalSpinner(M.SETTING_WEEKLY_GOAL_MIN, M.getWeeklyGoalMinutes(), M.DEFAULT_WEEKLY_GOAL_MIN,
+                            99, _("Weekly Goal"), touchmenu_instance)
+                    end,
+                },
+            }
+        end,
+    }
     return items
 end
 

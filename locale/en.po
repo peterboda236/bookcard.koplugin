@@ -69,11 +69,8 @@ msgstr "Card elements"
 msgid "Statistics"
 msgstr "Statistics"
 
-msgid "Reorder"
-msgstr "Reorder"
-
-msgid "Reorder statistics"
-msgstr "Reorder statistics"
+msgid "Configure statistics items"
+msgstr "Configure statistics items"
 
 msgid "Text background grouping"
 msgstr "Text background grouping"
@@ -629,3 +626,45 @@ msgstr "Maximum lines"
 
 msgid "Stats per row (centered cover only)"
 msgstr "Stats per row (centered cover only)"
+
+msgid "Pages Read Today"
+msgstr "Pages Read Today"
+
+msgid "Pages Read Today (This Book)"
+msgstr "Pages Read Today (This Book)"
+
+msgid "Pages Read Today (All Books)"
+msgstr "Pages Read Today (All Books)"
+
+msgid "Daily Goal"
+msgstr "Daily Goal"
+
+msgid "Weekly Goal"
+msgstr "Weekly Goal"
+
+msgid "Set daily goal"
+msgstr "Set daily goal"
+
+msgid "Set weekly goal"
+msgstr "Set weekly goal"
+
+msgid "Hours"
+msgstr "Hours"
+
+msgid "Minutes"
+msgstr "Minutes"
+
+msgid "Default: {value}"
+msgstr "Default: {value}"
+
+msgid "%dh"
+msgstr "%dh"
+
+msgid "Separator line color"
+msgstr "Separator line color"
+
+msgid "Enter a hex color code (e.g. #1E90FF), the way KOReader expects it. \"Default\" restores {hex}."
+msgstr "Enter a hex color code (e.g. #1E90FF), the way KOReader expects it. \"Default\" restores {hex}."
+
+msgid "Reading goal settings"
+msgstr "Reading goal settings"
