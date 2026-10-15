@@ -768,16 +768,16 @@ function BookCard:addToMainMenu(menu_items)
             },
             {
                 text = _("Card elements"),
-                sub_item_table = {
-                    battery,
-                    streak,
-                    rtype,
-                    quote,
-                    {
-                        text = _("Statistics"),
-                        sub_item_table_func = function() return CardView.buildStatisticsMenu() end,
-                    },
-                },
+                -- The statistics entries ("Configure statistics items",
+                -- separator line, "Reading goal settings") sit directly in this
+                -- menu instead of in a "Statistics" submenu of their own.
+                sub_item_table_func = function()
+                    local items = { battery, streak, rtype, quote }
+                    for _i, item in ipairs(CardView.buildStatisticsMenu()) do
+                        items[#items + 1] = item
+                    end
+                    return items
+                end,
                 separator = true,
             },
             {

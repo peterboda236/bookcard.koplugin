@@ -1548,7 +1548,7 @@ function M.buildMarginsMenu()
 end
 
 -- ---------------------------------------------------------------------------
--- "Statistics" submenu (Card elements > Statistics): a "Reorder" entry,
+-- "Statistics" submenu (entries at the end of the Card elements menu): "Configure statistics items",
 -- then one on/off toggle per row, listed in the reader's current order.
 -- ---------------------------------------------------------------------------
 -- The Reorder list: KOReader's SortWidget, plus a full-width line along the

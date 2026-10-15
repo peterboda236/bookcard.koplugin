@@ -102,7 +102,7 @@ part of the day (night 0-6, morning 6-12, afternoon 12-18, evening 18-24) with
 the most reading time over all books.
 
 ### Configuring the statistics rows
-Card elements > Statistics > **Configure statistics items** is the one place
+Card elements > **Configure statistics items** is the one place
 to manage the statistics rows:
 - **Show / hide**: tap the checkbox on the left of a row.
 - **Reorder**: tap a row to select it, then move it up or down.
@@ -117,7 +117,7 @@ dialog above):
 - **Pages Read Today (This Book / All Books)** - distinct pages read today.
 - **Daily Goal / Weekly Goal** - time read today / this calendar week (all
   books) against a goal, e.g. `12 min / 30 min`, with a check mark once it is
-  met. The goals are set in Card elements > Statistics > **Reading goal
+  met. The goals are set in Card elements > **Reading goal
   settings** (hours + minutes) and are stored under Reading Insights' own keys
   (`reading_insights_daily_goal_min`, `reading_insights_weekly_goal_min`, in
   minutes; defaults 30 min / 5 h), so changing one in either plugin changes it
