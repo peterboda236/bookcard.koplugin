@@ -1556,6 +1556,28 @@ end
 -- the separator color - a preview of what ends up on the card.
 local StatSortWidget = SortWidget:extend{}
 
+-- SortWidget puts a hamburger icon in the title bar that only offers A-Z /
+-- Z-A sorting, which makes no sense for this list. The icon is created inside
+-- SortWidget:init(), so TitleBar.new is wrapped for the duration of that call
+-- to drop it (sort_disabled would also switch off drag-to-reorder).
+function StatSortWidget:init()
+    local TitleBar = require("ui/widget/titlebar")
+    local own_new = rawget(TitleBar, "new")
+    local orig_new = TitleBar.new
+    TitleBar.new = function(cls, o)
+        if o then o.left_icon = nil end
+        return orig_new(cls, o)
+    end
+    local ok, err = pcall(SortWidget.init, self)
+    TitleBar.new = own_new -- restore (nil if it was inherited)
+    if not ok then error(err, 0) end
+end
+
+-- Also swallow the hardware "Menu" key, which opens the same sort dialog.
+function StatSortWidget:onShowWidgetMenu()
+    return true
+end
+
 function StatSortWidget:_populateItems()
     SortWidget._populateItems(self)
     local color = Colors.getColor("separator", Blitbuffer.COLOR_DARK_GRAY)
