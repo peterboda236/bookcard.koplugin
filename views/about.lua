@@ -1,8 +1,8 @@
 --[[
 Book card - About dialog.
 
-Shown from Tools > Book card > About (see main.lua's addToMainMenu, where
-this entry is placed right after "Updates").
+Shown from Tools > Book card > About (see main.lua's
+addToMainMenu, where this entry is placed right after "Updates").
 
 A small, tap-anywhere-to-close box centered on screen with:
   - the plugin's display title, bold and centered

@@ -669,3 +669,6 @@ msgstr "Introduza um código de cor hexadecimal (ex.: #1E90FF), como o KOReader 
 
 msgid "Reading goal settings"
 msgstr "Definições da meta de leitura"
+
+msgid "Appearance"
+msgstr "Aparência"

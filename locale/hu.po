@@ -599,7 +599,7 @@ msgid "Could not draw the card as an image (see the log for details)."
 msgstr "Nem sikerült a kártyát képként megrajzolni (a részletekért lásd a naplót)."
 
 msgid "Highlighted quote"
-msgstr "Kiemelt idézet"
+msgstr "Idézetek"
 
 msgid "Quote color"
 msgstr "Idézet színe"
@@ -669,3 +669,6 @@ msgstr "Adj meg egy hexadecimális színkódot (pl. #1E90FF), ahogy a KOReader v
 
 msgid "Reading goal settings"
 msgstr "Olvasási cél beállítás"
+
+msgid "Appearance"
+msgstr "Megjelenés"

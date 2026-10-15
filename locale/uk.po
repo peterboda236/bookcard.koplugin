@@ -722,3 +722,6 @@ msgstr "Введіть шістнадцятковий код кольору (н�
 
 msgid "Reading goal settings"
 msgstr "Налаштування цілі читання"
+
+msgid "Appearance"
+msgstr "Вигляд"

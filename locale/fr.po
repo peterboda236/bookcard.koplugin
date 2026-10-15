@@ -669,3 +669,6 @@ msgstr "Saisissez un code couleur hexadécimal (p. ex. #1E90FF), tel que KOReade
 
 msgid "Reading goal settings"
 msgstr "Réglages de l'objectif de lecture"
+
+msgid "Appearance"
+msgstr "Apparence"

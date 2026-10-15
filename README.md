@@ -28,7 +28,7 @@ Copy the `bookcard.koplugin` folder to `koreader/plugins/`, restart KOReader.
   shadow, cover/statistics spacing), Colors, Fonts, Card elements
   (battery / streak / reader type toggles, statistics rows: show / hide,
   order, separators and reading goals), Advanced
-  Settings (orientation, clear cache), Updates.
+  Settings (orientation, clear cache), Updates, About.
 - Assign a gesture to open it.
 
 ## Android
@@ -84,7 +84,7 @@ rotates the screen - it always renders at the screen's current orientation,
 regardless of this setting.
 
 ## Wallpaper
-Tools > Book card > Background > Wallpaper lets you pick a background
+Tools > Book card > Appearance > Background > Wallpaper lets you pick a background
 picture, read from `settings/bookcard/wallpapers/` (drop your own image
 files there - png/jpg/jpeg/bmp/gif/webp - then reopen the menu to see them
 listed; pick "None" to go back to the plain background). With a wallpaper

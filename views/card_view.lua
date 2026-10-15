@@ -1055,7 +1055,7 @@ function M.build(card, opts)
     -- next to a single statistics column. "centered" puts the cover on its
     -- own, centered, with title/author/series/quote directly below it and
     -- the statistics spread beneath that in a 2-column grid instead - see
-    -- M.SETTING_LAYOUT ("Advanced Settings" > "Layout").
+    -- M.SETTING_LAYOUT ("Appearance" > "Layout").
     local layout_centered = Prefs.read(M.SETTING_LAYOUT, "side") == "centered"
 
     if layout_centered then

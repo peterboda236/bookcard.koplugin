@@ -668,3 +668,6 @@ msgstr "Enter a hex color code (e.g. #1E90FF), the way KOReader expects it. \"De
 
 msgid "Reading goal settings"
 msgstr "Reading goal settings"
+
+msgid "Appearance"
+msgstr "Appearance"

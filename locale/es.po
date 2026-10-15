@@ -669,3 +669,6 @@ msgstr "Introduce un código de color hexadecimal (p. ej. #1E90FF), tal como lo 
 
 msgid "Reading goal settings"
 msgstr "Ajustes de meta de lectura"
+
+msgid "Appearance"
+msgstr "Apariencia"

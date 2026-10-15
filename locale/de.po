@@ -669,3 +669,6 @@ msgstr "Gib einen Hex-Farbcode ein (z. B. #1E90FF), so wie KOReader ihn erwartet
 
 msgid "Reading goal settings"
 msgstr "Leseziel-Einstellungen"
+
+msgid "Appearance"
+msgstr "Darstellung"

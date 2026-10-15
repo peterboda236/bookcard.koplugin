@@ -658,6 +658,7 @@ function BookCard:addToMainMenu(menu_items)
     local quote = {
         text = _("Highlighted quote"),
         sub_item_table = { quote_toggle, quote_lines },
+        separator = true,
     }
 
     -- Statistics-column rows: toggles and their draw order both now live in
@@ -686,84 +687,9 @@ function BookCard:addToMainMenu(menu_items)
                 separator = true,
             },
             {
-                text = _("Updates"),
-                sub_item_table_func = function() return self:_updateSubItems() end,
-            },
-            {
-                text = _("About"),
-                keep_menu_open = true,
-                callback = function() About.show() end,
-                separator = true,
-            },
-            {
                 text = _("Preview"),
                 callback = function() self:onShowBookCard() end,
                 keep_menu_open = true,
-                separator = true,
-            },
-            {
-                text = _("Background"),
-                sub_item_table = (function()
-                    local dark_item = themeItem(_("Always dark"), "dark")
-                    dark_item.separator = true
-                    return {
-                        themeItem(_("Follow night mode"), "auto"),
-                        themeItem(_("Always light"), "light"),
-                        dark_item,
-                        {
-                            text_func = function()
-                                return _("Wallpaper") .. ": " .. Wallpaper.currentLabel()
-                            end,
-                            sub_item_table_func = function() return Wallpaper.buildPickerMenu() end,
-                        },
-                        Wallpaper.invertNightItem(),
-                        {
-                            text_func = function()
-                                return _("Text background opacity") .. ": " .. Wallpaper.opacityLabel()
-                            end,
-                            sub_item_table_func = function() return Wallpaper.buildOpacityMenu() end,
-                        },
-                        {
-                            text = _("Text background grouping"),
-                            sub_item_table = {
-                                backdropGroupingItem(_("Individually"), "individual"),
-                                backdropGroupingItem(_("Grouped (default)"), "grouped"),
-                            },
-                        },
-                    }
-                end)(),
-            },
-            {
-                text = _("Cover"),
-                sub_item_table = {
-                    rounded,
-                    {
-                        text = _("Cover shadow"),
-                        checked_func = function()
-                            return Prefs.readBool(CardView.SETTING_COVER_SHADOW, true)
-                        end,
-                        callback = function()
-                            Prefs.save(CardView.SETTING_COVER_SHADOW,
-                                not Prefs.readBool(CardView.SETTING_COVER_SHADOW, true))
-                        end,
-                        keep_menu_open = true,
-                    },
-                    {
-                        text = _("Cover / statistics spacing"),
-                        sub_item_table = {
-                            gapItem(_("Small (default)"), "small"),
-                            gapItem(_("Large"), "large"),
-                        },
-                    },
-                },
-            },
-            {
-                text = _("Colors"),
-                sub_item_table_func = function() return Colors.buildMenu() end,
-            },
-            {
-                text = _("Fonts"),
-                sub_item_table_func = function() return Fonts.buildMenu() end,
                 separator = true,
             },
             {
@@ -778,10 +704,9 @@ function BookCard:addToMainMenu(menu_items)
                     end
                     return items
                 end,
-                separator = true,
             },
             {
-                text = _("Advanced Settings"),
+                text = _("Appearance"),
                 sub_item_table = {
                     {
                         text = _("Layout"),
@@ -790,7 +715,83 @@ function BookCard:addToMainMenu(menu_items)
                             layoutItem(_("Cover centered, statistics grid below"), "centered"),
                             gridColumnsMenu(),
                         },
+                        separator = true,
                     },
+                    {
+                        text = _("Cover"),
+                        sub_item_table = {
+                            rounded,
+                            {
+                                text = _("Cover shadow"),
+                                checked_func = function()
+                                    return Prefs.readBool(CardView.SETTING_COVER_SHADOW, true)
+                                end,
+                                callback = function()
+                                    Prefs.save(CardView.SETTING_COVER_SHADOW,
+                                        not Prefs.readBool(CardView.SETTING_COVER_SHADOW, true))
+                                end,
+                                keep_menu_open = true,
+                            },
+                            {
+                                text = _("Cover / statistics spacing"),
+                                sub_item_table = {
+                                    gapItem(_("Small (default)"), "small"),
+                                    gapItem(_("Large"), "large"),
+                                },
+                            },
+                        },
+                    },
+                    {
+                        text = _("Background"),
+                        sub_item_table = (function()
+                            local dark_item = themeItem(_("Always dark"), "dark")
+                            dark_item.separator = true
+                            return {
+                                themeItem(_("Follow night mode"), "auto"),
+                                themeItem(_("Always light"), "light"),
+                                dark_item,
+                                {
+                                    text_func = function()
+                                        return _("Wallpaper") .. ": " .. Wallpaper.currentLabel()
+                                    end,
+                                    sub_item_table_func = function() return Wallpaper.buildPickerMenu() end,
+                                },
+                                Wallpaper.invertNightItem(),
+                                {
+                                    text_func = function()
+                                        return _("Text background opacity") .. ": " .. Wallpaper.opacityLabel()
+                                    end,
+                                    sub_item_table_func = function() return Wallpaper.buildOpacityMenu() end,
+                                },
+                                {
+                                    text = _("Text background grouping"),
+                                    sub_item_table = {
+                                        backdropGroupingItem(_("Individually"), "individual"),
+                                        backdropGroupingItem(_("Grouped (default)"), "grouped"),
+                                    },
+                                },
+                            }
+                        end)(),
+                    },
+                    {
+                        text = _("Colors"),
+                        sub_item_table_func = function() return Colors.buildMenu() end,
+                    },
+                    {
+                        text = _("Fonts"),
+                        sub_item_table_func = function() return Fonts.buildMenu() end,
+                        separator = true,
+                    },
+                    {
+                        text = _("Margins"),
+                        sub_item_table_func = function() return CardView.buildMarginsMenu() end,
+                    },
+                },
+                separator = true,
+            },
+            {
+                text = _("Advanced Settings"),
+                sub_item_table = {
                     {
                         text = _("Orientation"),
                         sub_item_table = {
@@ -798,10 +799,6 @@ function BookCard:addToMainMenu(menu_items)
                             orientationItem(_("Force portrait"), "portrait"),
                             orientationItem(_("Force landscape"), "landscape"),
                         },
-                    },
-                    {
-                        text = _("Margins"),
-                        sub_item_table_func = function() return CardView.buildMarginsMenu() end,
                     },
                     {
                         text = _("Image export (Android wallpaper / PocketBook logo)"),
@@ -815,6 +812,16 @@ function BookCard:addToMainMenu(menu_items)
                         end,
                     },
                 },
+            },
+            {
+                text = _("Updates"),
+                sub_item_table_func = function() return self:_updateSubItems() end,
+                separator = true,
+            },
+            {
+                text = _("About"),
+                keep_menu_open = true,
+                callback = function() About.show() end,
             },
         },
     }

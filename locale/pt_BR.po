@@ -669,3 +669,6 @@ msgstr "Digite um código de cor hexadecimal (ex.: #1E90FF), como o KOReader esp
 
 msgid "Reading goal settings"
 msgstr "Configuração da meta de leitura"
+
+msgid "Appearance"
+msgstr "Aparência"

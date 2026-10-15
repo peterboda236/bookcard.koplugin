@@ -669,3 +669,6 @@ msgstr "输入十六进制颜色代码（例如 #1E90FF），格式与 KOReader 
 
 msgid "Reading goal settings"
 msgstr "阅读目标设置"
+
+msgid "Appearance"
+msgstr "外观"
