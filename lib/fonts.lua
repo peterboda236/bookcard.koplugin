@@ -10,11 +10,9 @@ Book card - user-configurable fonts, for these text roles:
   bottom      the streak text and the reader-type text (bottom row)
   battery     the battery percentage
 
-title, author, series, quote, bottom and battery have fixed default sizes
-(26/18/18/15/15/15, see DEFAULT_SIZE). stat_value and stat_label are not
-fixed - card_view.lua computes them from however much space is left on the
-screen (getFace's `resolved_size` argument below). A user-set custom size
-always wins.
+title, author, series, quote, stat_value, stat_label, bottom and battery
+have fixed default sizes (26/18/18/15/24/15/15/15, see DEFAULT_SIZE). A
+user-set custom size always wins.
 
 Default font names are NotoSans (Regular/Bold/Italic and friends) for
 every role, rather than KOReader's generic "tfont"/"cfont" aliases, so
@@ -85,27 +83,24 @@ local DEFAULT_NAME = {
     battery    = "NotoSans-Bold.ttf",
 }
 
--- Fixed default sizes. stat_value / stat_label have no entry here: they are
--- sized dynamically by card_view.lua (see header comment above), so
--- getFace() falls back to its `resolved_size` argument for those. Also the
--- spinner's starting point/"Default" value in the menu for these roles.
+-- Fixed default sizes (also the spinner's starting point/"Default" value in
+-- the menu for these roles).
 local DEFAULT_SIZE = {
     title      = 26,
     author     = 18,
     series     = 18,
     quote      = 15,
+    stat_value = 24,
+    stat_label = 15,
     bottom     = 15,
     battery    = 15,
 }
 
--- Used only to seed the size spinner for the dynamically-sized roles with
--- a sensible starting number (their typical on-screen size) - the actual
--- default behavior for these roles is "whatever card_view.lua computes",
--- not this number; it is never itself persisted or applied unless the user
--- explicitly moves the spinner and taps "Set".
+-- Spinner seed for roles without a fixed DEFAULT_SIZE (none at the moment;
+-- kept as a fallback).
 local SPINNER_START_SIZE = {
-    stat_value = 22,
-    stat_label = 13,
+    stat_value = 24,
+    stat_label = 15,
 }
 
 local SETTINGS_NAME_PREFIX = "bookcard_font_name_"
