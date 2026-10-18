@@ -10,12 +10,11 @@ Book card - user-configurable fonts, for these text roles:
   bottom      the streak text and the reader-type text (bottom row)
   battery     the battery percentage
 
-Most sizes (title, author, series, stat_value, stat_label) are not fixed -
-card_view.lua computes them from however much space is left on the screen,
-so every card fits regardless of device/orientation. "default size" means
-"let card_view.lua keep computing it" (getFace's `resolved_size` argument
-below); only a user-set custom size switches a role to a fixed size.
-bottom/battery instead have real fixed defaults (14/13, see DEFAULT_SIZE).
+title, author, series, quote, bottom and battery have fixed default sizes
+(26/18/18/15/15/15, see DEFAULT_SIZE). stat_value and stat_label are not
+fixed - card_view.lua computes them from however much space is left on the
+screen (getFace's `resolved_size` argument below). A user-set custom size
+always wins.
 
 Default font names are NotoSans (Regular/Bold/Italic and friends) for
 every role, rather than KOReader's generic "tfont"/"cfont" aliases, so
@@ -86,14 +85,17 @@ local DEFAULT_NAME = {
     battery    = "NotoSans-Bold.ttf",
 }
 
--- Only bottom/battery had a fixed size before this menu existed; the rest
--- are sized dynamically by card_view.lua (see header comment above) and so
--- have no entry here - getFace() falls back to its `resolved_size` argument
--- for those instead. Used only as the spinner's starting point/"Default"
--- value in the menu for those two roles.
+-- Fixed default sizes. stat_value / stat_label have no entry here: they are
+-- sized dynamically by card_view.lua (see header comment above), so
+-- getFace() falls back to its `resolved_size` argument for those. Also the
+-- spinner's starting point/"Default" value in the menu for these roles.
 local DEFAULT_SIZE = {
-    bottom  = 14,
-    battery = 14,
+    title      = 26,
+    author     = 18,
+    series     = 18,
+    quote      = 15,
+    bottom     = 15,
+    battery    = 15,
 }
 
 -- Used only to seed the size spinner for the dynamically-sized roles with
@@ -102,10 +104,6 @@ local DEFAULT_SIZE = {
 -- not this number; it is never itself persisted or applied unless the user
 -- explicitly moves the spinner and taps "Set".
 local SPINNER_START_SIZE = {
-    title      = 22,
-    author     = 13,
-    series     = 13,
-    quote      = 13,
     stat_value = 22,
     stat_label = 13,
 }
@@ -199,11 +197,11 @@ local function buildFace(font, size)
 end
 
 -- `resolved_size` is card_view.lua's own dynamically-computed size for this
--- role (or nil for bottom/battery, which fall back to DEFAULT_SIZE) - only
--- used when the user hasn't set a custom size for `key`.
+-- role - only used when the user hasn't set a custom size for `key` and the
+-- role has no fixed DEFAULT_SIZE.
 function M.getFace(key, resolved_size)
     local name = M.getName(key) or DEFAULT_NAME[key]
-    local size = M.getSize(key) or resolved_size or DEFAULT_SIZE[key] or 14
+    local size = M.getSize(key) or DEFAULT_SIZE[key] or resolved_size or 14
     size = math.max(6, math.floor(size))
 
     local cache_key = name .. "@" .. size
