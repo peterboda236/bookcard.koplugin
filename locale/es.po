@@ -664,6 +664,9 @@ msgstr "%d h"
 msgid "Separator line color"
 msgstr "Color de la línea separadora"
 
+msgid "Cover shadow color"
+msgstr "Color de la sombra de la portada"
+
 msgid "Enter a hex color code (e.g. #1E90FF), the way KOReader expects it. \"Default\" restores {hex}."
 msgstr "Introduce un código de color hexadecimal (p. ej. #1E90FF), tal como lo espera KOReader. «Predeterminado» restaura {hex}."
 

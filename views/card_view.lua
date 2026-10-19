@@ -273,7 +273,7 @@ local function buildCover(card, max_w, max_h, pal, shadow_offset, restore)
             border = border,  radius = radius,
             bg     = pal.bg,  fg     = pal.fg,
             -- shadow awareness: BR corner restores shadow grey instead of bg
-            shadow_color  = soff > 0 and CoverFrame.SHADOW_GRAY or nil,
+            shadow_color  = soff > 0 and Colors.getColor("shadow", CoverFrame.SHADOW_GRAY) or nil,
             shadow_offset = soff,
             -- over a wallpaper, cut corners reveal the picture instead of a
             -- flat bg square (see Wallpaper.restore)
@@ -1145,6 +1145,7 @@ function M.build(card, opts)
                 width = cover_w_c, height = cover_h_c,
                 offset = shadow_off_c, radius = radius,
                 bg = pal.bg, restore = cover_restore_c,
+                color = Colors.getColor("shadow", CoverFrame.SHADOW_GRAY),
             }
             place(shadow, cover_left_c, cover_top_c)
         end
@@ -1409,6 +1410,7 @@ function M.build(card, opts)
             radius = radius,
             bg     = pal.bg,
             restore = cover_restore,
+            color  = Colors.getColor("shadow", CoverFrame.SHADOW_GRAY),
         }
         place(shadow, cover_left, cover_top)
     end

@@ -664,6 +664,9 @@ msgstr "%d ó"
 msgid "Separator line color"
 msgstr "Elválasztó vonal színe"
 
+msgid "Cover shadow color"
+msgstr "Borító árnyékának színe"
+
 msgid "Enter a hex color code (e.g. #1E90FF), the way KOReader expects it. \"Default\" restores {hex}."
 msgstr "Adj meg egy hexadecimális színkódot (pl. #1E90FF), ahogy a KOReader várja. Az „Alapértelmezett” visszaállítja ezt: {hex}."
 

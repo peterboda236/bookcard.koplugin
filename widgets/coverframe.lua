@@ -133,6 +133,7 @@ end
 --       offset = <shadow shift in px>,
 --       radius = <corner radius px matching the CoverFrame, 0 = square>,
 --       bg     = <background colour behind the whole composition>,
+--       color  = <shadow colour, default SHADOW_GRAY (50% black)>,
 --       restore = <optional function(bb, x, y, w, h), see CoverFrame above>,
 --   }
 -- ---------------------------------------------------------------------------
@@ -142,12 +143,15 @@ local CoverShadow = Widget:extend{
     offset  = 4,
     radius  = 0,
     bg      = nil,
+    color   = nil,   -- shadow colour; falls back to SHADOW_GRAY
     restore = nil,
 }
 
--- Shadow grey: mid-grey on a plain page.  The framebuffer is inverted at
--- refresh in night mode so the same value displays dark on both modes.
-local SHADOW_GRAY = Blitbuffer.gray(0.65)
+-- Default shadow colour: 50% black (#808080).  The framebuffer is inverted
+-- at refresh in night mode so the same value displays dark on both modes.
+-- The user can override it (Colors > Cover shadow color); callers pass the
+-- resulting colour in as `color`.
+local SHADOW_GRAY = Blitbuffer.gray(0.5)
 
 function CoverShadow:getSize()
     return Geom:new{ w = self.width + self.offset, h = self.height + self.offset }
@@ -157,11 +161,12 @@ function CoverShadow:paintTo(bb, x, y)
     local off = self.offset
     local w, h, r = self.width, self.height, self.radius or 0
     local sx, sy = x + off, y + off   -- shadow top-left on screen
+    local col = self.color or SHADOW_GRAY
 
     if r > 0 then
         r = math.min(r, math.floor(math.min(w, h) / 2))
         -- Fill the whole shadow rect then cut the four rounded corners.
-        bb:paintRect(sx, sy, w, h, SHADOW_GRAY)
+        bb:paintRect(sx, sy, w, h, col)
         local bg = self.bg or Blitbuffer.COLOR_WHITE
         local restore = self.restore
         local function put(px, py)
@@ -181,7 +186,7 @@ function CoverShadow:paintTo(bb, x, y)
             end
         end
     else
-        bb:paintRect(sx, sy, w, h, SHADOW_GRAY)
+        bb:paintRect(sx, sy, w, h, col)
     end
 end
 

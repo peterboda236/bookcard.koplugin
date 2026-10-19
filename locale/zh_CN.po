@@ -664,6 +664,9 @@ msgstr "%d小时"
 msgid "Separator line color"
 msgstr "分隔线颜色"
 
+msgid "Cover shadow color"
+msgstr "封面阴影颜色"
+
 msgid "Enter a hex color code (e.g. #1E90FF), the way KOReader expects it. \"Default\" restores {hex}."
 msgstr "输入十六进制颜色代码（例如 #1E90FF），格式与 KOReader 要求一致。点击“默认”可恢复为 {hex}。"
 

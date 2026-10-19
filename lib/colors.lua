@@ -21,6 +21,8 @@ theme color as a fallback for that reason.
               press a row in Card elements > Statistics > Reorder). Unlike
               the roles above it has a fixed default (#888888) instead of
               following the theme
+  shadow      the drop shadow behind the cover (Appearance > Cover > Cover
+              shadow). Fixed default #808080 (50% black), like separator
 
 Colors are stored as "#RRGGBB" hex strings in G_reader_settings, same as
 KOReader itself (see Blitbuffer.colorFromString) - any hex code the user can
@@ -61,12 +63,13 @@ local ColorWheelWidget = PluginUtil.load("widgets/colorwheelwidget.lua")
 -- (lib/fonts.lua) role for role.
 local KEY_ORDER = {
     "title", "author", "series", "quote", "stat_value", "stat_label", "bottom", "battery",
-    "separator",
+    "separator", "shadow",
 }
 
 -- Roles that have a fixed default color instead of following the theme.
 local DEFAULT_HEX = {
     separator = "#888888",
+    shadow    = "#808080",   -- 50% black
 }
 
 local SETTINGS_PREFIX = "bookcard_color_"
@@ -176,6 +179,7 @@ local function labelFor(key)
         bottom     = _("Streak / reader type color"),
         battery    = _("Battery color"),
         separator  = _("Separator line color"),
+        shadow     = _("Cover shadow color"),
     }
     return labels[key] or key
 end

@@ -717,6 +717,9 @@ msgstr "%dг"
 msgid "Separator line color"
 msgstr "Колір лінії-роздільника"
 
+msgid "Cover shadow color"
+msgstr "Колір тіні обкладинки"
+
 msgid "Enter a hex color code (e.g. #1E90FF), the way KOReader expects it. \"Default\" restores {hex}."
 msgstr "Введіть шістнадцятковий код кольору (напр. #1E90FF), як очікує KOReader. «За замовчуванням» відновлює {hex}."
 
