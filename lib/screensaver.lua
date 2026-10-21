@@ -99,6 +99,14 @@ end
 --   book open  -> read the live state, and refresh the cache with it
 --   no book    -> read the cache (rebuild from sidecar + DB if it is missing
 --                 or belongs to another book than the last one opened)
+-- Wall-clock seconds (sub-second precision when the socket library is
+-- there, whole seconds otherwise). Only used for the timing line in the log.
+local function now()
+    local ok, socket = pcall(require, "socket")
+    if ok and socket and socket.gettime then return socket.gettime() end
+    return os.time()
+end
+
 function M.buildCard(ui)
     if ui and ui.document then
         local card = Data.collectLive(ui)
@@ -116,10 +124,19 @@ function M.buildCard(ui)
     return Data.prepare(card, { live = false })
 end
 
+-- Logs how long the card took to get ready, split into "numbers" (reading
+-- state + statistics database) and "layout" (widgets, fonts, cover,
+-- wallpaper), so a slow sleep screen report can say which half it is.
 function M.buildWidget(ui)
+    local t0 = now()
     local card = M.buildCard(ui)
+    local t1 = now()
     if not card then return nil end
-    return CardView.build(card)
+    local widget = CardView.build(card)
+    local t2 = now()
+    logger.info(string.format("BookCard: sleep card ready in %.0f ms (data %.0f ms, layout %.0f ms)",
+        (t2 - t0) * 1000, (t1 - t0) * 1000, (t2 - t1) * 1000))
+    return widget
 end
 
 function M.patchCore()

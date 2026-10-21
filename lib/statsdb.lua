@@ -10,7 +10,8 @@ This plugin never writes to the statistics database; it only SELECTs.
                                  fn's result or `fallback` on any failure
   StatsDb.first(conn, sql, n)    first row of `sql` as { col1, col2, ... }
                                  (numbers/strings), or nil
-  StatsDb.all(conn, sql, n)      every row as a list of { col1, col2, ... }
+  StatsDb.all(conn, sql, n)      every row as a list of { col1, col2, ... };
+                                 second result: false if the query failed
 ]]--
 
 local DataStorage = require("datastorage")
@@ -88,8 +89,8 @@ end
 
 function M.all(conn, sql, ncols)
     local rows = {}
-    run(conn, sql, ncols or 2, function(row) rows[#rows + 1] = row end)
-    return rows
+    local ok = run(conn, sql, ncols or 2, function(row) rows[#rows + 1] = row end)
+    return rows, ok
 end
 
 return M
