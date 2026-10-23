@@ -357,11 +357,16 @@ local function fillBookStats(conn, card, book_id)
             FROM page_stat WHERE id_book = %d GROUP BY dates)]], book_id), 1)
     if r then card.days_read = num(r[1]) end
 
+    -- Straight from page_stat_data (not the page_stat view): the view
+    -- expands every row through the `numbers` table, and "ORDER BY
+    -- start_time LIMIT 1" on it can make SQLite walk the WHOLE start_time
+    -- index when that index exists (seconds on an e-reader). min() on the
+    -- raw table gives the same first start without any of that.
     r = StatsDb.first(conn, string.format([[
-        SELECT start_time,
+        SELECT min(start_time),
                CAST(julianday('now', 'localtime')
-                    - julianday(date(start_time, 'unixepoch', 'localtime')) AS INTEGER)
-        FROM page_stat WHERE id_book = %d ORDER BY start_time ASC LIMIT 1]], book_id), 2)
+                    - julianday(date(min(start_time), 'unixepoch', 'localtime')) AS INTEGER)
+        FROM page_stat_data WHERE id_book = %d]], book_id), 2)
     if r then
         card.started_ts = num(r[1])
         card.days_since_start = num(r[2])
@@ -466,67 +471,150 @@ local function daypart(hour)
     return "evening"
 end
 
+-- ---- time windows ---------------------------------------------------------
+-- The statistics database only ever grows (years of page turns), and the
+-- sleep screen used to read ALL of it every single time - five scans through
+-- the page_stat view calling date() on every row - which took seconds on an
+-- e-reader with a large database. Everything below works on a recent time
+-- window instead: "start_time >= <timestamp>" is a plain integer comparison,
+-- and the long-term part (the streaks up to yesterday) is worked out once a
+-- day and remembered.
+
+-- Timestamp of local midnight, `days_back` days before today.
+local function dayStartTs(days_back)
+    local t = os.date("*t")
+    return os.time{ year = t.year, month = t.month, day = t.day - (days_back or 0),
+                    hour = 0, min = 0, sec = 0 }
+end
+
+local function dateStrToStartTs(str)
+    local y, m, d = parseDateYMD(str)
+    if not y then return nil end
+    return os.time{ year = y, month = m, day = d, hour = 0, min = 0, sec = 0 }
+end
+
+-- Distinct local dates ("YYYY-MM-DD", newest first) with reading in
+-- [since, before). Second result: false if the query failed.
+local function distinctDays(conn, since, before)
+    local rows, ok = StatsDb.all(conn, string.format(
+        "SELECT DISTINCT date(start_time, 'unixepoch', 'localtime') AS d FROM page_stat_data "
+        .. "WHERE start_time >= %d AND start_time < %d ORDER BY d DESC", since, before), 1)
+    local days = {}
+    for _, row in ipairs(rows) do days[#days + 1] = row[1] end
+    return days, ok ~= false
+end
+
+-- Distinct week-start dates (newest first) of a newest-first list of days.
+local function weeksOf(days, week_start_wd)
+    local weeks, last = {}, nil
+    for _, d in ipairs(days) do
+        local w = weekStartDate(d, week_start_wd)
+        if w and w ~= last then weeks[#weeks + 1] = w; last = w end
+    end
+    return weeks
+end
+
+-- The part of the streaks that is already history: the run of consecutive
+-- days ending YESTERDAY, and of consecutive weeks ending LAST week. Today's
+-- (and this week's) reading is added on top by readGlobal.
+--
+-- Only a recent window is read; when the run still reaches the window's
+-- oldest entry (it may continue further back) the window is widened. A break
+-- inside the window - the normal case - settles it, so the answer is exactly
+-- what the complete list of days would give.
+-- Returns days_run, weeks_run, ok (false if a query failed: don't remember).
+local function historyRuns(conn, ctx)
+    local all_ok = true
+    for _, span in ipairs({ 90, 400, 0 }) do
+        local since = span > 0 and math.max(dayStartTs(span), 0) or 0
+        local days, ok = distinctDays(conn, since, ctx.today_start)
+        all_ok = all_ok and ok
+
+        local day_run = computeCurrentStreak(days, isConsecutiveDay, function(first)
+            return first == ctx.yesterday
+        end)
+
+        local weeks = weeksOf(days, ctx.week_start)
+        -- This week's earlier days belong to the live part, not the history.
+        if weeks[1] == ctx.this_week then table.remove(weeks, 1) end
+        local week_run = computeCurrentStreak(weeks, isConsecutiveWeek, function(first)
+            return first == ctx.last_week
+        end)
+
+        local settled = (#days == 0 or day_run < #days) and (#weeks == 0 or week_run < #weeks)
+        if span == 0 or since <= 0 or settled then return day_run, week_run, all_ok end
+    end
+end
+
+-- G_reader_settings key remembering today's historyRuns() result.
+M.HISTORY_KEY = "bookcard_streak_history"
+
 -- Streaks span all books; the reader type (part of day) is scoped to this
 -- book alone (card.book_id), when known.
 function M.readGlobal(conn, card)
-    -- Today only, across every book: raw sum, no per-page cap - kept
-    -- consistent with the per-book today_time change above.
-    local total_row = StatsDb.first(conn, string.format([[
-        SELECT sum(durations)
-        FROM (
-            SELECT sum(duration) AS durations
-            FROM page_stat
-            WHERE date(start_time, 'unixepoch', 'localtime') = date('now', 'localtime')
-            GROUP BY id_book, page
-        )]]), 1)
-    if total_row then card.all_books_time = num(total_row[1]) end
-
-    -- Pages read today across every book (distinct book + page pairs).
-    local pages_row = StatsDb.first(conn, string.format([[
-        SELECT count(*)
-        FROM (
-            SELECT id_book, page
-            FROM page_stat
-            WHERE date(start_time, 'unixepoch', 'localtime') = date('now', 'localtime')
-            GROUP BY id_book, page
-        )]]), 1)
-    if pages_row then card.all_books_pages = num(pages_row[1]) end
-
-    local rows = StatsDb.all(conn,
-        "SELECT DISTINCT date(start_time, 'unixepoch', 'localtime') AS d FROM page_stat_data ORDER BY d DESC", 1)
-    local dates = {}
-    for _, row in ipairs(rows) do dates[#dates + 1] = row[1] end
-
     local today_str = os.date("%Y-%m-%d")
     local yesterday = os.date("%Y-%m-%d", os.time() - DAY)
-    card.streak_days = computeCurrentStreak(dates, isConsecutiveDay, function(first)
-        return first == today_str or first == yesterday
-    end)
-
     local week_start = weekStartWday()
-    local wrows = StatsDb.all(conn, "SELECT DISTINCT " .. weekStartSqlExpr(week_start)
-        .. " AS w FROM page_stat_data ORDER BY w DESC", 1)
-    local weeks = {}
-    for _, row in ipairs(wrows) do weeks[#weeks + 1] = row[1] end
     local this_week = weekStartDate(today_str, week_start)
-
-    -- Time read this calendar week, all books (weekly goal). Same grouping
-    -- as Reading Insights' per-day totals: one sum per book + page + day.
-    if this_week then
-        local week_row = StatsDb.first(conn, string.format([[
-            SELECT sum(durations)
-            FROM (
-                SELECT sum(duration) AS durations
-                FROM page_stat
-                WHERE date(start_time, 'unixepoch', 'localtime') >= '%s'
-                GROUP BY id_book, page, date(start_time, 'unixepoch', 'localtime')
-            )]], esc(this_week)), 1)
-        if week_row then card.week_time = num(week_row[1]) end
-    end
     local last_week = weekStartDate(os.date("%Y-%m-%d", os.time() - 7 * DAY), week_start)
-    card.streak_weeks = computeCurrentStreak(weeks, isConsecutiveWeek, function(first)
-        return first == this_week or first == last_week
-    end)
+    local today_start = dayStartTs(0)
+    local week_since = this_week and dateStrToStartTs(this_week) or today_start
+
+    -- One pass over this calendar week (all books): one sum per book + page +
+    -- day (the same grouping Reading Insights uses for its per-day totals),
+    -- then summed per day. From that single result:
+    --   today's time / pages   the row for today: raw sum, no per-page cap,
+    --                          and the distinct (book, page) pairs
+    --   weekly time            every day of the week together
+    local day_rows = StatsDb.all(conn, string.format([[
+        SELECT d, sum(durations), count(*)
+        FROM (
+            SELECT date(start_time, 'unixepoch', 'localtime') AS d, sum(duration) AS durations
+            FROM page_stat
+            WHERE start_time >= %d
+            GROUP BY id_book, page, d
+        )
+        GROUP BY d]], week_since), 3)
+    local week_total, today_time, today_pages = nil, nil, 0
+    for _, row in ipairs(day_rows) do
+        local secs = num(row[2])
+        if secs then week_total = (week_total or 0) + secs end
+        if row[1] == today_str then
+            today_time = secs
+            today_pages = num(row[3]) or 0
+        end
+    end
+    card.all_books_time = today_time
+    card.all_books_pages = today_pages
+    if this_week then card.week_time = week_total end
+
+    -- Did anything get read today / this week? (the latest row tells both)
+    local latest_row = StatsDb.first(conn, string.format(
+        "SELECT max(start_time) FROM page_stat_data WHERE start_time >= %d", week_since), 1)
+    local latest = latest_row and num(latest_row[1])
+    local today_read = latest ~= nil and latest >= today_start
+    local week_read = latest ~= nil
+
+    -- Streaks: history (remembered for the day) + today / this week.
+    local day_run, week_run
+    local saved = G_reader_settings and G_reader_settings:readSetting(M.HISTORY_KEY)
+    if type(saved) == "table" and saved.day == today_str and saved.ws == week_start
+            and num(saved.days) and num(saved.weeks) then
+        day_run, week_run = saved.days, saved.weeks
+    else
+        local ok
+        day_run, week_run, ok = historyRuns(conn, {
+            today_start = today_start, yesterday = yesterday, week_start = week_start,
+            this_week = this_week, last_week = last_week,
+        })
+        if ok and G_reader_settings then
+            G_reader_settings:saveSetting(M.HISTORY_KEY, {
+                day = today_str, ws = week_start, days = day_run, weeks = week_run,
+            })
+        end
+    end
+    card.streak_days = day_run + (today_read and 1 or 0)
+    card.streak_weeks = week_run + (week_read and 1 or 0)
 
     local hours_sql
     if card.book_id then
