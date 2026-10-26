@@ -675,3 +675,12 @@ msgstr "Ajustes de meta de lectura"
 
 msgid "Appearance"
 msgstr "Apariencia"
+
+msgid "Cover border"
+msgstr "Borde de la portada"
+
+msgid "Dark border in night mode"
+msgstr "Borde oscuro en modo nocturno"
+
+msgid "When the card is dark, draw the cover frame in near-black instead of white, so it stays subtle. Needs \"Cover border\" to be on."
+msgstr "Cuando la tarjeta es oscura, dibuja el borde de la portada casi negro en lugar de blanco, para que resulte discreto. Requiere «Borde de la portada»."

@@ -80,6 +80,9 @@ M.SETTING_ROUNDED     = "bookcard_rounded_corners"       -- default on
 M.SETTING_THEME       = "bookcard_theme"                 -- "auto" (default) | "light" | "dark"
 M.SETTING_GAP         = "bookcard_cover_stats_gap"       -- "small" (default) | "large"
 M.SETTING_COVER_SHADOW = "bookcard_cover_shadow"          -- default on
+M.SETTING_COVER_BORDER = "bookcard_cover_border"          -- default on - thin frame round the cover
+M.SETTING_DARK_BORDER  = "bookcard_cover_dark_border"     -- default on - near-black frame when the
+                                                          -- card is dark (as in Reading insights)
 M.SETTING_HIGHLIGHTS   = "bookcard_show_highlights"      -- default OFF
 M.SETTING_QUOTE        = "bookcard_show_quote"           -- default OFF - a
                                                           -- random highlighted
@@ -214,6 +217,7 @@ local function palette()
     local flip = dark ~= night
     return {
         flip = flip,
+        dark = dark,
         bg = flip and Blitbuffer.COLOR_BLACK or Blitbuffer.COLOR_WHITE,
         fg = flip and Blitbuffer.COLOR_WHITE or Blitbuffer.COLOR_BLACK,
     }
@@ -257,10 +261,23 @@ end
 -- ---------------------------------------------------------------------------
 -- Cover (framed, optionally rounded)
 -- ---------------------------------------------------------------------------
+-- Frame colour (taken over from Reading insights). On a dark card the frame
+-- is near-black (~98% black on screen, like Bookshelf) instead of white, so a
+-- dark cover keeps a faint frame rather than a bright one. In night mode the
+-- framebuffer is inverted at refresh, so 0xFA is painted to be shown as 0x05;
+-- when the card is only forced dark (no night mode) 0x05 is painted directly.
+local function coverBorderColor(pal)
+    if pal.dark and Prefs.readBool(M.SETTING_DARK_BORDER, true) then
+        return Screen.night_mode and Blitbuffer.Color8(0xFA) or Blitbuffer.Color8(0x05)
+    end
+    return pal.fg
+end
+
 -- `max_w` x `max_h` is the box for the OUTER size (frame included).
 -- Returns the widget and its outer width and height.
 local function buildCover(card, max_w, max_h, pal, shadow_offset, restore)
-    local border = math.max(2, S(1))
+    -- Frame thickness as in Reading insights: a 1 px line (or none).
+    local border = Prefs.readBool(M.SETTING_COVER_BORDER, true) and 1 or 0
     local radius = Prefs.readBool(M.SETTING_ROUNDED, true) and S(4) or 0
     local box_w, box_h = max_w - 2 * border, max_h - 2 * border
     local soff = shadow_offset or 0
@@ -271,7 +288,7 @@ local function buildCover(card, max_w, max_h, pal, shadow_offset, restore)
             inner  = inner,
             width  = outer_w, height = outer_h,
             border = border,  radius = radius,
-            bg     = pal.bg,  fg     = pal.fg,
+            bg     = pal.bg,  fg     = coverBorderColor(pal),
             -- shadow awareness: BR corner restores shadow grey instead of bg
             shadow_color  = soff > 0 and Colors.getColor("shadow", CoverFrame.SHADOW_GRAY) or nil,
             shadow_offset = soff,

@@ -675,3 +675,12 @@ msgstr "Leseziel-Einstellungen"
 
 msgid "Appearance"
 msgstr "Darstellung"
+
+msgid "Cover border"
+msgstr "Cover-Rahmen"
+
+msgid "Dark border in night mode"
+msgstr "Dunkler Rahmen im Nachtmodus"
+
+msgid "When the card is dark, draw the cover frame in near-black instead of white, so it stays subtle. Needs \"Cover border\" to be on."
+msgstr "Wenn die Karte dunkel ist, wird der Cover-Rahmen fast schwarz statt weiß gezeichnet, damit er dezent bleibt. Benötigt „Cover-Rahmen“."

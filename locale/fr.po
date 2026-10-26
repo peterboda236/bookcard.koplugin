@@ -675,3 +675,12 @@ msgstr "Réglages de l'objectif de lecture"
 
 msgid "Appearance"
 msgstr "Apparence"
+
+msgid "Cover border"
+msgstr "Cadre de la couverture"
+
+msgid "Dark border in night mode"
+msgstr "Cadre sombre en mode nuit"
+
+msgid "When the card is dark, draw the cover frame in near-black instead of white, so it stays subtle. Needs \"Cover border\" to be on."
+msgstr "Lorsque la carte est sombre, dessine le cadre de la couverture en presque noir au lieu de blanc, pour qu’il reste discret. Nécessite « Cadre de la couverture »."
