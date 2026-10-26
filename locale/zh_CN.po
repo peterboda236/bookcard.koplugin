@@ -675,3 +675,12 @@ msgstr "阅读目标设置"
 
 msgid "Appearance"
 msgstr "外观"
+
+msgid "Cover border"
+msgstr "封面边框"
+
+msgid "Dark border in night mode"
+msgstr "夜间模式下使用深色边框"
+
+msgid "When the card is dark, draw the cover frame in near-black instead of white, so it stays subtle. Needs \"Cover border\" to be on."
+msgstr "卡片为深色时，封面边框使用接近黑色而非白色，更为低调。需要开启“封面边框”。"

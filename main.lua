@@ -722,6 +722,33 @@ function BookCard:addToMainMenu(menu_items)
                         sub_item_table = {
                             rounded,
                             {
+                                text = _("Cover border"),
+                                checked_func = function()
+                                    return Prefs.readBool(CardView.SETTING_COVER_BORDER, true)
+                                end,
+                                callback = function()
+                                    Prefs.save(CardView.SETTING_COVER_BORDER,
+                                        not Prefs.readBool(CardView.SETTING_COVER_BORDER, true))
+                                end,
+                                keep_menu_open = true,
+                            },
+                            {
+                                text = _("Dark border in night mode"),
+                                help_text = _("When the card is dark, draw the cover frame in near-black instead of white, so it stays subtle. Needs \"Cover border\" to be on."),
+                                enabled_func = function()
+                                    return Prefs.readBool(CardView.SETTING_COVER_BORDER, true)
+                                end,
+                                checked_func = function()
+                                    return Prefs.readBool(CardView.SETTING_COVER_BORDER, true)
+                                        and Prefs.readBool(CardView.SETTING_DARK_BORDER, true)
+                                end,
+                                callback = function()
+                                    Prefs.save(CardView.SETTING_DARK_BORDER,
+                                        not Prefs.readBool(CardView.SETTING_DARK_BORDER, true))
+                                end,
+                                keep_menu_open = true,
+                            },
+                            {
                                 text = _("Cover shadow"),
                                 checked_func = function()
                                     return Prefs.readBool(CardView.SETTING_COVER_SHADOW, true)

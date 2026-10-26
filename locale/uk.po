@@ -728,3 +728,12 @@ msgstr "Налаштування цілі читання"
 
 msgid "Appearance"
 msgstr "Вигляд"
+
+msgid "Cover border"
+msgstr "Рамка обкладинки"
+
+msgid "Dark border in night mode"
+msgstr "Темна рамка в нічному режимі"
+
+msgid "When the card is dark, draw the cover frame in near-black instead of white, so it stays subtle. Needs \"Cover border\" to be on."
+msgstr "Коли картка темна, малює рамку обкладинки майже чорною замість білої, щоб вона була непомітною. Потрібна увімкнена «Рамка обкладинки»."
